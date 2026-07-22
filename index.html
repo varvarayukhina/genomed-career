@@ -28,7 +28,7 @@
 <style>
   :root{
     --ink:#0A2540; --ink-2:#33465c; --ink-3:#5b6b80;
-    --blue:#0093C9; --blue-600:#0079AC; --cyan:#00C2FF;
+    --blue:#00B5E2; --blue-600:#0094B9; --cyan:#00C2FF;
     --paper:#ffffff; --stripe:#F4F8FE; --stripe-2:#eaf1fd;
     --line:#dbe6f5; --line-2:#e8eefb;
     --ok:#1aa06d;
@@ -157,7 +157,7 @@
   .gm-hero{position:relative; padding:54px 0 62px; overflow:hidden;
     background:
       radial-gradient(900px 380px at 84% -18%, rgba(255,255,255,.35), transparent 60%),
-      linear-gradient(135deg, #29C3EC 0%, #00A9DE 48%, #0089C2 100%);
+      linear-gradient(135deg, #33C9EE 0%, #00B5E2 48%, #0092BC 100%);
     border-bottom-left-radius:36px; border-bottom-right-radius:36px;
   }
   /* точечная фактура — цвет Tiffany */
@@ -519,6 +519,26 @@
   .gm-side-item.is-on .gm-side-item__box svg{opacity:1}
   .gm-side-item.is-empty{opacity:.4; cursor:default}
   .gm-side-item.is-empty:hover{background:none}
+
+  /* «Бегущие ленты» чипов (marquee) — включаются JS только на мобильном */
+  .gm-marq{overflow:hidden !important; display:block !important}
+  .gm-marq__track{display:flex; width:max-content; flex:0 0 auto; will-change:transform}
+  .gm-marq__track .gm-side-item{margin-right:8px; flex:0 0 auto}
+  .gm-marq.is-paused .gm-marq__track{animation-play-state:paused}
+  @keyframes gm-marq-left{from{transform:translateX(0)} to{transform:translateX(-50%)}}
+  @keyframes gm-marq-right{from{transform:translateX(-50%)} to{transform:translateX(0)}}
+  @media (prefers-reduced-motion: reduce){ .gm-marq__track{animation:none !important; transform:none !important} }
+
+  /* Конфетти тематических иконок при выборе направления */
+  .gm-conf-layer{position:fixed; inset:0; pointer-events:none; z-index:9999; overflow:hidden}
+  .gm-conf{position:fixed; pointer-events:none; line-height:1; will-change:transform,opacity;
+    transform:translate(-50%,-50%);
+    animation-name:gm-conf-fall; animation-timing-function:cubic-bezier(.25,.6,.35,1); animation-fill-mode:forwards}
+  @keyframes gm-conf-fall{
+    0%{opacity:0; transform:translate(-50%,-50%) rotate(0)}
+    12%{opacity:1}
+    100%{opacity:0; transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--rot))}
+  }
 
   /* панель результата + сброс фильтров */
   .gm-vacs__bar{display:flex; align-items:center; justify-content:space-between; gap:12px;
@@ -895,6 +915,8 @@
 .mmap .p-default{display:flex; align-items:center; gap:20px 30px; flex-wrap:wrap}
 .mmap .p-default .p-stats{margin:0; flex:0 0 auto}
 .mmap .p-invite{flex:1 1 320px; color:var(--muted); font-size:.9rem; line-height:1.5}
+.mmap .p-invite p{margin:0 0 9px}
+.mmap .p-invite p:last-child{margin-bottom:0}
 .mmap .p-invite b{color:var(--ink); font-weight:700}
 .mmap .p-default .btn{flex:0 0 auto; min-width:250px}
 .mmap .card2{display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:28px; align-items:start}
@@ -1138,17 +1160,17 @@
 
     <div class="gm-why gm-why--3" style="margin-top:8px">
       <div class="gm-why__item gm-reveal">
-        <span class="gm-why__k">// impact</span>
+        <span class="gm-why__k">// смысл</span>
         <h3>Работа доходит до пациента</h3>
         <p>Пробирка, пайплайн или строчка кода — часть чьего-то диагноза и решения о лечении. Здесь редко бывает «просто задача».</p>
       </div>
       <div class="gm-why__item gm-reveal">
-        <span class="gm-why__k">// culture</span>
+        <span class="gm-why__k">// атмосфера</span>
         <h3>К нам приходят за возможностями. Возвращаются за стабильностью.</h3>
         <p>Мы создаём среду для карьерного роста и профессионального развития. И атмосферу, ради которой возвращаются обратно. Здесь по-настоящему ценят людей.</p>
       </div>
       <div class="gm-why__item gm-reveal">
-        <span class="gm-why__k">// growth</span>
+        <span class="gm-why__k">// развитие</span>
         <h3>Стек обновляется — и вы вместе с ним</h3>
         <p>Секвенирование, новые панели, инструменты на основе ИИ. Методы двигаются быстро, и рядом есть у кого учиться.</p>
       </div>
@@ -1752,15 +1774,95 @@ const VACANCIES = [
     b.type='button'; b.className='gm-side-item'; b.dataset.val=label; b.dataset.group=group;
     b.setAttribute('aria-pressed','false');
     b.innerHTML=CHECK+'<span class="gm-side-item__t">'+label+'</span><i class="gm-side-item__n"></i>';
-    b.addEventListener('click', ()=>{
-      const set = group==='city' ? selCity : selDept;
-      if(set.has(label)) set.delete(label); else set.add(label);
-      render();
-    });
     return b;
   }
   cities.forEach(c=>cityEl.appendChild(mkItem('city', c)));
   depts.forEach(d=>deptEl.appendChild(mkItem('dept', d)));
+
+  // Клик по чипу — делегированно (работает и на клонах в «бегущей ленте»).
+  function chipClick(group, ev){
+    const btn = ev.target.closest('.gm-side-item');
+    if(!btn || btn.classList.contains('is-empty')) return;
+    const label = btn.dataset.val;
+    const set = group==='city' ? selCity : selDept;
+    const turnOn = !set.has(label);
+    if(turnOn) set.add(label); else set.delete(label);
+    if(group==='dept' && turnOn) burstIcons(label, ev);   // конфетти иконок при выборе направления
+    render();
+  }
+  cityEl.addEventListener('click', function(e){ chipClick('city', e); });
+  deptEl.addEventListener('click', function(e){ chipClick('dept', e); });
+
+  /* ---- Конфетти тематических иконок при выборе направления ---- */
+  const DEPT_ICONS = {
+    'Медицина':['🩺','🥼','❤️','💉','🧑‍⚕️'],
+    'Лаборатория':['🧪','🔬','🧬','🥽','⚗️'],
+    'Клиентский сервис':['💬','📞','🎧','🤝','✉️'],
+    'Финансы':['💰','📊','🧾','💳','📈'],
+    'Продажи':['📈','🤝','🎯','💼','🚀'],
+    'IT':['💻','⌨️','🖥️','⚙️','🔌'],
+    'Управление':['📋','🗂️','🎯','⭐','🧭']
+  };
+  let confLayer=null;
+  function burstIcons(label, ev){
+    const icons = DEPT_ICONS[label] || ['✨','🎉','⭐','💫'];
+    if(!confLayer){ confLayer=document.createElement('div'); confLayer.className='gm-conf-layer'; document.body.appendChild(confLayer); }
+    const t = ev && ev.changedTouches && ev.changedTouches[0];
+    let ox, oy;
+    if(t){ ox=t.clientX; oy=t.clientY; }
+    else if(ev && typeof ev.clientX==='number' && ev.clientX){ ox=ev.clientX; oy=ev.clientY; }
+    else { ox=window.innerWidth/2; oy=140; }
+    for(var i=0;i<18;i++){
+      var s=document.createElement('span');
+      s.className='gm-conf';
+      s.textContent=icons[i % icons.length];
+      s.style.left=ox+'px'; s.style.top=oy+'px';
+      s.style.fontSize=(16+Math.random()*14)+'px';
+      s.style.setProperty('--dx', ((Math.random()*2-1)*150)+'px');
+      s.style.setProperty('--dy', (120+Math.random()*260)+'px');
+      s.style.setProperty('--rot', ((Math.random()*2-1)*220)+'deg');
+      s.style.animationDuration=(0.9+Math.random()*0.8)+'s';
+      s.style.animationDelay=(Math.random()*0.12)+'s';
+      confLayer.appendChild(s);
+      s.addEventListener('animationend', function(){ this.remove(); });
+    }
+  }
+
+  /* ---- «Бегущие ленты» чипов на мобильном: направления плывут →, города ← ---- */
+  function setupDrift(container, dir){
+    if(!container || container.dataset.drift) return;
+    var items=[].slice.call(container.querySelectorAll('.gm-side-item'));
+    if(items.length<2) return;
+    var track=document.createElement('div');
+    track.className='gm-marq__track';
+    items.forEach(function(it){ track.appendChild(it); });
+    items.forEach(function(it){ var c=it.cloneNode(true); c.setAttribute('aria-hidden','true'); c.tabIndex=-1; track.appendChild(c); });
+    container.appendChild(track);
+    container.classList.add('gm-marq');
+    container.dataset.drift=dir;
+    requestAnimationFrame(function(){
+      var half=track.scrollWidth/2;
+      var dur=Math.max(16, half/26);                 // ~26px/с — медленно «плывёт»
+      track.style.animationName = (dir==='right') ? 'gm-marq-right' : 'gm-marq-left';
+      track.style.animationDuration = dur+'s';
+    });
+    var resumeT=null;
+    function pause(){ container.classList.add('is-paused'); if(resumeT){ clearTimeout(resumeT); } }
+    function resume(){ if(resumeT){ clearTimeout(resumeT); } resumeT=setTimeout(function(){ container.classList.remove('is-paused'); }, 1400); }
+    container.addEventListener('touchstart', pause, {passive:true});
+    container.addEventListener('touchend', resume, {passive:true});
+    container.addEventListener('mouseenter', pause);
+    container.addEventListener('mouseleave', resume);
+  }
+  var mqMobile = window.matchMedia('(max-width:760px)');
+  function applyDrift(){
+    if(mqMobile.matches){
+      setupDrift(deptEl, 'right');   // направления → слева направо
+      setupDrift(cityEl, 'left');    // города → справа налево
+    }
+  }
+  if(mqMobile.addEventListener) mqMobile.addEventListener('change', applyDrift);
+  else if(mqMobile.addListener) mqMobile.addListener(applyDrift);
 
   /* ---- поиск с выпадающими подсказками (автодополнение) ---- */
   const dropEl = document.getElementById('gmSearchDrop');
@@ -1824,21 +1926,18 @@ const VACANCIES = [
     document.addEventListener('click', e=>{ if(!e.target.closest('.gm-search')) closeDrop(); });
   }
 
+  function paintGroup(root, set, cnt){
+    root.querySelectorAll('.gm-side-item').forEach(b=>{
+      const on=set.has(b.dataset.val), n=cnt(b.dataset.val);
+      b.classList.toggle('is-on', on);
+      b.classList.toggle('is-empty', n===0 && !on);
+      b.setAttribute('aria-pressed', on?'true':'false');
+      const nEl=b.querySelector('.gm-side-item__n'); if(nEl) nEl.textContent = n;
+    });
+  }
   function refreshItems(){
-    [...cityEl.children].forEach(b=>{
-      const on=selCity.has(b.dataset.val), n=cityCount(b.dataset.val);
-      b.classList.toggle('is-on', on);
-      b.classList.toggle('is-empty', n===0 && !on);
-      b.setAttribute('aria-pressed', on?'true':'false');
-      b.querySelector('.gm-side-item__n').textContent = n;
-    });
-    [...deptEl.children].forEach(b=>{
-      const on=selDept.has(b.dataset.val), n=deptCount(b.dataset.val);
-      b.classList.toggle('is-on', on);
-      b.classList.toggle('is-empty', n===0 && !on);
-      b.setAttribute('aria-pressed', on?'true':'false');
-      b.querySelector('.gm-side-item__n').textContent = n;
-    });
+    paintGroup(cityEl, selCity, cityCount);
+    paintGroup(deptEl, selDept, deptCount);
   }
 
   function card(v){
@@ -1924,6 +2023,7 @@ const VACANCIES = [
   window.gmHasDept = dept => depts.includes(dept);
 
   render();
+  applyDrift();
 })();
 
 /* ============================================================
@@ -2510,7 +2610,11 @@ ${Array.from({length:18},(_,i)=>{const y=i*42-20; return `<line x1="290" y1="${y
       '<div class="p-default">'+
         '<div class="p-stats"><div class="p-stat p-stat--vac"><b data-count="'+totalVac+'">0</b><span>открытых позиций</span></div>'+
         '<div class="p-stat"><b>5</b><span>направлений</span></div></div>'+
-        '<div class="p-invite">Слева — старт работы, справа — должность мечты. Наведите на станцию, чтобы узнать о роли, на <b>пересадку&nbsp;⇄</b> — увидеть живую историю роста. Или постройте маршрут между любыми ролями наверху.</div>'+
+        '<div class="p-invite">'+
+          '<p>Слева — старт работы, справа — должность мечты.</p>'+
+          '<p>Наведите на станцию, чтобы узнать о роли, на <b>пересадку&nbsp;⇄</b> — увидеть живую историю роста.</p>'+
+          '<p>Или постройте маршрут между любыми ролями наверху.</p>'+
+        '</div>'+
         '<button class="btn btn--primary" id="seeVac">Показать, где сейчас нанимают</button>'+
       '</div>';
     countUp(panelBody.querySelector('[data-count]'), totalVac);
