@@ -748,8 +748,8 @@
     #vakansii .gm-reveal{opacity:1 !important; transform:none !important}
     #vakansii{padding-top:24px}
 
-    /* блок вакансий: заголовок → поиск → лента направлений → город → карточки */
-    #vakansii .gm-sec__lead{display:none}
+    /* блок вакансий: только карточки (поиск и лента направлений переехали в hero) */
+    #vakansii .gm-sec__head{display:none}
     #vakansii .gm-vaclayout{display:flex; flex-direction:column; gap:16px; margin-top:4px}
     #vakansii .gm-sidebar{display:contents}
     #vakansii .gm-vaccol{display:contents}
@@ -758,7 +758,7 @@
     #vakansii .gm-vacs__bar{order:3}
     #vakansii .gm-vacs{order:4}
     #vakansii .gm-vacs__empty{order:4}
-    #vakansii .gm-side-group--city{order:5}
+    #vakansii .gm-side-group--city{order:1}
 
     /* группы фильтров без карточки-бокса: лейбл над горизонтальной лентой плашек */
     #vakansii .gm-side-group{background:none; border:none; box-shadow:none; padding:0; display:block}
@@ -774,6 +774,29 @@
     #vakansii .gm-side-item:active{transform:scale(.97)}
     #vakansii .gm-side-item.is-on{border-color:var(--blue); background:linear-gradient(135deg,#eaf4ff,#e1eeff); color:var(--ink); font-weight:600}
     #vakansii .gm-side-item__box{display:none}
+
+    /* ===== hero (синий) как Авиасейлс: шапка + поиск + лента направлений на синем ===== */
+    #pochemu{padding-bottom:26px}
+    #pochemu .gm-hero__sub, #pochemu .gm-hero__cta{display:none}
+    #pochemu .gm-hero__col{min-width:0}
+    #pochemu h1{max-width:100%; margin:6px auto 4px; font-size:clamp(1.4rem, 6vw, 2rem)}
+    html, body{overflow-x:hidden}
+    #pochemu .gm-search{width:100%; max-width:none; margin-top:20px}
+    #pochemu .gm-search input{background:#fff; color:var(--ink); border-color:#fff}
+    #pochemu .gm-side-group--dept{margin-top:12px; background:none; border:none; box-shadow:none; padding:0; width:100%}
+    #pochemu .gm-side-group--dept .gm-side-lbl{display:none}
+    #pochemu #gmFilterDept{display:flex; flex-wrap:nowrap; overflow-x:auto; gap:8px; scrollbar-width:none;
+      -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity; margin:0 -24px; padding:2px 24px 4px}
+    #pochemu #gmFilterDept::-webkit-scrollbar{display:none}
+    #pochemu #gmFilterDept .gm-side-item{flex:0 0 auto; width:auto; white-space:nowrap; scroll-snap-align:start;
+      border:none; border-radius:999px; padding:10px 16px; background:rgba(255,255,255,.18); color:#fff; font-weight:600;
+      transition:background .16s, transform .16s}
+    #pochemu #gmFilterDept .gm-side-item:active{transform:scale(.97)}
+    #pochemu #gmFilterDept .gm-side-item .gm-side-item__n{color:#fff}
+    #pochemu #gmFilterDept .gm-side-item.is-on,
+    #pochemu #gmFilterDept .gm-side-item.is-on .gm-side-item__n{background:#fff; color:var(--blue)}
+    #pochemu #gmFilterDept .gm-side-item.is-on{background:#fff}
+    #pochemu #gmFilterDept .gm-side-item__box{display:none}
   }
 
 /* ==================== МЕТРО-КАРТА «Траектория карьеры и развитие» (scoped .mmap) ==================== */
@@ -1437,13 +1460,28 @@ if (gmBurger) gmBurger.addEventListener('click', function(){
 
 /* ---------- мобилка: вакансии — первым экраном (как Авиасейлс) ---------- */
 (function(){ try{
-  const vak=document.getElementById('vakansii'), hero=document.getElementById('pochemu'), path=document.getElementById('path');
-  if(!vak||!hero||!path) return;
   const mq=window.matchMedia('(max-width:760px)');
-  function apply(){
-    if(mq.matches){ if(vak.nextElementSibling!==hero) hero.parentNode.insertBefore(vak, hero); }
-    else { if(vak.nextElementSibling!==path) path.parentNode.insertBefore(vak, path); }
+  const vak=document.getElementById('vakansii'), p2=document.getElementById('pochemu-2'), path=document.getElementById('path');
+  if(!vak||!p2||!path) return;
+  const heroCol=document.querySelector('#pochemu .gm-hero__col');
+  const h1=heroCol?heroCol.querySelector('h1'):null;
+  const search=document.querySelector('.gm-search');
+  const deptGroup=document.querySelector('#vakansii .gm-side-group--dept');
+  const vaccol=document.querySelector('#vakansii .gm-vaccol');
+  const sidebar=document.querySelector('#vakansii .gm-sidebar');
+  function toMobile(){
+    /* hero остаётся наверху; вакансии-карточки — сразу под ним; «19 лет» — ниже */
+    if(vak.nextElementSibling!==p2) p2.parentNode.insertBefore(vak, p2);
+    /* поиск + лента направлений — внутрь синего hero, под заголовок (как Авиасейлс) */
+    if(heroCol&&h1&&search&&search.parentNode!==heroCol) h1.insertAdjacentElement('afterend', search);
+    if(heroCol&&search&&deptGroup&&deptGroup.parentNode!==heroCol) search.insertAdjacentElement('afterend', deptGroup);
   }
+  function toDesktop(){
+    if(vak.nextElementSibling!==path) path.parentNode.insertBefore(vak, path);
+    if(vaccol&&search&&search.parentNode!==vaccol) vaccol.insertBefore(search, vaccol.firstChild);
+    if(sidebar&&deptGroup&&deptGroup.parentNode!==sidebar) sidebar.appendChild(deptGroup);
+  }
+  function apply(){ mq.matches?toMobile():toDesktop(); }
   apply();
   if(mq.addEventListener) mq.addEventListener('change', apply);
   else if(mq.addListener) mq.addListener(apply);
