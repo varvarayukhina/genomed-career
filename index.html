@@ -772,8 +772,9 @@
     #vakansii .gm-vaclayout{display:flex; flex-direction:column; gap:16px; margin-top:4px}
     #vakansii .gm-sidebar{display:contents}
     #vakansii .gm-vaccol{display:contents}
-    #vakansii .gm-search{order:0; position:sticky; top:52px; z-index:40;   /* top = высота липкого .gm-subnav (52px); z-index ниже него, чтобы не перекрывать меню */
-      margin:0 -18px 2px; padding:12px 18px 10px;
+    #vakansii .gm-search{order:0; position:sticky; top:52px; z-index:40;   /* top = высота липкого .gm-subnav (52px); z-index ниже него */
+      box-sizing:border-box; width:100vw; margin:0 0 2px calc(50% - 50vw);   /* full-bleed через 100vw: сохраняет полную ширину и в приклеенном состоянии (flex-stretch её терял) */
+      padding:12px 18px 10px;
       background:var(--stripe); box-shadow:0 10px 18px -12px rgba(16,42,67,.35)}
     #vakansii .gm-side-group--dept{order:2}
     #vakansii .gm-vacs__bar{order:3}
