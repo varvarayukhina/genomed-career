@@ -520,14 +520,13 @@
   .gm-side-item.is-empty{opacity:.4; cursor:default}
   .gm-side-item.is-empty:hover{background:none}
 
-  /* «Бегущие ленты» чипов (marquee) — включаются JS только на мобильном */
-  .gm-marq{overflow:hidden !important; display:block !important}
-  .gm-marq__track{display:flex; width:max-content; flex:0 0 auto; will-change:transform}
+  /* «Бегущие ленты» чипов — авто-дрейф через нативный скролл (включает JS на мобильном) */
+  .gm-marq{display:block !important; overflow-x:auto !important; overflow-y:hidden !important;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none}
+  .gm-marq::-webkit-scrollbar{display:none}
+  .gm-marq__track{display:flex; width:max-content; flex:0 0 auto}
   .gm-marq__track .gm-side-item{margin-right:8px; flex:0 0 auto}
-  .gm-marq.is-paused .gm-marq__track{animation-play-state:paused}
-  @keyframes gm-marq-left{from{transform:translateX(0)} to{transform:translateX(-50%)}}
-  @keyframes gm-marq-right{from{transform:translateX(-50%)} to{transform:translateX(0)}}
-  @media (prefers-reduced-motion: reduce){ .gm-marq__track{animation:none !important; transform:none !important} }
+  .gm-marq .gm-side-item.is-empty{opacity:1; cursor:pointer}   /* на ленте чипы не блёкнут и всегда кликабельны */
 
   /* Конфетти тематических иконок при выборе направления */
   .gm-conf-layer{position:fixed; inset:0; pointer-events:none; z-index:9999; overflow:hidden}
@@ -779,15 +778,16 @@
     #vakansii .gm-vacs{order:4}
     #vakansii .gm-vacs__empty{order:4}
     #vakansii .gm-side-group--city{order:1}
+    #vakansii .gm-side-group--fmt{order:2}
 
     /* группы фильтров без карточки-бокса: лейбл над горизонтальной лентой плашек */
     #vakansii .gm-side-group{background:none; border:none; box-shadow:none; padding:0; display:block}
     #vakansii .gm-side-lbl{display:block; width:auto; padding:0 0 9px; font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3)}
-    #vakansii #gmFilterDept, #vakansii #gmFilterCity{
+    #vakansii #gmFilterDept, #vakansii #gmFilterCity, #vakansii #gmFilterFmt{
       display:flex; flex-wrap:nowrap; overflow-x:auto; gap:8px; padding-bottom:6px;
       -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity; scrollbar-width:none;
       margin:0 -18px; padding-left:18px; padding-right:18px}
-    #vakansii #gmFilterDept::-webkit-scrollbar, #vakansii #gmFilterCity::-webkit-scrollbar{display:none}
+    #vakansii #gmFilterDept::-webkit-scrollbar, #vakansii #gmFilterCity::-webkit-scrollbar, #vakansii #gmFilterFmt::-webkit-scrollbar{display:none}
     #vakansii .gm-side-item{flex:0 0 auto; width:auto; white-space:nowrap; scroll-snap-align:start;
       border:1px solid var(--line); border-radius:999px; padding:10px 16px; background:var(--stripe);
       transition:border-color .16s, background .16s, transform .16s}
@@ -812,10 +812,9 @@
       border:none; border-radius:999px; padding:10px 16px; background:rgba(255,255,255,.18); color:#fff; font-weight:600;
       transition:background .16s, transform .16s}
     #pochemu #gmFilterDept .gm-side-item:active{transform:scale(.97)}
-    #pochemu #gmFilterDept .gm-side-item .gm-side-item__n{color:#fff}
-    #pochemu #gmFilterDept .gm-side-item.is-on,
-    #pochemu #gmFilterDept .gm-side-item.is-on .gm-side-item__n{background:#fff; color:var(--blue)}
-    #pochemu #gmFilterDept .gm-side-item.is-on{background:#fff}
+    #pochemu #gmFilterDept .gm-side-item .gm-side-item__n{background:#fff; color:var(--blue); font-weight:800; padding:1px 7px}
+    #pochemu #gmFilterDept .gm-side-item.is-on{background:#fff; color:var(--blue)}
+    #pochemu #gmFilterDept .gm-side-item.is-on .gm-side-item__n{background:var(--blue); color:#fff}
     #pochemu #gmFilterDept .gm-side-item__box{display:none}
   }
 
@@ -1193,6 +1192,10 @@
         <div class="gm-side-group gm-side-group--city">
           <span class="gm-side-lbl">Город</span>
           <div id="gmFilterCity" role="group" aria-label="Фильтр по городам"></div>
+        </div>
+        <div class="gm-side-group gm-side-group--fmt">
+          <span class="gm-side-lbl">Формат</span>
+          <div id="gmFilterFmt" role="group" aria-label="Фильтр по формату работы"></div>
         </div>
         <div class="gm-side-group gm-side-group--dept">
           <span class="gm-side-lbl">Направление</span>
@@ -1750,6 +1753,7 @@ const VACANCIES = [
   const emptyEl = document.getElementById('gmVacsEmpty');
   const cityEl  = document.getElementById('gmFilterCity');
   const deptEl  = document.getElementById('gmFilterDept');
+  const fmtEl   = document.getElementById('gmFilterFmt');
   if(!listEl || !cityEl || !deptEl) return;
 
   const searchEl = document.getElementById('gmVacSearch');
@@ -1757,7 +1761,8 @@ const VACANCIES = [
   const CHECK = '<span class="gm-side-item__box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span>';
   const cities=[]; VACANCIES.forEach(v=>{ if(!cities.includes(v.city)) cities.push(v.city); });
   const depts =[]; VACANCIES.forEach(v=>{ if(!depts.includes(v.dept)) depts.push(v.dept); });
-  const selCity=new Set(), selDept=new Set();   // пустой набор = «все»
+  const selCity=new Set(), selDept=new Set(), selFmt=new Set();   // пустой набор = «все»
+  const FMT_REMOTE='Удалённо', FMT_OFFICE='В офисе';
   let query='';
 
   // текст для поиска: должность + короткое описание + полный текст (без разметки)
@@ -1765,9 +1770,11 @@ const VACANCIES = [
   const matchesQuery=v=>!query || haystack(v).includes(query);
   const matchCity=v=>selCity.size===0 || selCity.has(v.city);   // пусто = все города
   const matchDept=v=>selDept.size===0 || selDept.has(v.dept);   // пусто = все направления
-  // счётчик у пункта: сколько вакансий даст этот пункт при текущем выборе другой группы + поиске
-  const cityCount=c=>VACANCIES.filter(v=>v.city===c && matchDept(v) && matchesQuery(v)).length;
-  const deptCount=d=>VACANCIES.filter(v=>matchCity(v) && v.dept===d && matchesQuery(v)).length;
+  const matchFmt=v=>selFmt.size===0 || (selFmt.has(FMT_REMOTE)&&v.remote) || (selFmt.has(FMT_OFFICE)&&!v.remote); // формат работы
+  // счётчик у пункта: сколько вакансий даст этот пункт при текущем выборе других групп + поиске
+  const cityCount=c=>VACANCIES.filter(v=>v.city===c && matchDept(v) && matchFmt(v) && matchesQuery(v)).length;
+  const deptCount=d=>VACANCIES.filter(v=>matchCity(v) && v.dept===d && matchFmt(v) && matchesQuery(v)).length;
+  const fmtCount=f=>VACANCIES.filter(v=>(f===FMT_REMOTE?v.remote:!v.remote) && matchCity(v) && matchDept(v) && matchesQuery(v)).length;
 
   function mkItem(group, label){
     const b=document.createElement('button');
@@ -1778,13 +1785,14 @@ const VACANCIES = [
   }
   cities.forEach(c=>cityEl.appendChild(mkItem('city', c)));
   depts.forEach(d=>deptEl.appendChild(mkItem('dept', d)));
+  if(fmtEl){ fmtEl.appendChild(mkItem('fmt', FMT_REMOTE)); fmtEl.appendChild(mkItem('fmt', FMT_OFFICE)); }
 
   // Клик по чипу — делегированно (работает и на клонах в «бегущей ленте»).
   function chipClick(group, ev){
     const btn = ev.target.closest('.gm-side-item');
-    if(!btn || btn.classList.contains('is-empty')) return;
+    if(!btn) return;
     const label = btn.dataset.val;
-    const set = group==='city' ? selCity : selDept;
+    const set = group==='city' ? selCity : (group==='dept' ? selDept : selFmt);
     const turnOn = !set.has(label);
     if(turnOn) set.add(label); else set.delete(label);
     if(group==='dept' && turnOn) burstIcons(label, ev);   // конфетти иконок при выборе направления
@@ -1792,6 +1800,7 @@ const VACANCIES = [
   }
   cityEl.addEventListener('click', function(e){ chipClick('city', e); });
   deptEl.addEventListener('click', function(e){ chipClick('dept', e); });
+  if(fmtEl) fmtEl.addEventListener('click', function(e){ chipClick('fmt', e); });
 
   /* ---- Конфетти тематических иконок при выборе направления ---- */
   const DEPT_ICONS = {
@@ -1821,14 +1830,18 @@ const VACANCIES = [
       s.style.setProperty('--dx', ((Math.random()*2-1)*150)+'px');
       s.style.setProperty('--dy', (120+Math.random()*260)+'px');
       s.style.setProperty('--rot', ((Math.random()*2-1)*220)+'deg');
-      s.style.animationDuration=(0.9+Math.random()*0.8)+'s';
+      s.style.animationDuration=(1.35+Math.random()*0.5)+'s';
       s.style.animationDelay=(Math.random()*0.12)+'s';
       confLayer.appendChild(s);
       s.addEventListener('animationend', function(){ this.remove(); });
     }
   }
 
-  /* ---- «Бегущие ленты» чипов на мобильном: направления плывут →, города ← ---- */
+  /* ---- «Бегущие ленты» чипов на мобильном ----
+         Авто-дрейф реализован через нативный скролл контейнера: направления
+         плывут →, города ←. Палец в любой момент листает ленту вручную, а
+         через ~1.3 c после касания дрейф сам возобновляется. Петля бесшовная
+         (чипы продублированы клонами). */
   function setupDrift(container, dir){
     if(!container || container.dataset.drift) return;
     var items=[].slice.call(container.querySelectorAll('.gm-side-item'));
@@ -1840,18 +1853,34 @@ const VACANCIES = [
     container.appendChild(track);
     container.classList.add('gm-marq');
     container.dataset.drift=dir;
+
+    var half=0, paused=false, resumeT=null, last=0;
+    var SPEED=26;   // px/сек — медленно «плывёт»
+    function loop(ts){
+      if(!last) last=ts;
+      var dt=ts-last; last=ts;
+      half = track.scrollWidth/2;
+      if(half>0 && !paused && dt>0 && dt<200){
+        container.scrollLeft += (dir==='right') ? -(SPEED*dt/1000) : (SPEED*dt/1000);
+        // бесшовная петля — только в авто-режиме, чтобы не рвать инерцию пальца
+        if(container.scrollLeft <= 0) container.scrollLeft += half;
+        else if(container.scrollLeft >= half) container.scrollLeft -= half;
+      }
+      requestAnimationFrame(loop);
+    }
     requestAnimationFrame(function(){
-      var half=track.scrollWidth/2;
-      var dur=Math.max(16, half/26);                 // ~26px/с — медленно «плывёт»
-      track.style.animationName = (dir==='right') ? 'gm-marq-right' : 'gm-marq-left';
-      track.style.animationDuration = dur+'s';
+      half = track.scrollWidth/2;
+      container.scrollLeft = (dir==='right') ? half : 0;   // старт с запасом в нужную сторону
+      requestAnimationFrame(loop);
     });
-    var resumeT=null;
-    function pause(){ container.classList.add('is-paused'); if(resumeT){ clearTimeout(resumeT); } }
-    function resume(){ if(resumeT){ clearTimeout(resumeT); } resumeT=setTimeout(function(){ container.classList.remove('is-paused'); }, 1400); }
+
+    function pause(){ paused=true; if(resumeT){ clearTimeout(resumeT); resumeT=null; } }
+    function resume(){ if(resumeT){ clearTimeout(resumeT); } resumeT=setTimeout(function(){ paused=false; last=0; }, 1300); }
     container.addEventListener('touchstart', pause, {passive:true});
     container.addEventListener('touchend', resume, {passive:true});
-    container.addEventListener('mouseenter', pause);
+    container.addEventListener('touchcancel', resume, {passive:true});
+    container.addEventListener('mousedown', pause);
+    container.addEventListener('mouseup', resume);
     container.addEventListener('mouseleave', resume);
   }
   var mqMobile = window.matchMedia('(max-width:760px)');
@@ -1880,7 +1909,7 @@ const VACANCIES = [
     if(searchEl) searchEl.setAttribute('aria-expanded','false');
   }
   function chooseVac(v){
-    selCity.clear(); selDept.clear();
+    selCity.clear(); selDept.clear(); selFmt.clear();
     searchEl.value=v.title; query=v.title.toLowerCase();
     render(); closeDrop();
     listEl.scrollIntoView({behavior:'smooth', block:'start'});
@@ -1938,6 +1967,7 @@ const VACANCIES = [
   function refreshItems(){
     paintGroup(cityEl, selCity, cityCount);
     paintGroup(deptEl, selDept, deptCount);
+    if(fmtEl) paintGroup(fmtEl, selFmt, fmtCount);
   }
 
   function card(v){
@@ -1972,7 +2002,7 @@ const VACANCIES = [
 
   const countEl = document.getElementById('gmVacsCount');
   const resetEl = document.getElementById('gmFilterReset');
-  const hasFilters = ()=> selCity.size>0 || selDept.size>0 || query!=='';
+  const hasFilters = ()=> selCity.size>0 || selDept.size>0 || selFmt.size>0 || query!=='';
   function plural(n){ const a=Math.abs(n)%100, b=a%10;
     if(a>10 && a<20) return 'вакансий';
     if(b>1 && b<5)  return 'вакансии';
@@ -1980,7 +2010,7 @@ const VACANCIES = [
     return 'вакансий'; }
 
   function render(){
-    const items=VACANCIES.filter(v=> matchCity(v) && matchDept(v) && matchesQuery(v));
+    const items=VACANCIES.filter(v=> matchCity(v) && matchDept(v) && matchFmt(v) && matchesQuery(v));
     listEl.innerHTML=''; items.forEach(v=>listEl.appendChild(card(v)));
     emptyEl.hidden=items.length>0; refreshItems();
     if(countEl) countEl.textContent = 'Найдено: '+items.length+' '+plural(items.length);
@@ -1989,7 +2019,7 @@ const VACANCIES = [
 
   if(resetEl){
     resetEl.addEventListener('click', ()=>{
-      selCity.clear(); selDept.clear(); query='';
+      selCity.clear(); selDept.clear(); selFmt.clear(); query='';
       if(searchEl) searchEl.value=''; closeDrop(); render();
     });
   }
@@ -2014,7 +2044,7 @@ const VACANCIES = [
 
   // Глобальный хук для интерактива «Собери свой путь»: отфильтровать вакансии по направлению.
   window.gmApplyDept = function(dept){
-    selCity.clear(); selDept.clear();
+    selCity.clear(); selDept.clear(); selFmt.clear();
     if(depts.includes(dept)) selDept.add(dept);
     if(searchEl) searchEl.value=''; query=''; if(typeof closeDrop==='function') closeDrop();
     render();
