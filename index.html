@@ -802,7 +802,7 @@
     #pochemu .gm-hero__sub, #pochemu .gm-hero__cta{display:none}
     #pochemu .gm-hero__col{min-width:0}
     #pochemu h1{max-width:100%; margin:6px auto 4px; font-size:clamp(1.4rem, 6vw, 2rem)}
-    html, body{overflow-x:clip}   /* clip (без hidden-фолбэка) не создаёт скролл-контейнер → sticky работает и в iOS Safari */
+    .gm-page{overflow-x:clip}   /* обёртка всего контента надёжно режет горизонтальный вылет (в т.ч. iOS Safari), не создавая скролл-контейнер → sticky не ломается */
     #pochemu .gm-search{width:100%; max-width:none; margin-top:20px}
     #pochemu .gm-search input{background:#fff; color:var(--ink); border-color:#fff}
     #pochemu .gm-side-group--dept{margin-top:12px; background:none; border:none; box-shadow:none; padding:0; width:100%}
@@ -1045,6 +1045,7 @@
   <meta name="twitter:description" content="Открытые вакансии, кадровый резерв и интерактивная карта карьеры.">
 </head>
 <body>
+<div class="gm-page">
 <script>document.documentElement.className += ' js-enabled';</script>
 
 <!-- прогресс заполнения анкеты, закреплённый сверху (виден при скролле) -->
@@ -2375,6 +2376,7 @@ ${Array.from({length:18},(_,i)=>{const y=i*42-20; return `<line x1="290" y1="${y
   }
 })();
 </script>
+</div><!-- /.gm-page -->
 
 <!-- ==================== JS метро-карты ==================== -->
 <script>
