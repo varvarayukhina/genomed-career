@@ -230,6 +230,15 @@
   .gm-metro-lead p:last-child{margin-bottom:0}
   p.gm-metro-lead__hint{margin-top:18px; padding-top:15px; border-top:1px solid var(--line-2); display:flex; gap:10px; align-items:flex-start; color:var(--ink-3); font-size:1rem}
   p.gm-metro-lead__hint svg{flex:none; width:19px; height:19px; color:var(--blue); margin-top:2px}
+  /* тёплый блок под картой метро */
+  .gm-metro-cta{display:flex; align-items:center; justify-content:space-between; gap:22px; flex-wrap:wrap;
+    margin-top:28px; padding:24px 30px; border-radius:var(--radius);
+    background:linear-gradient(135deg,#EAF7FE,#EEF2FE); border:1px solid var(--line); box-shadow:var(--shadow-sm)}
+  .gm-metro-cta__t{min-width:0}
+  .gm-metro-cta b{display:block; font-family:var(--display); font-weight:700; font-size:1.18rem; color:var(--ink)}
+  .gm-metro-cta span{display:block; margin-top:6px; color:var(--ink-2); font-size:1rem; line-height:1.5; max-width:54ch}
+  .gm-metro-cta .gm-btn{flex:none}
+  @media (max-width:600px){ .gm-metro-cta{padding:22px 20px} .gm-metro-cta .gm-btn{width:100%; justify-content:center} }
 
   /* ---------- Почему Геномед ---------- */
   .gm-why{display:grid; grid-template-columns:repeat(2,1fr); gap:20px}
@@ -1277,8 +1286,8 @@
 
     <div class="gm-vacs__foot gm-reveal">
       <div class="gm-vacs__foot-t">
-        <b>Это не все наши вакансии</b>
-        <span>Открытых ролей больше, и они появляются постоянно. Не нашли своё — оставьте анкету, и мы найдём роль именно для вас.</span>
+        <b>Не нашли свою вакансию?</b>
+        <span>Это не «нет». Оставьте анкету — вернёмся, когда появится подходящая задача.</span>
       </div>
       <a href="#reserv" class="gm-btn gm-btn--ghost">Оставить анкету в резерве
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
@@ -1336,6 +1345,15 @@
     </p>
     <div class="toast" id="toast"></div>
   </div>
+    <div class="gm-metro-cta gm-reveal">
+      <div class="gm-metro-cta__t">
+        <b>Не нашли свою станцию?</b>
+        <span>Наши маршруты не заканчиваются на этой схеме. Расскажите о себе — и мы вместе найдём или придумаем роль именно под вас.</span>
+      </div>
+      <a href="#reserv" class="gm-btn gm-btn--primary">Рассказать о себе
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
   </div>
 </section>
 
