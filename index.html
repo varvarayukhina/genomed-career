@@ -125,7 +125,7 @@
   }
   /* панель-слайдер: разделы листаются вбок и кликаются (как верхняя панель Aviasales) */
   .gm-subnav__links{
-    display:flex; align-items:center; gap:4px;
+    display:flex; align-items:center; gap:7px; padding:9px 0;
     overflow-x:auto; scrollbar-width:none;
     scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch;
   }
@@ -133,10 +133,11 @@
   .gm-subnav a{
     scroll-snap-align:start; flex:none;
     font-family:var(--sans); font-weight:600; font-size:.82rem; letter-spacing:.01em; white-space:nowrap;
-    color:var(--ink-3); padding:14px 14px; border-bottom:2px solid transparent; transition:.15s;
+    color:var(--ink-2); padding:8px 15px; border-radius:999px;
+    border:1px solid var(--line); background:#fff; transition:.15s;
   }
-  .gm-subnav a:hover{color:var(--ink)}
-  .gm-subnav a.is-active{color:var(--blue); border-bottom-color:var(--blue)}
+  .gm-subnav a:hover{color:var(--blue); border-color:var(--blue); background:var(--stripe)}
+  .gm-subnav a.is-active{color:#fff; background:var(--blue); border-color:var(--blue); box-shadow:0 4px 12px rgba(0,181,226,.28)}
 
   /* ================= BUTTONS ================= */
   .gm-btn{
@@ -772,7 +773,7 @@
     #vakansii .gm-vaclayout{display:flex; flex-direction:column; gap:16px; margin-top:4px}
     #vakansii .gm-sidebar{display:contents}
     #vakansii .gm-vaccol{display:contents}
-    #vakansii .gm-search{order:0; position:sticky; top:52px; z-index:40;   /* top = высота липкого .gm-subnav (52px); z-index ниже него */
+    #vakansii .gm-search{order:0; position:sticky; top:58px; z-index:40;   /* top = высота липкого .gm-subnav с кнопками (58px); z-index ниже него */
       align-self:stretch; width:auto; flex:none;   /* явный stretch держит полную ширину и в приклеенном (sticky) состоянии, где flex её терял */
       margin:0 -16px 2px; padding:12px 16px 10px;   /* -16px = гориз. паддинг .gm-wrap на мобилке → строка ровно во всю ширину, без вылета */
       background:var(--stripe); box-shadow:0 10px 18px -12px rgba(16,42,67,.35)}
