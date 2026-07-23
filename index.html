@@ -226,6 +226,10 @@
   .gm-sec__head{max-width:44rem; margin-bottom:40px}
   .gm-sec h2{font-size:clamp(1.9rem,3.4vw,2.7rem); font-weight:700; margin-top:14px}
   .gm-sec__lead{margin-top:16px; color:var(--ink-2); font-size:1.1rem}
+  .gm-metro-lead p{margin:0 0 13px}
+  .gm-metro-lead p:last-child{margin-bottom:0}
+  p.gm-metro-lead__hint{margin-top:18px; padding-top:15px; border-top:1px solid var(--line-2); display:flex; gap:10px; align-items:flex-start; color:var(--ink-3); font-size:1rem}
+  p.gm-metro-lead__hint svg{flex:none; width:19px; height:19px; color:var(--blue); margin-top:2px}
 
   /* ---------- Почему Геномед ---------- */
   .gm-why{display:grid; grid-template-columns:repeat(2,1fr); gap:20px}
@@ -1246,7 +1250,11 @@
     <div class="gm-sec__head gm-reveal">
       <span class="gm-eyebrow">Карьерный путь</span>
       <h2>Траектория карьеры и развитие</h2>
-      <p class="gm-sec__lead">У каждого направления свой вход и своя вершина. Наведите на станцию — узнаете о роли, на пересадку&nbsp;&#8646;&nbsp;— увидите живую историю роста реального сотрудника. Или постройте маршрут между любыми ролями.</p>
+      <div class="gm-sec__lead gm-metro-lead">
+        <p>Наша карьерная схема&nbsp;— не лестница с жёсткими ступенями, а метро. Вы можете перейти с одной линии на другую, когда почувствуете, что готовы.</p>
+        <p>Мы не спрашиваем, сколько вы проработали на предыдущей станции. Мы спрашиваем: «Готовы ли вы взять на себя больше?» Если да&nbsp;— добро пожаловать на новый маршрут.</p>
+        <p class="gm-metro-lead__hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l7.5 18 2.5-7 7-2.5L3 3z"/></svg><span>Наведите на станцию&nbsp;— увидите живую историю роста реального сотрудника. Или постройте маршрут между любыми ролями.</span></p>
+      </div>
     </div>
     <div class="mmap">
     <div class="bar">
@@ -1281,7 +1289,7 @@
     <aside class="panel" id="panel"><div id="panelBody"></div></aside>
     <p class="hint">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
-      Слева — вход в профессию, справа — вершина. Наведите на станцию — узнаете о роли; на пересадку&nbsp;&#8646;&nbsp;(там, где линии пересекаются) — всплывёт живая история роста. Пульсирующие точки — открытые вакансии. Нажмите — откроются карточка и отклик.
+      Слева — вход в профессию, справа — вершина. На пересадках&nbsp;&#8646;&nbsp;можно сменить профессию, не уходя из компании. Пульсирующие точки — открытые вакансии: нажмите, чтобы открыть карточку и отправить отклик.
     </p>
     <div class="toast" id="toast"></div>
   </div>
