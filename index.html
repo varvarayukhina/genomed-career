@@ -238,6 +238,8 @@
   .gm-why__k{font-family:var(--mono); font-size:.72rem; color:var(--cyan); letter-spacing:.1em}
   .gm-why__item h3{font-size:1.28rem; margin:12px 0 8px}
   .gm-why__item p{color:var(--ink-2); font-size:1rem}
+  .gm-why--3 .gm-why__item{padding-top:30px}
+  .gm-why--3 .gm-why__item::before{content:""; position:absolute; top:0; left:0; right:0; height:5px; background:linear-gradient(135deg,var(--cyan),var(--blue))}
 
   /* ---------- Направления ---------- */
   .gm-dirs{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
@@ -488,14 +490,16 @@
     .gm-steps{grid-template-columns:1fr}
   }
   /* ===== реальные цифры компании ===== */
-  .gm-stats{display:grid; grid-template-columns:repeat(4,1fr); background:#fff;
-    border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;
-    margin-bottom:30px; box-shadow:var(--shadow-sm)}
-  .gm-stat{padding:24px 22px; border-left:1px solid var(--line-2)}
-  .gm-stat:first-child{border-left:0}
-  .gm-stat b{display:block; font-family:var(--display); font-weight:800; font-size:2.1rem;
-    color:var(--blue); line-height:1; letter-spacing:-.01em}
-  .gm-stat span{display:block; margin-top:8px; color:var(--ink-3); font-size:.9rem; line-height:1.35}
+  .gm-stats{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:30px}
+  .gm-stat{position:relative; background:#fff; border:1px solid var(--line); border-radius:var(--radius);
+    padding:28px 22px 24px; box-shadow:var(--shadow-sm); overflow:hidden}
+  .gm-stat::before{content:""; position:absolute; top:0; left:0; right:0; height:5px;
+    background:linear-gradient(135deg,var(--cyan),var(--blue))}
+  .gm-stat b{display:block; font-family:var(--display); font-weight:800; font-size:2.2rem;
+    color:var(--ink); line-height:1; letter-spacing:-.02em}
+  .gm-stat b::after{content:""; display:block; width:34px; height:3px; border-radius:3px;
+    background:linear-gradient(135deg,var(--cyan),var(--blue)); margin:12px 0}
+  .gm-stat span{display:block; color:var(--ink-3); font-size:.9rem; line-height:1.4}
   .gm-why--3{grid-template-columns:repeat(3,1fr)}
 
   /* ===== навигация вакансий: боковое меню + поиск ===== */
@@ -676,8 +680,6 @@
   @media (max-width:1000px){ .gm-steps--5{grid-template-columns:repeat(3,1fr)} }
   @media (max-width:900px){
     .gm-stats{grid-template-columns:repeat(2,1fr)}
-    .gm-stat:nth-child(3){border-left:0}
-    .gm-stat:nth-child(n+3){border-top:1px solid var(--line-2)}
     .gm-why--3{grid-template-columns:1fr}
   }
   @media (max-width:760px){
@@ -690,18 +692,16 @@
   }
   @media (max-width:520px){
     .gm-stats{grid-template-columns:1fr}
-    .gm-stat{border-left:0; border-top:1px solid var(--line-2)}
-    .gm-stat:first-child{border-top:0}
     .gm-stat b{font-size:1.9rem}
     .gm-vc__side{flex-direction:column}
     .gm-vc__side .gm-btn, .gm-vc__more{width:100%; flex:none}
     .gm-steps--5{grid-template-columns:1fr}
   }
   /* ===== реальные бенефиты ===== */
-  .gm-perks{display:grid; grid-template-columns:repeat(3,1fr); margin-top:26px;
-    background:#fff; border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow-sm); overflow:hidden}
-  .gm-perk{display:flex; gap:15px; align-items:flex-start; padding:24px 26px}
-  .gm-perk + .gm-perk{border-left:1px solid var(--line-2)}
+  .gm-perks{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:26px}
+  .gm-perk{display:flex; gap:15px; align-items:flex-start; padding:22px 24px;
+    background:#fff; border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow-sm)}
+  .gm-perk + .gm-perk{border-left:0}
   .gm-perk__ic{width:42px; height:42px; flex:none; border-radius:11px;
     display:flex; align-items:center; justify-content:center; line-height:0;
     background:var(--stripe); color:var(--blue)}
@@ -741,7 +741,7 @@
   /* ===== адаптив: истории/галерея/перки/фильтры ===== */
   @media (max-width:900px){
     .gm-perks{grid-template-columns:1fr}
-    .gm-perk + .gm-perk{border-left:none; border-top:1px solid var(--line-2)}
+    .gm-perk + .gm-perk{border-top:0}
     .gm-stories{grid-template-columns:1fr}
     .gm-gallery{grid-template-columns:repeat(2,1fr)}
   }
