@@ -772,7 +772,9 @@
     #vakansii .gm-vaclayout{display:flex; flex-direction:column; gap:16px; margin-top:4px}
     #vakansii .gm-sidebar{display:contents}
     #vakansii .gm-vaccol{display:contents}
-    #vakansii .gm-search{order:1}
+    #vakansii .gm-search{order:0; position:sticky; top:0; z-index:60;
+      margin:0 -18px 2px; padding:12px 18px 10px;
+      background:var(--stripe); box-shadow:0 10px 18px -12px rgba(16,42,67,.35)}
     #vakansii .gm-side-group--dept{order:2}
     #vakansii .gm-vacs__bar{order:3}
     #vakansii .gm-vacs{order:4}
@@ -800,7 +802,7 @@
     #pochemu .gm-hero__sub, #pochemu .gm-hero__cta{display:none}
     #pochemu .gm-hero__col{min-width:0}
     #pochemu h1{max-width:100%; margin:6px auto 4px; font-size:clamp(1.4rem, 6vw, 2rem)}
-    html, body{overflow-x:hidden}
+    html, body{overflow-x:hidden; overflow-x:clip}   /* clip не создаёт скролл-контейнер → sticky-поиск работает */
     #pochemu .gm-search{width:100%; max-width:none; margin-top:20px}
     #pochemu .gm-search input{background:#fff; color:var(--ink); border-color:#fff}
     #pochemu .gm-side-group--dept{margin-top:12px; background:none; border:none; box-shadow:none; padding:0; width:100%}
@@ -1498,8 +1500,8 @@ if (gmBurger) gmBurger.addEventListener('click', function(){
     /* hero остаётся наверху; вакансии-карточки — сразу под ним; «19 лет» — ниже */
     if(vak.nextElementSibling!==p2) p2.parentNode.insertBefore(vak, p2);
     /* поиск + лента направлений — внутрь синего hero, под заголовок (как Авиасейлс) */
-    if(heroCol&&h1&&search&&search.parentNode!==heroCol) h1.insertAdjacentElement('afterend', search);
-    if(heroCol&&search&&deptGroup&&deptGroup.parentNode!==heroCol) search.insertAdjacentElement('afterend', deptGroup);
+    /* поиск закреплён (sticky) над списком вакансий; в синий hero уносим только ленту направлений */
+    if(heroCol&&h1&&deptGroup&&deptGroup.parentNode!==heroCol) h1.insertAdjacentElement('afterend', deptGroup);
   }
   function toDesktop(){
     if(vak.nextElementSibling!==path) path.parentNode.insertBefore(vak, path);
