@@ -1034,20 +1034,22 @@
   .gm-hero .gm-hero-fx{ position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:1; }
   /* анимированная полупрозрачная схема-метро на фоне hero */
   .gm-hero__bgmetro{position:absolute; inset:-8% -3% -16% -3%; z-index:2; pointer-events:none;
-    opacity:.42; filter:blur(2.2px);
+    opacity:.5; filter:blur(1.4px);
     -webkit-mask-image:radial-gradient(140% 125% at 55% 42%, #000 48%, transparent 100%);
             mask-image:radial-gradient(140% 125% at 55% 42%, #000 48%, transparent 100%);
-    animation:heroMetroDrift 36s ease-in-out infinite alternate; will-change:transform}
+    animation:heroMapDrift 44s ease-in-out infinite alternate; will-change:transform}
   .gm-hero__bgmetro svg{width:100%; height:100%; display:block}
-  .gm-hero__bgmetro path{fill:none; stroke-linecap:round; stroke-linejoin:round}
-  .gm-hero__bgmetro .hm-base path{stroke-width:5.5}
-  .gm-hero__bgmetro .hm-flow path{stroke-width:7.5; stroke-dasharray:18 220; opacity:.95;
-    animation:heroMetroFlow 6.5s linear infinite}
-  .gm-hero__bgmetro .hm-flow path:nth-of-type(2n){animation-duration:8.5s}
-  .gm-hero__bgmetro .hm-flow path:nth-of-type(3n){animation-duration:10.5s; animation-direction:reverse}
-  .gm-hero__bgmetro circle{opacity:.9}
-  @keyframes heroMetroDrift{0%{transform:translate3d(-1.5%,.5%,0) scale(1.05)}100%{transform:translate3d(1.7%,-.9%,0) scale(1.1)}}
-  @keyframes heroMetroFlow{to{stroke-dashoffset:-324}}
+  .gm-hero__bgmetro .ln-base path{fill:none; stroke-width:9; stroke-linecap:round; stroke-linejoin:round}
+  .gm-hero__bgmetro .ln-run path{fill:none; stroke-width:9; stroke-linecap:round; stroke-linejoin:round;
+    stroke:#ffffff; opacity:.85; stroke-dasharray:34 1180; filter:drop-shadow(0 0 7px #cdf3ff);
+    animation:heroMapRun 4.6s linear infinite}
+  .gm-hero__bgmetro .ln-run path:nth-of-type(2){animation-duration:6.1s}
+  .gm-hero__bgmetro .ln-run path:nth-of-type(3){animation-duration:5.3s}
+  .gm-hero__bgmetro .ln-run path:nth-of-type(4){animation-duration:7.2s}
+  .gm-hero__bgmetro .ln-run path:nth-of-type(5){animation-duration:5.8s}
+  .gm-hero__bgmetro .stns circle{stroke-width:3; fill:#eef9ff; opacity:.92}
+  @keyframes heroMapRun{to{stroke-dashoffset:-1214}}
+  @keyframes heroMapDrift{0%{transform:translate3d(-1.4%,.6%,0) scale(1.05)}100%{transform:translate3d(1.5%,-.7%,0) scale(1.09)}}
   @media (prefers-reduced-motion:reduce){.gm-hero__bgmetro,.gm-hero__bgmetro path{animation:none}}
   .gm-hero .gm-light{
     position:absolute; width:380px; height:380px; left:0; top:0; border-radius:50%;
@@ -1143,32 +1145,7 @@
 <!-- ==================== HERO · ПОЧЕМУ ГЕНОМЕД ==================== -->
 <section class="gm-hero" id="pochemu">
   <div class="gm-hero__bgmetro" aria-hidden="true">
-    <svg viewBox="0 0 1440 720" preserveAspectRatio="xMidYMid slice">
-      <g class="hm-base">
-        <path d="M-40 590 L 400 480 L 760 300 L 1120 210 L 1480 160" stroke="#00AEEF"/>
-        <path d="M-40 150 L 380 320 L 740 470 L 1100 560 L 1480 610" stroke="#7C5CFC"/>
-        <path d="M-40 400 L 600 400 L 900 360 L 1480 345" stroke="#FF8C42"/>
-        <path d="M-40 520 L 500 520 L 820 320 L 1480 260" stroke="#E24A8B"/>
-        <path d="M-40 300 L 520 300 L 840 500 L 1480 545" stroke="#2BB673"/>
-        <path d="M-40 665 L 640 645 L 1010 525 L 1480 470" stroke="#F59E0B"/>
-        <path d="M-40 705 L 720 695 L 1050 470 L 1480 415" stroke="#EF4444"/>
-      </g>
-      <g class="hm-flow">
-        <path d="M-40 590 L 400 480 L 760 300 L 1120 210 L 1480 160" stroke="#7fe0ff"/>
-        <path d="M-40 150 L 380 320 L 740 470 L 1100 560 L 1480 610" stroke="#c3b1ff"/>
-        <path d="M-40 400 L 600 400 L 900 360 L 1480 345" stroke="#ffc79a"/>
-        <path d="M-40 520 L 500 520 L 820 320 L 1480 260" stroke="#f7a8cf"/>
-        <path d="M-40 300 L 520 300 L 840 500 L 1480 545" stroke="#9fe6c4"/>
-        <path d="M-40 665 L 640 645 L 1010 525 L 1480 470" stroke="#ffd98a"/>
-        <path d="M-40 705 L 720 695 L 1050 470 L 1480 415" stroke="#ffa3a3"/>
-      </g>
-      <g>
-        <circle cx="760" cy="300" r="7" fill="#00AEEF"/><circle cx="1120" cy="210" r="6" fill="#00AEEF"/>
-        <circle cx="380" cy="320" r="6" fill="#7C5CFC"/><circle cx="1100" cy="560" r="6" fill="#7C5CFC"/>
-        <circle cx="900" cy="360" r="6" fill="#FF8C42"/><circle cx="820" cy="320" r="6" fill="#E24A8B"/>
-        <circle cx="840" cy="500" r="6" fill="#2BB673"/><circle cx="520" cy="300" r="6" fill="#2BB673"/>
-      </g>
-    </svg>
+    <svg viewBox="0 0 1480 940" preserveAspectRatio="xMidYMid slice"><g class="ln-base"><path stroke="#00AEEF" d="M200 780 L250 780 L830 200 L1180 200"/><path stroke="#7C5CFC" d="M200 200 L250 200 L830 780 L1180 780"/><path stroke="#FF8C42" d="M200 490 L1180 490"/><path stroke="#E24A8B" d="M200 640 L690 640 L990 340 L1180 340"/><path stroke="#2BB673" d="M200 340 L690 340 L990 640 L1180 640"/></g><g class="ln-run"><path d="M200 780 L250 780 L830 200 L1180 200"/><path d="M200 200 L250 200 L830 780 L1180 780"/><path d="M200 490 L1180 490"/><path d="M200 640 L690 640 L990 340 L1180 340"/><path d="M200 340 L690 340 L990 640 L1180 640"/></g><g class="stns"><circle cx="200" cy="780" r="7" stroke="#00AEEF"/><circle cx="330" cy="700" r="7" stroke="#00AEEF"/><circle cx="620" cy="410" r="7" stroke="#00AEEF"/><circle cx="950" cy="200" r="7" stroke="#00AEEF"/><circle cx="1180" cy="200" r="7" stroke="#00AEEF"/><circle cx="200" cy="200" r="7" stroke="#7C5CFC"/><circle cx="330" cy="280" r="7" stroke="#7C5CFC"/><circle cx="620" cy="570" r="7" stroke="#7C5CFC"/><circle cx="1180" cy="780" r="7" stroke="#7C5CFC"/><circle cx="200" cy="490" r="7" stroke="#FF8C42"/><circle cx="620" cy="490" r="7" stroke="#FF8C42"/><circle cx="1180" cy="490" r="7" stroke="#FF8C42"/><circle cx="200" cy="640" r="7" stroke="#E24A8B"/><circle cx="540" cy="640" r="7" stroke="#E24A8B"/><circle cx="990" cy="340" r="7" stroke="#E24A8B"/><circle cx="1180" cy="340" r="7" stroke="#E24A8B"/><circle cx="200" cy="340" r="7" stroke="#2BB673"/><circle cx="540" cy="340" r="7" stroke="#2BB673"/><circle cx="990" cy="640" r="7" stroke="#2BB673"/><circle cx="1180" cy="640" r="7" stroke="#2BB673"/></g></svg>
   </div>
   <div class="gm-wrap">
     <div class="gm-hero__grid">
