@@ -20,12 +20,12 @@
   }
   *{box-sizing:border-box}
   html,body{margin:0}
-  body{font-family:var(--sans); color:var(--ink); background:var(--bg);
+  body{background:transparent;font-family:var(--sans); color:var(--ink); background:var(--bg);
     -webkit-font-smoothing:antialiased; line-height:1.5; overflow-x:hidden}
   a{color:inherit; text-decoration:none}
   .wrap{max-width:1320px; margin:0 auto; padding:0 32px}
 
-  .top{padding:52px 0 22px}
+  .top{padding:8px 0 22px}
   .eyebrow{font-family:var(--display); font-weight:700; font-size:.74rem; letter-spacing:.14em;
     text-transform:uppercase; color:var(--lab); display:inline-flex; align-items:center; gap:.5em}
   .eyebrow::before{content:""; width:22px; height:2px; background:var(--lab); border-radius:2px}
@@ -89,7 +89,10 @@
   .hub__glow{opacity:.0}
   .hub__r{fill:#fff; stroke-width:4; transition:filter .2s}
   .hub:hover .hub__r{filter:drop-shadow(0 6px 18px rgba(30,41,59,.32))}
-  .hub__i{font-family:var(--sans); font-weight:800; font-size:14px; text-anchor:middle}
+  .hub__i{font-family:var(--sans); font-weight:800; font-size:20px; text-anchor:middle}
+  .hub__r2{opacity:.55}
+  .mline--casing{opacity:1}
+  .st__icon{font-size:15px; text-anchor:middle; pointer-events:none}
   .hub-story{filter:drop-shadow(0 2px 5px rgba(10,37,64,.35))}
   .hub.dim{opacity:.18; pointer-events:none}
   @keyframes hubpulse{0%,100%{opacity:.5; transform:scale(1)}50%{opacity:0; transform:scale(1.9)}}
@@ -243,41 +246,24 @@
       border-radius:0 27px 27px 0; background:linear-gradient(90deg, rgba(246,250,254,0), rgba(246,250,254,.9))}
     .panel{padding:18px}
   }
-
-  /* ---- два варианта схемы на одной странице ---- */
-  .vlabel{display:inline-flex; align-items:center; gap:9px; margin:26px 0 0;
-    font-family:var(--display); font-weight:800; font-size:.74rem; letter-spacing:.12em;
-    text-transform:uppercase; color:var(--muted); background:#fff; border:1px solid #E2E8F0;
-    border-radius:999px; padding:8px 16px; box-shadow:var(--shadow-sm)}
-  .vlabel b{color:var(--lab); font-weight:800}
-  .vsplit{margin:70px 0 0; padding-top:8px; border-top:1px solid #E7EDF4}
-  .vsplit h2{font-family:var(--display); font-weight:800; font-size:clamp(1.5rem,2.6vw,2.1rem);
-    letter-spacing:-.02em; margin:26px 0 0; line-height:1.15}
-  .vsplit p.lead{margin-top:12px}
-  .vframe{width:100%; border:0; display:block; margin-top:8px; background:transparent}
 </style>
 </head>
 <body>
 
 <div class="wrap top">
-  <span class="eyebrow">Карта карьеры</span>
-  <h1>Как бывает в Геномед</h1>
-  <p class="lead">У каждого направления свой вход и своя вершина. Линии пересекаются там, где можно сменить профессию, не уходя из компании: наведите на пересадку&nbsp;⇄&nbsp;— увидите живую историю роста реального сотрудника. Или постройте маршрут сами.</p>
-
-  <span class="vlabel"><b>Вариант 1</b> · схема, которую вы уже смотрели</span>
 
   <div class="bar">
     <div class="filters" id="filters">
       <button class="chip is-on" data-line="all"><span class="dot"></span>Все</button>
-      <button class="chip" data-line="tech" style="--cc:#14B8A6"><span class="dot" style="background:#14B8A6"></span>Технологии</button>
-      <button class="chip" data-line="lab" style="--cc:#00AEEF"><span class="dot" style="background:#00AEEF"></span>Лаборатория</button>
-      <button class="chip" data-line="eng" style="--cc:#64748B"><span class="dot" style="background:#64748B"></span>Инженерия</button>
-      <button class="chip" data-line="rnd" style="--cc:#7C5CFC"><span class="dot" style="background:#7C5CFC"></span>R&D</button>
-      <button class="chip" data-line="cs" style="--cc:#E24A8B"><span class="dot" style="background:#E24A8B"></span>Продажи</button>
-      <button class="chip" data-line="proc" style="--cc:#FF8C42"><span class="dot" style="background:#FF8C42"></span>Процессы</button>
-      <button class="chip" data-line="hr" style="--cc:#2BB673"><span class="dot" style="background:#2BB673"></span>Персонал</button>
-      <button class="chip" data-line="fin" style="--cc:#F59E0B"><span class="dot" style="background:#F59E0B"></span>Финансы</button>
-      <button class="chip" data-line="ops" style="--cc:#EF4444"><span class="dot" style="background:#EF4444"></span>Приём</button>
+      <button class="chip" data-line="tech" style="--cc:#14B8A6"><span class="dot" style="background:#14B8A6"></span>⚙️&nbsp;Технологии</button>
+      <button class="chip" data-line="lab" style="--cc:#00AEEF"><span class="dot" style="background:#00AEEF"></span>🧪&nbsp;Лаборатория</button>
+      <button class="chip" data-line="eng" style="--cc:#64748B"><span class="dot" style="background:#64748B"></span>🔧&nbsp;Инженерия</button>
+      <button class="chip" data-line="rnd" style="--cc:#7C5CFC"><span class="dot" style="background:#7C5CFC"></span>🧬&nbsp;R&D</button>
+      <button class="chip" data-line="cs" style="--cc:#E24A8B"><span class="dot" style="background:#E24A8B"></span>💬&nbsp;Продажи</button>
+      <button class="chip" data-line="proc" style="--cc:#FF8C42"><span class="dot" style="background:#FF8C42"></span>🤖&nbsp;Процессы</button>
+      <button class="chip" data-line="hr" style="--cc:#2BB673"><span class="dot" style="background:#2BB673"></span>👥&nbsp;Персонал</button>
+      <button class="chip" data-line="fin" style="--cc:#F59E0B"><span class="dot" style="background:#F59E0B"></span>📊&nbsp;Финансы</button>
+      <button class="chip" data-line="ops" style="--cc:#EF4444"><span class="dot" style="background:#EF4444"></span>📦&nbsp;Приём</button>
     </div>
     <div class="builder">
       <span class="builder__lbl">Маршрут</span>
@@ -308,33 +294,6 @@
   </p>
 </div>
 
-
-<div class="wrap vsplit">
-  <span class="vlabel"><b>Вариант 2</b> · та же карта, другой рисунок</span>
-  <h2>Живая транспортная схема</h2>
-  <p class="lead">Те же станции и те же пути, но линии идут плавными дугами, у каждого направления
-  появился свой значок, названия на карте сокращены до узнаваемых, а пересадки&nbsp;⇄&nbsp;увеличены —
-  именно они показывают, где можно сменить направление, не уходя из компании.
-  Полное название должности открывается при наведении и в карточке.</p>
-  <iframe class="vframe" id="v3frame" src="v3.html" title="Вариант 2 — живая схема" scrolling="no" loading="lazy"></iframe>
-</div>
-
-<script>
-/* высота второго варианта подгоняется под его содержимое (обе схемы на одном домене) */
-(function(){
-  var f=document.getElementById('v3frame'); if(!f) return;
-  function fit(){
-    try{
-      var d=f.contentDocument; if(!d||!d.body) return;
-      f.style.height=Math.max(d.body.scrollHeight, d.documentElement.scrollHeight)+'px';
-    }catch(e){}
-  }
-  f.addEventListener('load',function(){ fit(); setTimeout(fit,400); setTimeout(fit,1600); });
-  addEventListener('resize',fit);
-  setInterval(fit,2000);
-})();
-</script>
-
 <div class="toast" id="toast"></div>
 
 <script>
@@ -344,6 +303,7 @@
   const el = id => document.getElementById(id);
   const svg = el('map');
 
+  const ICON = {"lab": "🧪", "rnd": "🧬", "hr": "👥", "fin": "📊", "proc": "🤖", "cs": "💬", "tech": "⚙️", "eng": "🔧", "ops": "📦"};
   const LINES = [
     { key:"tech", name:"Технологии и производство", short:"Технологии", hex:"#14B8A6" },
     { key:"lab", name:"Лаборатория", short:"Лаборатория", hex:"#00AEEF" },
@@ -428,12 +388,12 @@
     fin: [[200, 900], [875, 900], [1025, 1050], [1300, 1050]],
     ops: [[200, 1030], [925, 1030], [1075, 1180], [1300, 1180]],
   };
-  const SHORT = {"lab-0": "Лаборант", "lab-1": "Ст. лаборант", "lab-2": "Молбиолог", "lab-3": "Ст. молбиолог", "lab-4": "Зав. отделом лаб.", "tech-0": "Ст. лаборант (ВПС)", "tech-1": "Молбиолог (ВПС)", "tech-2": "Зав. пробоподготовкой", "tech-3": "Зам. зав. по технологиям", "tech-4": "Директор тех. развития", "rnd-0": "Лаборант (НПО)", "rnd-1": "Ст. специалист (НПО)", "rnd-2": "Ведущий спец. (НПО)", "rnd-3": "Зам. рук. R&D", "eng-0": "Инженер-электроник", "eng-1": "Ст. инженер-электроник", "eng-2": "Зам. рук. производства", "cs-0": "Лаборант (серв.)", "cs-1": "Менеджер B2C", "cs-2": "Ст. молбиолог (серв.)", "cs-3": "Менеджер B2C/B2B/B2D", "cs-4": "Менеджер продаж науч. сервиса", "cs-5": "Ведущий менеджер", "cs-6": "Продакт-менеджер", "cs-7": "Рук. прикладных решений", "proc-0": "Спец. по процессам", "proc-1": "Ведущий спец. по процессам", "proc-2": "Рук. разработки ИИ", "proc-3": "Зам. директора департамента", "hr-0": "Менеджер по персоналу", "hr-1": "Ведущий менеджер HR", "hr-2": "Рук. ОКС", "hr-3": "Оперативный директор", "hr-4": "Директор департамента", "hr-5": "Директор по персоналу", "hr-6": "Зам. ген. директора", "fin-0": "Фин. контролёр", "fin-1": "Зам. рук. первичного учёта", "fin-2": "Экономист упр. учёта", "fin-3": "Рук. упр. учёта", "ops-0": "Спец. приёма", "ops-1": "Ст. спец. приёма", "ops-2": "Рук. проборазбора", "ops-3": "Офис-менеджер", "ops-4": "Спец. СМК", "ops-5": "Ведущий спец. СМК"};
+  const SHORT = {"lab-0": "Лаборант", "lab-1": "Ст. лаборант", "lab-2": "Молбиолог", "lab-3": "Ст. молбиолог", "lab-4": "Зав. отделом лаб.", "tech-0": "Ст. лаборант (ВПС)", "tech-1": "Молбиолог (ВПС)", "tech-2": "Зав. пробоподгот.", "tech-3": "Зам. зав. лаб.", "tech-4": "Дир. тех. развития", "rnd-0": "Лаборант (НПО)", "rnd-1": "Ст. спец. (НПО)", "rnd-2": "Вед. спец. (НПО)", "rnd-3": "Зам. рук. R&D", "eng-0": "Инженер-электроник", "eng-1": "Ст. инженер", "eng-2": "Зам. рук. произв.", "cs-0": "Лаборант (серв.)", "cs-1": "Менеджер B2C", "cs-2": "Ст. молбиолог (серв.)", "cs-3": "Менеджер B2B/B2D", "cs-4": "Продажи науч. сервиса", "cs-5": "Вед. менеджер", "cs-6": "Продакт-менеджер", "cs-7": "Рук. прикл. решений", "proc-0": "Спец. по процессам", "proc-1": "Вед. спец. процессов", "proc-2": "Рук. разработки ИИ", "proc-3": "Зам. директора ПУР", "hr-0": "Менеджер по персоналу", "hr-1": "Вед. менеджер HR", "hr-2": "Рук. ОКС", "hr-3": "Оперативный директор", "hr-4": "Директор ПУР", "hr-5": "Директор по персоналу", "hr-6": "Зам. ген. директора", "fin-0": "Фин. контролёр", "fin-1": "Зам. рук. перв. учёта", "fin-2": "Экономист упр. учёта", "fin-3": "Рук. упр. учёта", "ops-0": "Спец. приёма", "ops-1": "Ст. спец. приёма", "ops-2": "Рук. проборазбора", "ops-3": "Офис-менеджер", "ops-4": "Спец. СМК", "ops-5": "Вед. спец. СМК"};
   const FIT = {"lab-0": "новичку после вуза: точная работа руками, войти в диагностику с нуля", "lab-1": "кто освоил рутину и готов отвечать за секвенирование и качество", "lab-2": "кто хочет вести исследования и обучать новичков", "lab-3": "опытным биологам: сложные исследования и наставничество", "lab-4": "кто хочет руководить отделом, а не только исследовать", "tech-0": "кто хочет углубиться в высокопроизводительное секвенирование", "tech-1": "кто любит NGS и сложные библиотеки", "tech-2": "кто готов отвечать за участок и команду", "tech-3": "кто хочет внедрять технологии и методики", "tech-4": "кто мыслит стратегически и хочет отвечать за технологии", "rnd-0": "кто любит эксперименты и отработку методик", "rnd-1": "кто готов разрабатывать и валидировать методики", "rnd-2": "кто хочет вести проекты от идеи до внедрения", "rnd-3": "кто хочет определять, какие методы появятся завтра", "eng-0": "кто дружит с электроникой и держит приборы в строю", "eng-1": "кто готов брать сложную технику и учить младших", "eng-2": "кто хочет вырасти в управление производством", "cs-0": "кто хочет совмещать лабораторию и сервисные проекты", "cs-1": "кто любит общение и помощь клиентам", "cs-2": "опытным биологам: сервисные научные проекты", "cs-3": "кто готов работать со всеми сегментами клиентов", "cs-4": "биологам, кто хочет перейти в продажи науч. сервиса", "cs-5": "кто ведёт ключевых клиентов и учит команду", "cs-6": "кто хочет отвечать за продукт и продажи", "cs-7": "кто хочет отвечать за клиентские продукты целиком", "proc-0": "кто любит наводить порядок в процессах", "proc-1": "кто хочет проектировать процессы и внедрять ИИ", "proc-2": "кто хочет возглавить разработку ИИ-инструментов", "proc-3": "кто хочет вырасти в управление департаментом", "hr-0": "кто хочет работать с людьми: подбор и адаптация", "hr-1": "кто готов вести ключевые процессы найма", "hr-2": "кто хочет руководить кадровым сопровождением", "hr-3": "кто хочет отвечать за операционное управление", "hr-4": "кто хочет возглавить департамент ПУиР", "hr-5": "кто хочет отвечать за HR-стратегию компании", "hr-6": "кто видит себя в топ-управлении персоналом", "fin-0": "внимательным к цифрам: контроль операций", "fin-1": "кто любит порядок в документах и учёте", "fin-2": "кто любит аналитику и управленческий учёт", "fin-3": "кто хочет видеть финансовую картину целиком", "ops-0": "аккуратным: войти в лабораторию с приёма образцов", "ops-1": "кто готов контролировать приём и разбор", "ops-2": "кто хочет отвечать за отдел и качество приёма", "ops-3": "кто любит порядок и хочет войти с офисной роли", "ops-4": "кто ценит стандарты и качество", "ops-5": "кто хочет вырасти в эксперта по качеству"};
   const COORD = {
     'lab-0':[200, 540],
     'lab-1':[430, 540],
-    'lab-2':[753, 487],
+    'lab-2':[660, 540],
     'lab-3':[1013, 420],
     'lab-4':[1300, 420],
     'tech-0':[380, 420],
@@ -442,30 +402,30 @@
     'tech-3':[1043, 160],
     'tech-4':[1300, 160],
     'rnd-0':[200, 780],
-    'rnd-1':[541, 554],
+    'rnd-1':[309, 780],
     'rnd-2':[866, 290],
     'rnd-3':[1300, 290],
     'eng-0':[200, 1160],
-    'eng-1':[646, 734],
+    'eng-1':[655, 725],
     'eng-2':[1300, 480],
     'cs-0':[200, 660],
     'cs-1':[364, 660],
     'cs-2':[528, 660],
     'cs-3':[612, 660],
-    'cs-4':[869, 551],
+    'cs-4':[829, 591],
     'cs-5':[972, 540],
     'cs-6':[1136, 540],
     'cs-7':[1300, 540],
     'proc-0':[200, 290],
-    'proc-1':[625, 470],
+    'proc-1':[735, 580],
     'proc-2':[886, 731],
     'proc-3':[1300, 780],
     'hr-0':[200, 160],
-    'hr-1':[372, 312],
+    'hr-1':[451, 391],
     'hr-2':[537, 477],
     'hr-3':[703, 643],
     'hr-4':[869, 809],
-    'hr-5':[1066, 900],
+    'hr-5':[1136, 900],
     'hr-6':[1300, 900],
     'fin-0':[200, 900],
     'fin-1':[587, 900],
@@ -509,17 +469,54 @@
   })();
 
   /* ---- линии ---- */
-  function linePath(key){ const v=ROUTES[key]; return 'M '+v.map(p=>p[0]+' '+p[1]).join(' L '); }
+  /* v3: большие плавные дуги вместо прямых углов — как на настоящей схеме метро */
+  const CURVE = 120;
+  function curved(pts, R){
+    if(pts.length<3) return 'M '+pts.map(p=>p[0]+' '+p[1]).join(' L ');
+    let d='M '+pts[0][0]+' '+pts[0][1];
+    for(let i=1;i<pts.length-1;i++){
+      const a=pts[i-1], b=pts[i], c=pts[i+1];
+      const v1=[a[0]-b[0],a[1]-b[1]], v2=[c[0]-b[0],c[1]-b[1]];
+      const l1=Math.hypot(v1[0],v1[1])||1, l2=Math.hypot(v2[0],v2[1])||1;
+      const r=Math.min(R, l1*0.46, l2*0.46);
+      d+=' L '+(b[0]+v1[0]/l1*r).toFixed(1)+' '+(b[1]+v1[1]/l1*r).toFixed(1);
+      d+=' Q '+b[0]+' '+b[1]+' '+(b[0]+v2[0]/l2*r).toFixed(1)+' '+(b[1]+v2[1]/l2*r).toFixed(1);
+    }
+    const e=pts[pts.length-1];
+    return d+' L '+e[0]+' '+e[1];
+  }
+  function linePath(key){ return curved(ROUTES[key], CURVE); }
   const RUNLIGHTS=[];
   LINES.forEach(l=>{
     const d=linePath(l.key);
-    svg.appendChild(make('path',{d, class:'mline mline--halo','data-line':l.key, stroke:l.hex,'stroke-width':16}));
+    svg.appendChild(make('path',{d, class:'mline mline--halo','data-line':l.key, stroke:l.hex,'stroke-width':20}));
+    /* белая обойма под цветом: на пересечениях линии «расступаются» и появляется воздух */
+    svg.appendChild(make('path',{d, class:'mline mline--casing','data-line':l.key, stroke:'#F7FAFD','stroke-width':17}));
     const p=make('path',{d, id:'path-'+l.key, class:'mline','data-line':l.key, stroke:l.hex,'stroke-width':9});
     svg.appendChild(p);
     const light=make('circle',{r:5, class:'runlight','data-line':l.key});
     svg.appendChild(light);
     RUNLIGHTS.push({el:light, path:p, len:p.getTotalLength(), t:Math.random(), speed:0.05+Math.random()*0.03});
   });
+
+  /* станции подтягиваются на изогнутую линию, чтобы не «сползали» на дугах */
+  function snap(pe,x,y){
+    const len=pe.getTotalLength(); let bl=0,bd=1e18;
+    for(let l=0;l<=len;l+=5){ const p=pe.getPointAtLength(l);
+      const d=(p.x-x)*(p.x-x)+(p.y-y)*(p.y-y); if(d<bd){bd=d;bl=l;} }
+    for(let step=2.5; step>0.2; step/=2)
+      for(const s2 of [bl-step,bl+step]){
+        if(s2<0||s2>len) continue;
+        const p=pe.getPointAtLength(s2), d=(p.x-x)*(p.x-x)+(p.y-y)*(p.y-y);
+        if(d<bd){bd=d;bl=s2;}
+      }
+    return pe.getPointAtLength(bl);
+  }
+  LINES.forEach(l=>{ const pe=document.getElementById('path-'+l.key);
+    STATIONS.filter(s2=>s2.line===l.key).forEach(s2=>{
+      const p=snap(pe, POS[s2.id].x, POS[s2.id].y); POS[s2.id].x=p.x; POS[s2.id].y=p.y; }); });
+  HUBS.forEach(h=>{ const pe=document.getElementById('path-'+h.lines[0]);
+    const p=snap(pe,h.x,h.y); h.x=p.x; h.y=p.y; });
   (function(){
     if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     let last=performance.now();
@@ -604,13 +601,13 @@
     grad.appendChild(make('stop',{offset:'100%','stop-color':cols[cols.length-1]}));
     defs.appendChild(grad);
     const g=make('g',{class:'hub','data-hub':i, tabindex:0, role:'button'});
-    g.appendChild(make('circle',{cx:h.x, cy:h.y, r:16, class:'hub__halo', fill:'none', stroke:'url(#hg'+i+')','stroke-width':2}));
-    g.appendChild(make('circle',{cx:h.x, cy:h.y, r:26, class:'st__hit'}));
-    g.appendChild(make('circle',{cx:h.x, cy:h.y, r:15.5, class:'hub__r', stroke:'url(#hg'+i+')'}));
-    const ic=make('text',{x:h.x, y:h.y+5, class:'hub__i', fill:cols[Math.floor(cols.length/2)]}); ic.textContent='⇄'; g.appendChild(ic);
+    g.appendChild(make('circle',{cx:h.x, cy:h.y, r:27, class:'hub__halo', fill:'none', stroke:'url(#hg'+i+')','stroke-width':2.4}));
+    g.appendChild(make('circle',{cx:h.x, cy:h.y, r:34, class:'st__hit'}));
+    g.appendChild(make('circle',{cx:h.x, cy:h.y, r:25, class:'hub__r', stroke:'url(#hg'+i+')','stroke-width':6}));g.appendChild(make('circle',{cx:h.x, cy:h.y, r:16, class:'hub__r2', fill:'none', stroke:'url(#hg'+i+')','stroke-width':3}));
+    const ic=make('text',{x:h.x, y:h.y+7, class:'hub__i', fill:cols[Math.floor(cols.length/2)]}); ic.textContent='⇄'; g.appendChild(ic);
     // маркер живой истории — иконка человечка на пересадке
     if(h.story){
-      const bx=h.x+15, by=h.y-15;
+      const bx=h.x+22, by=h.y-22;
       g.appendChild(make('circle',{cx:bx, cy:by, r:9, class:'hub-story', fill:'#0A2540', stroke:'#fff','stroke-width':2}));
       const ig=make('g',{transform:'translate('+(bx-6)+','+(by-6)+') scale(0.5)', fill:'none', stroke:'#fff','stroke-width':2.6,'stroke-linecap':'round','stroke-linejoin':'round'});
       ig.appendChild(make('path',{d:'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'}));
@@ -631,9 +628,13 @@
     if(s.vac>0) g.appendChild(make('circle',{cx:x, cy:y, r:11, class:'st__vachalo', fill:'none', stroke:col,'stroke-width':2.4}));
     const rr = lead ? 13 : 11;
     g.appendChild(make('circle',{cx:x, cy:y, r:rr, class:'st__ring', stroke:col,'stroke-width': lead?4:3.4, fill:'#fff'}));
-    if(lead)             g.appendChild(make('circle',{cx:x, cy:y, r:5, class:'st__core', fill:col}));
+    if(s.col===0){       /* входная станция линии носит её иконку */
+      g.appendChild(make('circle',{cx:x, cy:y, r:16, fill:'#fff', stroke:col,'stroke-width':3.4}));
+      const em=make('text',{x:x, y:y+5.5, class:'st__icon'}); em.textContent=ICON[s.line]||''; g.appendChild(em);
+    }
+    else if(lead)        g.appendChild(make('circle',{cx:x, cy:y, r:5, class:'st__core', fill:col}));
     else if(s.vac>0)     g.appendChild(make('circle',{cx:x, cy:y, r:6, class:'st__core', fill:col}));
-    else if(s.col===0)   g.appendChild(make('circle',{cx:x, cy:y, r:5, class:'st__core', fill:col}));
+
     const lb=make('text',{class:'st__label'});
     if(lp==='left'){ lb.setAttribute('x',x-16); lb.setAttribute('y',y+4); lb.setAttribute('text-anchor','end'); }
     else if(lp==='right'){ lb.setAttribute('x',x+16); lb.setAttribute('y',y+4); lb.setAttribute('text-anchor','start'); }
