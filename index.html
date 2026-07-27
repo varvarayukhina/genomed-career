@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Карьера — лаборатория Геномед</title>
+<title>Вакансии и карьера в Геномед — работа в генетической лаборатории</title>
 <meta name="description" content="Карьера в лаборатории Геномед: клиническая генетика полного цикла — секвенирование, биоинформатика, R&D, IT и медицина. Открытые вакансии и кадровый резерв.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1074,6 +1074,11 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Карьера в Геномед — присоединяйтесь к команде">
   <meta name="twitter:description" content="Открытые вакансии, кадровый резерв и интерактивная карта карьеры.">
+  <meta name="twitter:image" content="https://genomed.ru/wp-content/uploads/vacancy/gallery/2025/photo_2025-06-17_17-51-07_1280x0_426.jpg">
+  <meta property="og:url" content="https://varvarayukhina.github.io/genomed-career/">
+  <meta property="og:site_name" content="Геномед">
+  <meta property="og:locale" content="ru_RU">
+  <link rel="canonical" href="https://varvarayukhina.github.io/genomed-career/">
 </head>
 <body>
 <div class="gm-page">
@@ -1634,8 +1639,13 @@ function updateProgress(){
 })();
 
 /* ---------- отклик на конкретную вакансию → отметить профиль + скролл к анкете ---------- */
-function applyToForm(profile){
+function applyToForm(profile, position){
   if(profile) checkProfile(profile);
+  if(position){
+    const pos=document.getElementById('position');
+    if(pos){ pos.value=position; }
+    if(typeof updateProgress==='function') updateProgress();
+  }
   document.getElementById('reserv').scrollIntoView({behavior:'smooth', block:'start'});
   setTimeout(()=>document.getElementById('fio').focus({preventScroll:true}), 620);
 }
@@ -1805,6 +1815,44 @@ const VACANCIES = [
 ];
 
 VACANCIES.forEach(function(v){ v.cities=[v.city]; });
+
+/* ---------- SEO: разметка JobPosting (JSON-LD) из VACANCIES ----------
+   Автоматически отдаёт вакансии в «Google Вакансии» / Яндекс.Работу —
+   единый источник правды — сам массив VACANCIES, дубли вести не нужно.
+   При обновлении вакансий поменяйте дату актуализации в JOB_POSTED. */
+(function(){
+  try{
+    if(typeof VACANCIES==='undefined' || !VACANCIES.length) return;
+    var JOB_POSTED='2026-07-27';               // дата актуализации вакансий
+    var ORG={ "@type":"Organization", "name":"Геномед", "sameAs":"https://genomed.ru" };
+    var COUNTRY={ "Алматы":"KZ" };              // всё остальное — Россия (RU)
+    var list=VACANCIES.map(function(v){
+      var country=COUNTRY[v.city] || "RU";
+      var jp={
+        "@context":"https://schema.org/",
+        "@type":"JobPosting",
+        "title": v.title,
+        "description": v.full || v.short || v.title,
+        "datePosted": JOB_POSTED,
+        "employmentType": "FULL_TIME",
+        "hiringOrganization": ORG,
+        "identifier": { "@type":"PropertyValue", "name":"Геномед", "value": v.title },
+        "jobLocation": { "@type":"Place",
+          "address": { "@type":"PostalAddress", "addressLocality": v.city, "addressCountry": country } }
+      };
+      if(v.format==='Удалённо'){
+        jp.jobLocationType="TELECOMMUTE";
+        jp.applicantLocationRequirements={ "@type":"Country", "name": country };
+      }
+      if(v.url) jp.url=v.url;                   // ссылка на официальную вакансию genomed.ru
+      return jp;
+    });
+    var s=document.createElement('script');
+    s.type='application/ld+json';
+    s.textContent=JSON.stringify(list);
+    document.head.appendChild(s);
+  }catch(e){ console.warn('JobPosting JSON-LD пропущен:', e); }
+})();
 
 (function(){
   const listEl  = document.getElementById('gmVacs');
@@ -2061,7 +2109,7 @@ VACANCIES.forEach(function(v){ v.cities=[v.city]; });
         '<button type="button" class="gm-btn gm-btn--primary gm-vc__apply">Откликнуться</button>'+
         (hasFull?'<button type="button" class="gm-vc__more">Подробнее</button>':'')+
       '</div>';
-    el.querySelector('.gm-vc__apply').addEventListener('click', ()=>applyToForm(v.profile));
+    el.querySelector('.gm-vc__apply').addEventListener('click', ()=>applyToForm(v.profile, v.title));
     const more=el.querySelector('.gm-vc__more');
     if(more){ const full=el.querySelector('.gm-vc__full');
       more.addEventListener('click', ()=>{
