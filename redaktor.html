@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Геномед — редактор карты карьеры</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#1E293B;--muted:#64748B;--faint:#94A3B8;--blue:#00AEEF;--ok:#16A34A;--bad:#DC2626;
+    --sans:"Inter",-apple-system,sans-serif;--display:"Montserrat",var(--sans)}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:var(--sans);color:var(--ink);background:#F1F5F9;display:flex;height:100vh;overflow:hidden}
+
+  .side{width:360px;flex:none;background:#fff;border-right:1px solid #E2E8F0;display:flex;flex-direction:column;
+    box-shadow:4px 0 24px rgba(30,41,59,.06);z-index:5}
+  .side__h{padding:18px 20px 14px;border-bottom:1px solid #EEF2F7}
+  .side__h h1{font-family:var(--display);font-weight:800;font-size:1.05rem;margin:0}
+  .side__h p{margin:6px 0 0;font-size:.8rem;color:var(--muted);line-height:1.5}
+  .side__b{flex:1;overflow-y:auto;padding:14px 20px 20px}
+  .side__f{padding:14px 20px;border-top:1px solid #EEF2F7;display:flex;flex-direction:column;gap:8px}
+
+  .stat{display:flex;gap:14px;margin-bottom:14px}
+  .stat div{flex:1;background:#F8FAFC;border:1px solid #EEF2F7;border-radius:12px;padding:9px 11px}
+  .stat b{display:block;font-family:var(--display);font-weight:800;font-size:1.15rem;line-height:1}
+  .stat span{display:block;font-size:.68rem;color:var(--faint);margin-top:3px}
+  .stat .ok b{color:var(--ok)} .stat .bad b{color:var(--bad)}
+
+  h3{font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--faint);margin:18px 0 8px}
+  .trk{border:1px solid #EEF2F7;border-radius:11px;padding:9px 11px;margin-bottom:7px;font-size:.78rem;line-height:1.45;cursor:pointer}
+  .trk:hover{border-color:var(--blue);background:#F8FDFF}
+  .trk.on{border-color:var(--blue);background:#EFF9FE}
+  .trk b{display:block;font-size:.66rem;color:var(--ok);font-weight:800;letter-spacing:.04em;margin-bottom:3px}
+  .trk.err b{color:var(--bad)}
+  .trk span{color:var(--muted)}
+  .trk i{font-style:normal;color:var(--ink);font-weight:600}
+
+  .btn{border:none;cursor:pointer;border-radius:10px;font-family:var(--display);font-weight:700;font-size:.82rem;
+    padding:11px 14px;transition:.15s;display:flex;align-items:center;justify-content:center;gap:8px}
+  .btn--p{background:#0093C9;color:#fff}
+  .btn--p:hover{background:#0079AC}
+  .btn--g{background:#F1F5F9;color:var(--ink)}
+  .btn--g:hover{background:#E2E8F0}
+  .row{display:flex;gap:8px}
+  .row .btn{flex:1}
+  label.chk{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--muted);cursor:pointer;user-select:none}
+
+  .canvas{flex:1;position:relative;overflow:hidden;background:
+    linear-gradient(#E9EEF5 1px,transparent 1px) 0 0/40px 40px,
+    linear-gradient(90deg,#E9EEF5 1px,transparent 1px) 0 0/40px 40px,#F8FAFC}
+  svg{width:100%;height:100%;display:block;cursor:grab}
+  svg.drag{cursor:grabbing}
+  .ln{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:8;opacity:.9}
+  .nd{cursor:move}
+  .nd circle.r{fill:#fff;stroke-width:3.4}
+  .nd.sel circle.r{stroke-width:5;filter:drop-shadow(0 4px 14px rgba(30,41,59,.35))}
+  .nd.key circle.r{stroke-width:6}
+  .lb{font-family:var(--sans);font-weight:600;font-size:12.5px;fill:var(--ink);
+    paint-order:stroke;stroke:#fff;stroke-width:3.6px;stroke-linejoin:round;pointer-events:none;user-select:none}
+  .lb.clash{fill:var(--bad);stroke:#FFF1F2}
+  .hint{position:absolute;left:14px;bottom:14px;background:rgba(15,23,42,.9);color:#fff;font-size:.76rem;
+    padding:9px 13px;border-radius:10px;line-height:1.6;pointer-events:none;max-width:430px}
+  .hint b{color:#67E8F9}
+  #edit{position:absolute;display:none;font-family:var(--sans);font-size:13px;font-weight:600;padding:7px 10px;
+    border:2px solid #0093C9;border-radius:9px;outline:none;box-shadow:0 8px 24px rgba(30,41,59,.22);z-index:9;min-width:240px}
+  .tip{position:absolute;display:none;background:#0F172A;color:#fff;font-size:.78rem;padding:8px 11px;
+    border-radius:9px;max-width:330px;line-height:1.45;pointer-events:none;z-index:8}
+</style>
+</head>
+<body>
+
+<aside class="side">
+  <div class="side__h">
+    <h1>Редактор карты карьеры</h1>
+    <p>Двигайте кружки мышью, двойной клик — переименовать. Связи между должностями зафиксированы по списку Пятовой и не меняются.</p>
+  </div>
+  <div class="side__b">
+    <div class="stat">
+      <div id="sTr"><b>—</b><span>треков сходится</span></div>
+      <div id="sCl"><b>—</b><span>наложений подписей</span></div>
+    </div>
+    <div class="row" style="margin-bottom:6px">
+      <label class="chk"><input type="checkbox" id="snap" checked> сетка 20px</label>
+      <label class="chk"><input type="checkbox" id="showFull"> полные названия</label>
+    </div>
+    <h3>17 треков Пятовой</h3>
+    <div id="tracks"></div>
+  </div>
+  <div class="side__f">
+    <button class="btn btn--p" id="exp">Сохранить и отдать разработчику</button>
+    <div class="row">
+      <button class="btn btn--g" id="imp">Загрузить</button>
+      <button class="btn btn--g" id="reset">Сбросить</button>
+    </div>
+    <input type="file" id="file" accept=".json" style="display:none">
+  </div>
+</aside>
+
+<div class="canvas" id="cv">
+  <svg id="svg"></svg>
+  <input id="edit" spellcheck="false">
+  <div class="tip" id="tip"></div>
+  <div class="hint">
+    <b>Тянуть</b> кружок — переместить · <b>двойной клик</b> — переименовать ·
+    <b>Tab</b> на выбранной — подпись слева/справа/сверху/снизу<br>
+    <b>Колесо</b> — масштаб · <b>тянуть фон</b> — сдвинуть холст · красная подпись = наезжает на соседнюю
+  </div>
+</div>
+
+<script>
+const DATA = {"lines":[{"key":"lab","name":"Лаборатория","short":"Лаборатория","hex":"#00AEEF","tag":"от пробирки до заключения","does":"Принимает биоматериал пациентов и превращает его в прочитанный геном: пробоподготовка, ПЦР, секвенирование, контроль качества.","fit":["нравится точная работа руками и с приборами","важен видимый результат: образец → готовый анализ","хотите освоить секвенирование с нуля"]},{"key":"tech","name":"Технологии и производство","short":"Технологии","hex":"#7C5CFC","tag":"приборы и методики, на которых стоит лаборатория","does":"Высокопроизводительное секвенирование, пробоподготовка в масштабе, приборный парк и техническое развитие компании.","fit":["интересны приборы, методики и автоматизация","хочется отвечать за участок, а не за одну пробирку","видите себя в техническом лидерстве"]},{"key":"rnd","name":"R&D и наука","short":"R&D","hex":"#0D9488","tag":"из идеи — в рабочую методику","does":"Научно-производственный отдел: эксперименты, разработка и валидация новых методик, доведение их до внедрения.","fit":["любите ставить эксперименты и проверять гипотезы","хочется довести идею до реального продукта","интересна наука с практическим выходом"]},{"key":"sales","name":"Продажи и клиентский сервис","short":"Продажи","hex":"#E24A8B","tag":"клиенты, продукты и научный сервис","does":"Сопровождение клиентов B2C, B2B и B2D, продуктовая линейка для исследований и продажи услуг научного сервиса.","fit":["любите общение и умеете объяснять сложное","интересны продукты и работа с заказчиком","хотите применить биологическое образование вне лаборатории"]},{"key":"proc","name":"Процессы и ИИ","short":"Процессы","hex":"#FF8C42","tag":"от порядка в процессах — к ИИ-инструментам","does":"Описывает и оптимизирует бизнес-процессы компании, внедряет автоматизацию и разрабатывает решения на основе искусственного интеллекта.","fit":["нравится наводить порядок и видеть систему целиком","интересны автоматизация и искусственный интеллект","хотите вырасти от процессов к разработке продуктов"]},{"key":"hr","name":"Персонал и управление","short":"Персонал","hex":"#2BB673","tag":"люди и управление компанией","does":"Подбор, адаптация и сопровождение сотрудников, кадровое сопровождение, операционное управление и HR-стратегия холдинга.","fit":["вам интересны люди и их развитие","нравится выстраивать процессы найма","видите себя в управлении"]},{"key":"fin","name":"Финансы и учёт","short":"Финансы","hex":"#F59E0B","tag":"цифры, на которые опирается компания","does":"Финансовый контроль, первичный и управленческий учёт, отчётность и финансовая аналитика.","fit":["внимательны к цифрам и деталям","любите порядок в документах","хотите видеть финансовую картину целиком"]},{"key":"ops","name":"Приём и качество","short":"Приём","hex":"#EF4444","tag":"с чего начинается каждый анализ","does":"Приём, регистрация и разбор биоматериала, а также система менеджмента качества и административная поддержка офиса.","fit":["аккуратны и ответственны","важно, чтобы поток не сбивался","цените стандарты и качество"]}],"nodes":[{"id":"lab-1","line":"lab","full":"Лаборант","short":"Лаборант","x":300,"y":820,"lp":"left"},{"id":"lab-2","line":"lab","full":"старший лаборант","short":"Ст. лаборант","x":605,"y":804,"lp":"up"},{"id":"lab-3","line":"lab","full":"молекулярный биолог","short":"Молбиолог","x":910,"y":499,"lp":"up"},{"id":"lab-4","line":"lab","full":"старший молекулярный биолог","short":"Ст. молбиолог","x":1215,"y":194,"lp":"up"},{"id":"lab-5","line":"lab","full":"заведующий отделом лаборатории","short":"Зав. отделом лаб.","x":1520,"y":178,"lp":"right"},{"id":"lab-s2","line":"lab","full":"Старший молекулярный биолог (лаборатория сервисных научных проектов)","short":"Ст. молбиолог (серв.)","x":300,"y":888,"lp":"left"},{"id":"lab-s1","line":"lab","full":"Лаборант (лаборатория сервисных научных проектов)","short":"Лаборант (серв.)","x":300,"y":956,"lp":"left"},{"id":"tech-1","line":"tech","full":"Старший лаборант (направление высокопроизводительного секвенирования)","short":"Ст. лаборант (NGS)","x":300,"y":684,"lp":"left"},{"id":"tech-2","line":"tech","full":"молекулярный биолог (направление высокопроизводительного секвенирования)","short":"Молбиолог (NGS)","x":544,"y":684,"lp":"up"},{"id":"tech-3","line":"tech","full":"заведующий отделом пробоподготовки","short":"Зав. пробоподгот.","x":812,"y":597,"lp":"up"},{"id":"tech-4","line":"tech","full":"заместитель заведующего лабораторией по технологиям","short":"Зам. зав. лаб.","x":1276,"y":314,"lp":"up"},{"id":"tech-5","line":"tech","full":"директор по техническому развитию (СТО)","short":"Дир. тех. развития","x":1520,"y":314,"lp":"right"},{"id":"tech-e1","line":"tech","full":"Инженер-электроник","short":"Инженер-электроник","x":300,"y":616,"lp":"left"},{"id":"tech-e2","line":"tech","full":"Старший инженер-электроник","short":"Ст. инженер","x":1081,"y":382,"lp":"up"},{"id":"tech-e3","line":"tech","full":"заместитель руководителя отдела производства, эксплуатации и ремонта","short":"Зам. рук. произв.","x":1520,"y":382,"lp":"right"},{"id":"rnd-1","line":"rnd","full":"Лаборант (научно-производственного отдела)","short":"Лаборант (НПО)","x":300,"y":752,"lp":"left"},{"id":"rnd-2","line":"rnd","full":"старший специалист (научно-производственного отдела)","short":"Ст. спец. (НПО)","x":707,"y":702,"lp":"up"},{"id":"rnd-3","line":"rnd","full":"ведущий специалист (научно-производственного отдела)","short":"Вед. спец. (НПО)","x":1113,"y":296,"lp":"up"},{"id":"rnd-4","line":"rnd","full":"заместитель руководителя департамента r&d","short":"Зам. рук. R&D","x":1520,"y":246,"lp":"right"},{"id":"sal-1","line":"sales","full":"Менеджер по сопровождению клиентов B2C","short":"Менеджер B2C","x":300,"y":480,"lp":"left"},{"id":"sal-2","line":"sales","full":"Менеджер по сопровождению клиентов В2С, В2В, B2D","short":"Менеджер B2B/B2D","x":1081,"y":586,"lp":"up"},{"id":"sal-3","line":"sales","full":"ведущий менеджер по сопровождению клиентов В2С, В2В, B2D","short":"Вед. менеджер","x":1520,"y":586,"lp":"right"},{"id":"sal-p1","line":"sales","full":"Продакт-менеджер направления продаж продукции для молекулярно-биологических исследований","short":"Продакт-менеджер","x":300,"y":548,"lp":"left"},{"id":"sal-p2","line":"sales","full":"Руководитель отдела прикладных решений и клиентской поддержки","short":"Рук. прикл. решений","x":1520,"y":518,"lp":"right"},{"id":"sal-ns","line":"sales","full":"Менеджер по продажам услуг научного сервиса (исследования в области молекулярной биологии и генетики)","short":"Продажи науч. сервиса","x":1520,"y":450,"lp":"right"},{"id":"proc-1","line":"proc","full":"Специалист по процессному управлению","short":"Спец. по процессам","x":300,"y":140,"lp":"left"},{"id":"proc-2","line":"proc","full":"ведущий сециалист по процессному управлению","short":"Вед. спец. процессов","x":910,"y":397,"lp":"up"},{"id":"proc-3","line":"proc","full":"руководитель отдела разработки исследованного интеллекта","short":"Рук. разработки ИИ","x":1520,"y":654,"lp":"right"},{"id":"proc-4","line":"proc","full":"заместитель директора департамента процессного управления и развития","short":"Зам. директора ПУР","x":1520,"y":722,"lp":"right"},{"id":"hr-1","line":"hr","full":"Менеджер по персоналу","short":"Менеджер по персоналу","x":300,"y":208,"lp":"left"},{"id":"hr-2","line":"hr","full":"ведущий менеджер по персоналу","short":"Вед. менеджер HR","x":707,"y":296,"lp":"up"},{"id":"hr-3","line":"hr","full":"руководитель ОКС","short":"Рук. ОКС","x":1113,"y":702,"lp":"up"},{"id":"hr-4","line":"hr","full":"оперативный директор","short":"Оперативный директор","x":1520,"y":790,"lp":"right"},{"id":"hr-5","line":"hr","full":"директор департамента процессного управления и развития","short":"Директор ПУР","x":1520,"y":858,"lp":"right"},{"id":"hr-6","line":"hr","full":"директор по персоналу","short":"Директор по персоналу","x":910,"y":567,"lp":"up"},{"id":"hr-7","line":"hr","full":"заместитель генерального директора по управлению персоналом холдинга","short":"Зам. ген. директора","x":1520,"y":926,"lp":"right"},{"id":"fin-1","line":"fin","full":"Финансовый контролер","short":"Фин. контролёр","x":300,"y":344,"lp":"left"},{"id":"fin-2","line":"fin","full":"заместитель руководителя отдела первичного учета","short":"Зам. рук. перв. учёта","x":1520,"y":1062,"lp":"right"},{"id":"fin-3","line":"fin","full":"Экономист по управленческому учету","short":"Экономист упр. учёта","x":300,"y":412,"lp":"left"},{"id":"fin-4","line":"fin","full":"руководитель отдела управленческого учета","short":"Рук. упр. учёта","x":1520,"y":1130,"lp":"right"},{"id":"ops-1","line":"ops","full":"Специалист по приему биоматериала","short":"Спец. приёма","x":300,"y":1024,"lp":"left"},{"id":"ops-2","line":"ops","full":"старший специалист по приему биоматериала","short":"Ст. спец. приёма","x":1008,"y":469,"lp":"up"},{"id":"ops-3","line":"ops","full":"руководителель отдела проборазбора","short":"Рук. проборазбора","x":1520,"y":110,"lp":"right"},{"id":"ops-q1","line":"ops","full":"Офис-менеджер","short":"Офис-менеджер","x":300,"y":276,"lp":"left"},{"id":"ops-q2","line":"ops","full":"специалист отдела СМК","short":"Спец. СМК","x":910,"y":635,"lp":"up"},{"id":"ops-q3","line":"ops","full":"ведущий специалист отдела СМК","short":"Вед. спец. СМК","x":1520,"y":994,"lp":"right"}],"edges":[["hr-1","hr-2"],["hr-2","hr-3"],["hr-3","hr-4"],["hr-3","hr-5"],["ops-q1","ops-q2"],["ops-q2","ops-q3"],["tech-1","tech-2"],["tech-2","tech-3"],["tech-3","tech-4"],["tech-4","tech-5"],["rnd-1","rnd-2"],["rnd-2","rnd-3"],["rnd-3","rnd-4"],["fin-1","fin-2"],["fin-3","fin-4"],["hr-1","hr-6"],["hr-6","hr-7"],["ops-1","ops-2"],["ops-2","ops-3"],["proc-1","proc-2"],["proc-2","proc-3"],["proc-2","proc-4"],["sal-1","sal-2"],["sal-2","sal-3"],["sal-p1","sal-p2"],["lab-s2","sal-ns"],["lab-s1","sal-ns"],["tech-e1","tech-e2"],["tech-e2","tech-e3"],["lab-1","lab-2"],["lab-2","lab-3"],["lab-3","lab-4"],["lab-4","lab-5"]],"tracks":[["Менеджер по персоналу","ведущий менеджер по персоналу","руководитель ОКС","оперативный директор"],["руководитель ОКС","директор департамента процессного управления и развития"],["Офис-менеджер","специалист отдела СМК","ведущий специалист отдела СМК"],["Старший лаборант (направление высокопроизводительного секвенирования)","молекулярный биолог (направление высокопроизводительного секвенирования)","заведующий отделом пробоподготовки","заместитель заведующего лабораторией по технологиям","директор по техническому развитию (СТО)"],["Лаборант (научно-производственного отдела)","старший специалист (научно-производственного отдела)","ведущий специалист (научно-производственного отдела)","заместитель руководителя департамента r&d"],["Финансовый контролер","заместитель руководителя отдела первичного учета"],["Экономист по управленческому учету","руководитель отдела управленческого учета"],["Менеджер по персоналу","директор по персоналу","заместитель генерального директора по управлению персоналом холдинга"],["Специалист по приему биоматериала","старший специалист по приему биоматериала","руководителель отдела проборазбора"],["Специалист по процессному управлению","ведущий сециалист по процессному управлению","руководитель отдела разработки исследованного интеллекта"],["Специалист по процессному управлению","ведущий сециалист по процессному управлению","заместитель директора департамента процессного управления и развития"],["Менеджер по сопровождению клиентов B2C","Менеджер по сопровождению клиентов В2С, В2В, B2D","ведущий менеджер по сопровождению клиентов В2С, В2В, B2D"],["Продакт-менеджер направления продаж продукции для молекулярно-биологических исследований","Руководитель отдела прикладных решений и клиентской поддержки"],["Старший молекулярный биолог (лаборатория сервисных научных проектов)","Менеджер по продажам услуг научного сервиса (исследования в области молекулярной биологии и генетики)"],["Лаборант (лаборатория сервисных научных проектов)","Менеджер по продажам услуг научного сервиса (исследования в области молекулярной биологии и генетики)"],["Инженер-электроник","Старший инженер-электроник","заместитель руководителя отдела производства, эксплуатации и ремонта"],["Лаборант","старший лаборант","молекулярный биолог","старший молекулярный биолог","заведующий отделом лаборатории"]]};
+
+(function(){
+  "use strict";
+  const NS='http://www.w3.org/2000/svg';
+  const $=i=>document.getElementById(i);
+  const svg=$('svg'), cv=$('cv'), tip=$('tip'), inp=$('edit');
+  const mk=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e;};
+  const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const norm=s=>s.trim().toLowerCase().replace(/ё/g,'е');
+
+  const LINE={}; DATA.lines.forEach(l=>LINE[l.key]=l);
+  let N=JSON.parse(JSON.stringify(DATA.nodes));
+  const E=DATA.edges, byId=()=>Object.fromEntries(N.map(n=>[n.id,n]));
+  const OUT={}, INN={};
+  N.forEach(n=>{OUT[n.id]=[];INN[n.id]=[];});
+  E.forEach(([a,b])=>{OUT[a].push(b);INN[b].push(a);});
+  const isKey=n=>OUT[n.id].length>1 || INN[n.id].some(p=>byId()[p].line!==n.line);
+
+  /* ---------- вид ---------- */
+  let vb={x:100,y:40,w:1700,h:1200};
+  const gL=mk('g',{}), gN=mk('g',{});
+  svg.appendChild(gL); svg.appendChild(gN);
+  function applyVB(){ svg.setAttribute('viewBox',`${vb.x} ${vb.y} ${vb.w} ${vb.h}`); }
+  applyVB();
+  function toSVG(ev){ const r=svg.getBoundingClientRect();
+    return {x:vb.x+(ev.clientX-r.left)/r.width*vb.w, y:vb.y+(ev.clientY-r.top)/r.height*vb.h}; }
+
+  /* ---------- отрисовка ---------- */
+  const els={};
+  function draw(){
+    gL.innerHTML=''; gN.innerHTML=''; const B=byId();
+    E.forEach(([a,b])=>{
+      const A=B[a], C=B[b];
+      const sw=A.line!==C.line;
+      const dx=C.x-A.x, dy=C.y-A.y;
+      let d;
+      if(Math.abs(dy)<4) d=`M ${A.x} ${A.y} L ${C.x} ${C.y}`;
+      else { const bend=Math.max(0,Math.abs(dx)-Math.abs(dy)); const mx=A.x+bend*0.5*(dx<0?-1:1);
+        d=`M ${A.x} ${A.y} L ${mx} ${A.y} L ${mx+Math.abs(dy)*(dx<0?-1:1)} ${C.y} L ${C.x} ${C.y}`; }
+      gL.appendChild(mk('path',{d,class:'ln',stroke:'#fff','stroke-width':14,opacity:1}));
+      gL.appendChild(mk('path',{d,class:'ln',stroke:sw?'#0F172A':LINE[A.line].hex,
+        'stroke-dasharray':sw?'10 9':'none'}));
+    });
+    N.forEach(n=>{
+      const g=mk('g',{class:'nd'+(isKey(n)?' key':''),'data-id':n.id});
+      const col=LINE[n.line].hex;
+      g.appendChild(mk('circle',{cx:n.x,cy:n.y,r:26,fill:'transparent'}));
+      g.appendChild(mk('circle',{cx:n.x,cy:n.y,r:isKey(n)?17:11,class:'r',stroke:col}));
+      if(isKey(n)) g.appendChild(mk('circle',{cx:n.x,cy:n.y,r:8,fill:'none',stroke:col,'stroke-width':2.6,opacity:.6}));
+      const txt=$('showFull').checked?n.full:n.short;
+      const t=mk('text',{class:'lb'});
+      let x,y,anc;
+      if(n.lp==='left'){x=n.x-(isKey(n)?24:18);anc='end';y=n.y+4;}
+      else if(n.lp==='right'){x=n.x+(isKey(n)?24:18);anc='start';y=n.y+4;}
+      else if(n.lp==='down'){x=n.x;anc='middle';y=n.y+(isKey(n)?36:30);}
+      else {x=n.x;anc='middle';y=n.y-(isKey(n)?28:22);}
+      t.setAttribute('x',x);t.setAttribute('y',y);t.setAttribute('text-anchor',anc);
+      t.textContent=txt; g.appendChild(t); n._t=t;
+      gN.appendChild(g); els[n.id]=g;
+    });
+    check();
+  }
+
+  /* ---------- проверки ---------- */
+  function check(){
+    // 1) все 17 треков должны читаться по нарисованным связям
+    const set=new Set(E.map(([a,b])=>a+'>'+b));
+    const B=byId(); const idOf={};
+    N.forEach(n=>idOf[norm(n.full)]=n.id);
+    let ok=0;
+    const box=document.getElementById('tracks'); box.innerHTML='';
+    DATA.tracks.forEach((t,i)=>{
+      let good=true;
+      for(let k=0;k<t.length-1;k++){
+        const a=idOf[norm(t[k])], b=idOf[norm(t[k+1])];
+        if(!a||!b||!set.has(a+'>'+b)) good=false;
+      }
+      if(good) ok++;
+      const d=document.createElement('div');
+      d.className='trk'+(good?'':' err'); d.dataset.i=i;
+      d.innerHTML='<b>'+(good?'✓ трек '+(i+1):'✕ трек '+(i+1)+' — расходится')+'</b>'+
+        t.map((r,j)=>(j?'<span> → </span>':'')+'<i>'+esc(r)+'</i>').join('');
+      d.onclick=()=>{ document.querySelectorAll('.trk').forEach(x=>x.classList.remove('on'));
+        d.classList.add('on'); highlight(t); };
+      box.appendChild(d);
+    });
+    const s1=$('sTr'); s1.className=ok===DATA.tracks.length?'ok':'bad';
+    s1.innerHTML='<b>'+ok+' / '+DATA.tracks.length+'</b><span>треков сходится</span>';
+    // 2) наложения подписей — считаем по реальным габаритам текста
+    let clash=0;
+    const bb=N.map(n=>{ const b=n._t.getBBox(); return {n,b}; });
+    bb.forEach(x=>x.n._t.classList.remove('clash'));
+    for(let i=0;i<bb.length;i++)for(let j=i+1;j<bb.length;j++){
+      const a=bb[i].b,c=bb[j].b;
+      if(a.x<c.x+c.width+4 && c.x<a.x+a.width+4 && a.y<c.y+c.height+3 && c.y<a.y+a.height+3){
+        clash++; bb[i].n._t.classList.add('clash'); bb[j].n._t.classList.add('clash');
+      }
+    }
+    const s2=$('sCl'); s2.className=clash?'bad':'ok';
+    s2.innerHTML='<b>'+clash+'</b><span>наложений подписей</span>';
+  }
+  function highlight(t){
+    const B=byId(); const idOf={}; N.forEach(n=>idOf[norm(n.full)]=n.id);
+    Object.values(els).forEach(g=>g.style.opacity='.22');
+    t.forEach(r=>{ const g=els[idOf[norm(r)]]; if(g) g.style.opacity='1'; });
+    setTimeout(()=>Object.values(els).forEach(g=>g.style.opacity=''),2600);
+  }
+
+  /* ---------- перетаскивание ---------- */
+  let drag=null, pan=null, sel=null;
+  svg.addEventListener('pointerdown',ev=>{
+    const g=ev.target.closest('.nd');
+    if(g){ const id=g.dataset.id, n=N.find(x=>x.id===id);
+      const p=toSVG(ev); drag={n,dx:p.x-n.x,dy:p.y-n.y};
+      sel=n; document.querySelectorAll('.nd').forEach(x=>x.classList.remove('sel')); g.classList.add('sel');
+      svg.setPointerCapture(ev.pointerId);
+    } else { pan={x:ev.clientX,y:ev.clientY,vx:vb.x,vy:vb.y}; svg.classList.add('drag'); }
+  });
+  svg.addEventListener('pointermove',ev=>{
+    if(drag){ const p=toSVG(ev); let x=p.x-drag.dx, y=p.y-drag.dy;
+      if($('snap').checked){ x=Math.round(x/20)*20; y=Math.round(y/20)*20; }
+      drag.n.x=x; drag.n.y=y; draw();
+      const g=els[drag.n.id]; if(g) g.classList.add('sel');
+    } else if(pan){ const r=svg.getBoundingClientRect();
+      vb.x=pan.vx-(ev.clientX-pan.x)/r.width*vb.w; vb.y=pan.vy-(ev.clientY-pan.y)/r.height*vb.h; applyVB(); }
+    else { const g=ev.target.closest('.nd');
+      if(g){ const n=N.find(x=>x.id===g.dataset.id);
+        tip.style.display='block'; tip.textContent=n.full;
+        tip.style.left=(ev.clientX+14)+'px'; tip.style.top=(ev.clientY+14)+'px'; }
+      else tip.style.display='none'; }
+  });
+  addEventListener('pointerup',()=>{ drag=null; pan=null; svg.classList.remove('drag'); });
+  svg.addEventListener('wheel',ev=>{ ev.preventDefault();
+    const p=toSVG(ev), k=ev.deltaY>0?1.12:0.89;
+    vb.x=p.x-(p.x-vb.x)*k; vb.y=p.y-(p.y-vb.y)*k; vb.w*=k; vb.h*=k; applyVB(); },{passive:false});
+
+  /* ---------- переименование ---------- */
+  svg.addEventListener('dblclick',ev=>{
+    const g=ev.target.closest('.nd'); if(!g) return;
+    const n=N.find(x=>x.id===g.dataset.id);
+    const r=svg.getBoundingClientRect();
+    inp.value=n.short; inp.style.display='block';
+    inp.style.left=((n.x-vb.x)/vb.w*r.width+r.left-120)+'px';
+    inp.style.top=((n.y-vb.y)/vb.h*r.height+r.top-46)+'px';
+    inp.focus(); inp.select(); inp._n=n;
+  });
+  inp.addEventListener('keydown',ev=>{
+    if(ev.key==='Enter'){ inp._n.short=inp.value.trim()||inp._n.short; inp.style.display='none'; draw(); }
+    if(ev.key==='Escape') inp.style.display='none';
+  });
+  inp.addEventListener('blur',()=>{ if(inp._n){ inp._n.short=inp.value.trim()||inp._n.short; } inp.style.display='none'; draw(); });
+
+  addEventListener('keydown',ev=>{
+    if(ev.key==='Tab' && sel){ ev.preventDefault();
+      const o=['up','right','down','left']; sel.lp=o[(o.indexOf(sel.lp)+1)%4]; draw();
+      const g=els[sel.id]; if(g) g.classList.add('sel'); }
+  });
+  $('showFull').onchange=draw; $('snap').onchange=()=>{};
+
+  /* ---------- сохранить / загрузить ---------- */
+  $('exp').onclick=()=>{
+    const out={nodes:N.map(n=>({id:n.id,short:n.short,full:n.full,x:Math.round(n.x),y:Math.round(n.y),lp:n.lp}))};
+    const b=new Blob([JSON.stringify(out,null,1)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(b);
+    a.download='karta-karery-razmetka.json'; a.click();
+  };
+  $('imp').onclick=()=>$('file').click();
+  $('file').onchange=e=>{ const f=e.target.files[0]; if(!f) return;
+    const rd=new FileReader(); rd.onload=()=>{ try{
+      const j=JSON.parse(rd.result); const m=Object.fromEntries(j.nodes.map(x=>[x.id,x]));
+      N.forEach(n=>{ const s=m[n.id]; if(s){ n.x=s.x; n.y=s.y; n.lp=s.lp; n.short=s.short; } });
+      draw();
+    }catch(err){ alert('Не удалось прочитать файл: '+err.message); } };
+    rd.readAsText(f); };
+  $('reset').onclick=()=>{ if(confirm('Вернуть исходную раскладку?')){ N=JSON.parse(JSON.stringify(DATA.nodes)); draw(); } };
+
+  draw();
+})();
+</script>
+</body>
+</html>

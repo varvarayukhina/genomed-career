@@ -434,7 +434,7 @@
     'lab-0':[200, 540],
     'lab-1':[430, 540],
     'lab-2':[753, 487],
-    'lab-3':[1013, 420],
+    'lab-3':[1174, 420],
     'lab-4':[1300, 420],
     'tech-0':[380, 420],
     'tech-1':[594, 316],
@@ -442,26 +442,26 @@
     'tech-3':[1043, 160],
     'tech-4':[1300, 160],
     'rnd-0':[200, 780],
-    'rnd-1':[541, 554],
+    'rnd-1':[458, 637],
     'rnd-2':[866, 290],
     'rnd-3':[1300, 290],
     'eng-0':[200, 1160],
-    'eng-1':[646, 734],
+    'eng-1':[1037, 480],
     'eng-2':[1300, 480],
     'cs-0':[200, 660],
-    'cs-1':[364, 660],
+    'cs-1':[307, 660],
     'cs-2':[528, 660],
     'cs-3':[612, 660],
-    'cs-4':[869, 551],
+    'cs-4':[829, 591],
     'cs-5':[972, 540],
     'cs-6':[1136, 540],
     'cs-7':[1300, 540],
     'proc-0':[200, 290],
-    'proc-1':[625, 470],
+    'proc-1':[708, 553],
     'proc-2':[886, 731],
     'proc-3':[1300, 780],
     'hr-0':[200, 160],
-    'hr-1':[372, 312],
+    'hr-1':[282, 222],
     'hr-2':[537, 477],
     'hr-3':[703, 643],
     'hr-4':[869, 809],
@@ -480,7 +480,7 @@
   };
   const POS = {}; for(const id in COORD) POS[id]={x:COORD[id][0], y:COORD[id][1]};
   const X = s => POS[s.id].x, Y = s => POS[s.id].y;
-  const LP = {"lab-0": "up", "lab-1": "down", "lab-2": "up", "lab-3": "down", "lab-4": "right", "tech-0": "up", "tech-1": "down", "tech-2": "up", "tech-3": "down", "tech-4": "right", "rnd-0": "up", "rnd-1": "down", "rnd-2": "up", "rnd-3": "right", "eng-0": "up", "eng-1": "down", "eng-2": "right", "cs-0": "up", "cs-1": "down", "cs-2": "up", "cs-3": "down", "cs-4": "up", "cs-5": "down", "cs-6": "up", "cs-7": "right", "proc-0": "up", "proc-1": "down", "proc-2": "up", "proc-3": "right", "hr-0": "up", "hr-1": "down", "hr-2": "up", "hr-3": "down", "hr-4": "up", "hr-5": "down", "hr-6": "right", "fin-0": "up", "fin-1": "down", "fin-2": "up", "fin-3": "right", "ops-0": "up", "ops-1": "down", "ops-2": "up", "ops-3": "down", "ops-4": "up", "ops-5": "right"};
+  const LP = {"lab-0": "up", "lab-1": "down", "lab-2": "up", "lab-3": "down", "lab-4": "right", "tech-0": "down", "tech-1": "down", "tech-2": "up", "tech-3": "down", "tech-4": "right", "rnd-0": "up", "rnd-1": "down", "rnd-2": "up", "rnd-3": "right", "eng-0": "up", "eng-1": "left", "eng-2": "right", "cs-0": "up", "cs-1": "down", "cs-2": "up", "cs-3": "down", "cs-4": "up", "cs-5": "down", "cs-6": "up", "cs-7": "right", "proc-0": "up", "proc-1": "down", "proc-2": "up", "proc-3": "right", "hr-0": "up", "hr-1": "up", "hr-2": "up", "hr-3": "down", "hr-4": "up", "hr-5": "down", "hr-6": "right", "fin-0": "up", "fin-1": "down", "fin-2": "up", "fin-3": "right", "ops-0": "up", "ops-1": "down", "ops-2": "up", "ops-3": "down", "ops-4": "up", "ops-5": "right"};
 
   /* пересадочные узлы = перекрёстки линий, с живой историей */
   const HUBS = [
@@ -634,12 +634,26 @@
     if(lead)             g.appendChild(make('circle',{cx:x, cy:y, r:5, class:'st__core', fill:col}));
     else if(s.vac>0)     g.appendChild(make('circle',{cx:x, cy:y, r:6, class:'st__core', fill:col}));
     else if(s.col===0)   g.appendChild(make('circle',{cx:x, cy:y, r:5, class:'st__core', fill:col}));
+    /* длинные названия — ровно в две строки, по границе слов ближайшей к середине */
+    const LH2=14.5;
+    const wrapLabel=t=>{ const w=t.split(' '); if(w.length<2) return [t];
+      let best=null,bd=1e9;
+      for(let k=1;k<w.length;k++){
+        const a=w.slice(0,k).join(' '), b=w.slice(k).join(' ');
+        const d=Math.max(a.length,b.length); if(d<bd){bd=d;best=[a,b];}
+      } return best; };
+    const txt=(SHORT[s.id]||s.name);
+    const rows=txt.length>17 ? wrapLabel(txt) : [txt];
+    const H=rows.length*LH2;
     const lb=make('text',{class:'st__label'});
-    if(lp==='left'){ lb.setAttribute('x',x-16); lb.setAttribute('y',y+4); lb.setAttribute('text-anchor','end'); }
-    else if(lp==='right'){ lb.setAttribute('x',x+16); lb.setAttribute('y',y+4); lb.setAttribute('text-anchor','start'); }
-    else if(lp==='down'){ lb.setAttribute('x',x); lb.setAttribute('y',y+28); lb.setAttribute('text-anchor','middle'); }
-    else { lb.setAttribute('x',x); lb.setAttribute('y',y-20); lb.setAttribute('text-anchor','middle'); }
-    lb.textContent=(SHORT[s.id]||s.name); g.appendChild(lb);
+    let lx,ly,anc;
+    if(lp==='left'){      lx=x-17; anc='end';    ly=y-H/2+11.5; }
+    else if(lp==='right'){lx=x+17; anc='start';  ly=y-H/2+11.5; }
+    else if(lp==='down'){ lx=x;    anc='middle'; ly=y+22+11.5; }
+    else {                lx=x;    anc='middle'; ly=y-22-H+11.5; }
+    lb.setAttribute('x',lx); lb.setAttribute('y',ly); lb.setAttribute('text-anchor',anc);
+    rows.forEach((r,i)=>{ const ts=make('tspan',{x:lx, dy:i?LH2:0}); ts.textContent=r; lb.appendChild(ts); });
+    g.appendChild(lb);
     g.addEventListener('pointerenter', ()=>showTipFor(g, stationTipHTML(s)));
     g.addEventListener('pointerleave', hideTip);
     svg.appendChild(g); g._station=s;
