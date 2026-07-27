@@ -3,15 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Геномед — карта карьеры</title>
+<title>Геномед — траектория карьеры и развитие</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#F8FAFC; --ink:#1E293B; --muted:#64748B; --faint:#94A3B8; --gray:#CBD5E1;
-    --lab:#00AEEF; --bioinf:#7C5CFC; --ai:#FF8C42; --it:#5468FF; --med:#2BB673;
-    --cyan-btn:#0093C9; --cyan-btn-600:#0079AC;
+    --blue:#00AEEF; --cyan-btn:#0093C9; --cyan-btn-600:#0079AC;
     --shadow:0 20px 60px rgba(30,41,59,.16);
     --shadow-sm:0 6px 20px rgba(30,41,59,.08);
     --sans:"Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -22,41 +21,42 @@
   html,body{margin:0}
   body{background:transparent;font-family:var(--sans); color:var(--ink); background:var(--bg);
     -webkit-font-smoothing:antialiased; line-height:1.5; overflow-x:hidden}
+  .wrap{overflow-x:clip}
   a{color:inherit; text-decoration:none}
   .wrap{max-width:1320px; margin:0 auto; padding:0 32px}
 
   .top{padding:8px 0 22px}
   .eyebrow{font-family:var(--display); font-weight:700; font-size:.74rem; letter-spacing:.14em;
-    text-transform:uppercase; color:var(--lab); display:inline-flex; align-items:center; gap:.5em}
-  .eyebrow::before{content:""; width:22px; height:2px; background:var(--lab); border-radius:2px}
-  h1{font-family:var(--display); font-weight:800; font-size:clamp(2rem,4vw,3.1rem);
-    letter-spacing:-.02em; margin:14px 0 0; line-height:1.08}
-  .lead{color:var(--muted); font-size:1.08rem; margin:14px 0 0; max-width:52em}
+    text-transform:uppercase; color:var(--blue); display:inline-flex; align-items:center; gap:.5em}
+  .eyebrow::before{content:""; width:22px; height:2px; background:var(--blue); border-radius:2px}
+  h1{font-family:var(--display); font-weight:800; font-size:clamp(1.9rem,3.6vw,2.9rem);
+    letter-spacing:-.02em; margin:14px 0 0; line-height:1.1}
+  .lead{color:var(--muted); font-size:1.05rem; margin:14px 0 0; max-width:56em}
+  .lead + .lead{margin-top:9px}
+  .lead-hint{display:flex; gap:9px; align-items:flex-start; margin-top:14px; color:var(--ink);
+    font-size:.95rem; font-weight:600; max-width:56em}
+  .lead-hint svg{flex:none; margin-top:3px; color:var(--blue)}
 
-  .bar{display:flex; align-items:center; gap:14px 18px; flex-wrap:wrap; margin-top:28px}
-  .filters{display:flex; gap:8px; flex-wrap:wrap; flex:1 1 100%}
+  .bar{display:flex; align-items:center; gap:14px 18px; flex-wrap:wrap; margin-top:26px; min-width:0}
+  /* min-width:0 обязателен: без него flex-элемент не сжимается ниже своего контента
+     и «распирает» страницу вбок на узких экранах */
+  .filters{display:flex; gap:8px; flex-wrap:wrap; flex:1 1 100%; min-width:0}
   .chip{display:inline-flex; align-items:center; gap:8px; cursor:pointer; user-select:none;
     background:#fff; border:1px solid #E2E8F0; border-radius:999px; padding:9px 15px;
     font-family:var(--display); font-weight:600; font-size:.86rem; color:var(--muted);
-    transition:.18s cubic-bezier(.22,1,.36,1); box-shadow:var(--shadow-sm)}
+    transition:.18s cubic-bezier(.22,1,.36,1); box-shadow:var(--shadow-sm); white-space:nowrap}
   .chip .dot{width:9px; height:9px; border-radius:50%; background:var(--gray)}
   .chip:hover{transform:translateY(-1px); color:var(--ink)}
-  .chip.is-on{color:#fff; border-color:transparent}
+  .chip.is-on{color:#fff; border-color:transparent; background:var(--cc,var(--ink))}
   .chip.is-on .dot{background:rgba(255,255,255,.9)}
-  .chip[data-line="all"].is-on{background:var(--ink)}
-  .chip[data-line="lab"].is-on{background:var(--lab)}
-  .chip[data-line="bioinf"].is-on{background:var(--bioinf)}
-  .chip[data-line="ai"].is-on{background:var(--ai)}
-  .chip[data-line="it"].is-on{background:var(--it)}
-  .chip[data-line="med"].is-on{background:var(--med)}
 
-  .builder{margin-left:0; display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  .builder{display:flex; align-items:center; gap:10px; flex-wrap:wrap; min-width:0; max-width:100%;
     background:#fff; border:1px solid #E2E8F0; border-radius:999px; padding:7px 8px 7px 16px; box-shadow:var(--shadow-sm)}
   .builder__lbl{font-family:var(--display); font-weight:700; font-size:.78rem; color:var(--faint);
     letter-spacing:.02em; text-transform:uppercase}
   .builder select{appearance:none; border:none; background:#F1F5F9; border-radius:999px;
     padding:8px 30px 8px 14px; font-family:var(--sans); font-weight:600; font-size:.84rem; color:var(--ink);
-    cursor:pointer; max-width:190px; text-overflow:ellipsis;
+    cursor:pointer; max-width:210px; text-overflow:ellipsis;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%2364748B' stroke-width='2'%3E%3Cpath d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
     background-repeat:no-repeat; background-position:right 12px center}
   .builder__arrow{color:var(--faint)}
@@ -68,8 +68,8 @@
     padding:10px 16px; font-family:var(--display); font-weight:700; font-size:.84rem; transition:.18s}
   .builder__reset:hover{background:#E7EDF4; color:var(--ink)}
 
-  .stage{position:relative; margin:26px 0 60px; border-radius:28px; overflow:hidden;
-    background:linear-gradient(180deg,#FFFFFF, #F6FAFE); border:1px solid #EAF0F7;
+  .stage{position:relative; margin:26px 0 0; border-radius:28px; overflow:hidden;
+    background:linear-gradient(180deg,#FFFFFF,#F6FAFE); border:1px solid #EAF0F7;
     box-shadow:0 30px 80px rgba(30,41,59,.10)}
   .stage__bg{position:absolute; inset:0; pointer-events:none; overflow:hidden}
   .stage__dna{position:absolute; inset:-8% -4%; opacity:.5; will-change:transform}
@@ -81,79 +81,67 @@
 
   .mline{fill:none; stroke-linecap:round; stroke-linejoin:round; transition:opacity .35s, stroke-width .35s}
   .mline--halo{opacity:.13; filter:blur(2px)}
-  .runlight{fill:#fff; filter:drop-shadow(0 0 6px rgba(255,255,255,.9))}
-
-  /* пересадочный узел — перекрёсток линий */
-  .hub{cursor:pointer; transform-box:fill-box; transform-origin:center; transition:transform .2s cubic-bezier(.34,1.56,.64,1), opacity .35s}
-  .hub:hover{transform:scale(1.12)}
-  .hub__glow{opacity:.0}
-  .hub__r{fill:#fff; stroke-width:4; transition:filter .2s}
-  .hub:hover .hub__r{filter:drop-shadow(0 6px 18px rgba(30,41,59,.32))}
-  .hub__i{font-family:var(--sans); font-weight:800; font-size:20px; text-anchor:middle}
-  .hub__r2{opacity:.55}
+  .mline--switch{stroke-dasharray:9 9}
   .mline--casing{opacity:1}
-  .st__icon{font-size:15px; text-anchor:middle; pointer-events:none}
-  .hub-story{filter:drop-shadow(0 2px 5px rgba(10,37,64,.35))}
-  .hub.dim{opacity:.18; pointer-events:none}
-  @keyframes hubpulse{0%,100%{opacity:.5; transform:scale(1)}50%{opacity:0; transform:scale(1.9)}}
-  .hub__halo{transform-box:fill-box; transform-origin:center; animation:hubpulse 3s ease-out infinite}
+  .st__icon{font-size:15px;text-anchor:middle;pointer-events:none}
+  .runlight{fill:#fff; filter:drop-shadow(0 0 5px rgba(255,255,255,.85))}
 
   .st{cursor:pointer; transform-box:fill-box; transform-origin:center; transition:transform .2s cubic-bezier(.34,1.56,.64,1)}
   .st__hit{fill:transparent}
   .st__ring{fill:#fff; transition:filter .2s}
-  .st__core{transition:transform .2s}
-  .st__label{font-family:var(--sans); font-weight:600; font-size:12px; fill:var(--ink);
-    paint-order:stroke; stroke:#fff; stroke-width:3.6px; stroke-linejoin:round}
+  .st__label{font-family:var(--sans); font-weight:600; font-size:12.5px; fill:var(--ink);
+    paint-order:stroke; stroke:#fff; stroke-width:3.8px; stroke-linejoin:round}
   .st:hover{transform:scale(1.14)}
   .st:hover .st__ring{filter:drop-shadow(0 4px 14px rgba(30,41,59,.28))}
-  .st.faded{opacity:.12; transition:opacity .4s; pointer-events:none}
+  .st.faded{opacity:.1; transition:opacity .4s; pointer-events:none}
   .st.on-route .st__ring{filter:drop-shadow(0 0 0 3px rgba(30,41,59,.06)) drop-shadow(0 6px 16px rgba(0,174,239,.5))}
   @keyframes vacpulse{0%,100%{opacity:.5; transform:scale(1)}50%{opacity:0; transform:scale(2)}}
   .st__vachalo{transform-box:fill-box; transform-origin:center; animation:vacpulse 2.6s ease-out infinite}
   .st.hiring .st__ring{filter:drop-shadow(0 0 0 3px rgba(0,194,255,.16)) drop-shadow(0 6px 16px rgba(0,174,239,.45))}
   @keyframes stPulse{0%{transform:scale(1)}50%{transform:scale(1.26)}100%{transform:scale(1)}}
   .st.pop{animation:stPulse .55s ease}
+
+  /* бейдж развилки и пересадки поверх станции */
+  .badge{pointer-events:none}
+  .badge__c{stroke:#fff; stroke-width:2}
+  .badge__t{font-family:var(--sans); font-weight:800; font-size:11px; text-anchor:middle; fill:#fff}
+  @keyframes hubpulse{0%,100%{opacity:.55; transform:scale(1)}50%{opacity:0; transform:scale(1.85)}}
+  .badge__halo{transform-box:fill-box; transform-origin:center; animation:hubpulse 3s ease-out infinite}
+
   .route-layer,.route-outline,.route-segment{pointer-events:none}
-  /* во время маршрута — гасим фон, чтобы путь выделялся */
-  .map.routing .mline:not(.mline--halo){opacity:.1 !important}
+  .map.routing .mline:not(.mline--halo){opacity:.09 !important}
   .map.routing .mline--halo{opacity:0 !important}
   .map.routing .runlight{opacity:0 !important}
-  .map.routing .hub{opacity:.22}
-  .map.routing .st:not(.on-route){opacity:.16}
+  .map.routing .st:not(.on-route){opacity:.14}
+  .map.routing .badge{opacity:.2}
   .term{font-family:var(--display); font-weight:700; font-size:11px; letter-spacing:.06em;
     text-transform:uppercase; fill:var(--faint); paint-order:stroke; stroke:#fff; stroke-width:3px}
 
-  .board{display:block}
-  .panel{background:#fff; border:1px solid #E7EDF4; border-radius:var(--r); box-shadow:var(--shadow-sm); padding:22px 26px; overflow:hidden; margin-top:18px}
+  .panel{background:#fff; border:1px solid #E7EDF4; border-radius:var(--r); box-shadow:var(--shadow-sm);
+    padding:22px 26px; overflow:hidden; margin-top:18px}
   #panelBody{max-width:1040px; margin:0 auto}
   .p-default{display:flex; align-items:center; gap:20px 30px; flex-wrap:wrap}
-  .p-default .p-stats{margin:0; flex:0 0 auto}
+  .p-stats{display:flex; gap:28px; margin:0; flex:0 0 auto}
+  .p-stat b{font-family:var(--display); font-weight:800; font-size:1.7rem; display:block; letter-spacing:-.02em; line-height:1}
+  .p-stat span{font-size:.74rem; color:var(--faint); margin-top:4px; display:block}
+  .p-stat--vac b{color:var(--blue)}
   .p-invite{flex:1 1 320px; color:var(--muted); font-size:.9rem; line-height:1.5}
   .p-invite b{color:var(--ink); font-weight:700}
   .p-default .btn{flex:0 0 auto; min-width:250px}
   .card2{display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:28px; align-items:start}
   .card2__aside{border-left:1px solid #EEF2F7; padding-left:26px}
-  .hubcard,.routecard,.linecard{max-width:720px; margin:0 auto}
-  .route-blurb{display:flex; gap:8px; align-items:flex-start; margin:0 0 16px; padding:11px 13px;
-    background:linear-gradient(135deg,#EFF9FE,#F4F8FE); border:1px solid #DBEEF9; border-radius:12px;
-    font-size:.87rem; line-height:1.5; color:var(--ink); font-weight:600}
+  .hubcard,.routecard,.linecard{max-width:760px; margin:0 auto}
   @media(max-width:720px){ .card2{grid-template-columns:1fr; gap:18px}
     .card2__aside{border-left:none; padding-left:0; border-top:1px solid #EEF2F7; padding-top:16px} }
   .card__tag{display:inline-flex; align-items:center; gap:7px; font-family:var(--display); font-weight:700;
     font-size:.7rem; letter-spacing:.1em; text-transform:uppercase}
   .card__tag .dot{width:8px;height:8px;border-radius:50%}
-  .card__title{font-family:var(--display); font-weight:800; font-size:1.32rem; margin:10px 0 4px; letter-spacing:-.01em; line-height:1.15}
-  .card__resp{color:var(--muted); font-size:.92rem; margin-bottom:16px; line-height:1.5}
-  .card__skills{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px}
-  .card__skill{font-family:var(--sans); font-weight:600; font-size:.76rem; color:var(--muted);
-    background:#F1F5F9; border-radius:999px; padding:5px 11px}
-  .card__meta{display:flex; gap:22px; padding:14px 0; border-top:1px solid #EEF2F7; border-bottom:1px solid #EEF2F7; margin-bottom:16px}
-  .card__meta b{display:block; font-family:var(--display); font-weight:800; font-size:1.3rem; letter-spacing:-.01em}
-  .card__meta span{display:block; font-size:.74rem; color:var(--faint); margin-top:2px}
-  .card__grow b{color:var(--ink)}
-  .card__vac b{color:var(--lab)}
-  .card__vac--zero b{color:var(--faint)}
-  .card__cta{display:flex; gap:10px}
+  .card__title{font-family:var(--display); font-weight:800; font-size:1.3rem; margin:10px 0 6px; letter-spacing:-.01em; line-height:1.2}
+  .card__resp{color:var(--muted); font-size:.94rem; margin-bottom:16px; line-height:1.55}
+  .card__fit{display:flex; gap:9px; align-items:flex-start; padding:12px 14px; border-radius:13px;
+    background:#F8FBFE; border:1px solid #E7EFF7; font-size:.9rem; line-height:1.5; color:var(--ink)}
+  .card__fit b{font-weight:700}
+  .card__cta{display:flex; gap:10px; flex-wrap:wrap}
   .btn{border:none; cursor:pointer; border-radius:999px; font-family:var(--display); font-weight:700;
     font-size:.9rem; padding:13px 22px; transition:.18s; display:inline-flex; align-items:center; justify-content:center; gap:8px}
   .btn--primary{flex:1; background:var(--cyan-btn); color:#fff; box-shadow:0 8px 20px rgba(0,147,201,.32)}
@@ -161,27 +149,30 @@
   .btn--primary.is-reserve{background:var(--cyan-btn-600); box-shadow:0 8px 20px rgba(0,121,172,.28)}
   .btn--ghost{background:#F1F5F9; color:var(--ink)}
   .btn--ghost:hover{background:#E7EDF4}
+  .metric{display:flex; gap:22px; margin:0 0 16px}
+  .metric b{display:block; font-family:var(--display); font-weight:800; font-size:1.5rem; letter-spacing:-.01em; line-height:1}
+  .metric span{display:block; font-size:.74rem; color:var(--faint); margin-top:4px}
+  .metric .m-vac b{color:var(--blue)}
+  .metric .m-vac--zero b{color:var(--faint)}
 
-  .p-h{font-family:var(--display); font-weight:800; font-size:1.22rem; margin:14px 0 8px; letter-spacing:-.01em; line-height:1.15}
-  .p-sub{color:var(--muted); font-size:.9rem; line-height:1.55; margin:0}
-  .p-stats{display:flex; gap:28px; margin:18px 0 14px}
-  .p-stat b{font-family:var(--display); font-weight:800; font-size:1.7rem; display:block; letter-spacing:-.02em; line-height:1}
-  .p-stat span{font-size:.74rem; color:var(--faint); margin-top:4px; display:block}
-  .p-stat--vac b{color:var(--lab)}
-  .p-note{display:flex; gap:9px; align-items:flex-start; margin-top:16px; padding:12px 13px;
-    background:#F8FBFE; border:1px solid #E7EFF7; border-radius:13px; font-size:.83rem; color:var(--muted); line-height:1.5}
-  .p-note b{color:var(--ink); font-weight:700}
-
-  .dept h4{font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin:18px 0 8px}
+  .dept h4{font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--faint);margin:18px 0 8px}
   .dept p{margin:0;color:var(--muted);font-size:.92rem;line-height:1.55}
   .dept ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
   .dept li{position:relative;padding-left:22px;font-size:.9rem;color:var(--ink);line-height:1.45}
-  .dept li::before{content:'';position:absolute;left:2px;top:7px;width:8px;height:8px;border-radius:50%;background:var(--lc,var(--lab))}
-  .hub-lines{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 4px}
+  .dept li::before{content:'';position:absolute;left:2px;top:7px;width:8px;height:8px;border-radius:50%;background:var(--lc,var(--blue))}
+
+  .forks{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+  .forks li{display:flex;align-items:center;gap:11px;padding:11px 13px;border:1px solid #E7EDF4;
+    border-radius:12px;cursor:pointer;transition:.16s;font-size:.9rem;font-weight:600}
+  .forks li:hover{border-color:var(--blue);transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+  .forks .vdot{width:9px;height:9px;border-radius:50%;flex:none}
+  .forks span{margin-left:auto;font-size:.76rem;color:var(--faint);font-weight:500}
 
   .vac-list{list-style:none; margin:14px 0 0; padding:0; display:flex; flex-direction:column; gap:8px}
-  .vac-item{display:flex; align-items:center; gap:11px; padding:11px 13px; border:1px solid #E7EDF4; border-radius:12px; cursor:pointer; transition:.16s}
-  .vac-item:hover{border-color:var(--lab); transform:translateY(-1px); box-shadow:var(--shadow-sm)}
+  .vac-item{display:flex; align-items:center; gap:11px; padding:11px 13px; border:1px solid #E7EDF4;
+    border-radius:12px; cursor:pointer; transition:.16s}
+  .vac-item:hover{border-color:var(--blue); transform:translateY(-1px); box-shadow:var(--shadow-sm)}
   .vac-item .vdot{width:9px; height:9px; border-radius:50%; flex:none}
   .vac-item b{font-family:var(--sans); font-weight:700; font-size:.9rem; flex:1}
   .vac-item span{font-size:.76rem; color:var(--faint)}
@@ -193,23 +184,29 @@
     transition:opacity .3s, transform .3s}
   .route__step.show{opacity:1; transform:none}
   .route__step::before{content:""; position:absolute; left:5px; top:4px; width:11px; height:11px; border-radius:50%;
-    background:#fff; border:2.5px solid var(--dotc,var(--lab))}
+    background:#fff; border:2.5px solid var(--dotc,var(--blue))}
   .route__step::after{content:""; position:absolute; left:10px; top:15px; bottom:0; width:2px; background:#E2E8F0}
   .route__step:last-child{padding-bottom:0}
   .route__step:last-child::after{display:none}
-  .route__step b{display:block; font-weight:700; font-size:.92rem}
-  .route__step span{font-size:.76rem; color:var(--faint)}
+  .route__step b{display:block; font-weight:700; font-size:.92rem; line-height:1.3}
+  .route__step i{display:block; font-style:normal; font-size:.76rem; color:var(--faint); margin-top:2px}
+  .route__step--switch::before{border-style:dashed; border-color:#0F172A}
   .route__foot{display:flex; align-items:center; justify-content:space-between; gap:10px;
-    padding-top:14px; border-top:1px solid rgba(148,163,184,.2)}
-  .route__time{font-family:var(--display); font-weight:800; font-size:1.1rem}
-  .route__time span{font-size:.72rem; color:var(--faint); font-weight:600; display:block}
+    padding-top:14px; border-top:1px solid rgba(148,163,184,.2); flex-wrap:wrap}
+  .route__metric{font-family:var(--display); font-weight:800; font-size:1.05rem}
+  .route__metric span{font-size:.72rem; color:var(--faint); font-weight:600; display:block; letter-spacing:.02em}
+  .route-blurb{display:flex; gap:8px; align-items:flex-start; margin:0 0 16px; padding:11px 13px;
+    background:linear-gradient(135deg,#EFF9FE,#F4F8FE); border:1px solid #DBEEF9; border-radius:12px;
+    font-size:.87rem; line-height:1.5; color:var(--ink); font-weight:600}
+  .route-none{padding:16px 18px; border-radius:14px; background:#F8FBFE; border:1px solid #E7EFF7;
+    font-size:.94rem; line-height:1.6; color:var(--ink)}
 
   .toast{position:fixed; left:50%; bottom:40px; transform:translateX(-50%) translateY(20px);
     background:var(--ink); color:#fff; padding:12px 20px; border-radius:12px; font-weight:600; font-size:.9rem;
     box-shadow:var(--shadow); opacity:0; transition:.3s; z-index:80; pointer-events:none}
   .toast.show{opacity:1; transform:translateX(-50%)}
 
-  .tip{position:absolute; z-index:60; pointer-events:none; width:max-content; max-width:288px; text-align:left;
+  .tip{position:absolute; z-index:60; pointer-events:none; width:max-content; max-width:300px; text-align:left;
     background:#0F172A; color:#fff; font-size:.84rem; line-height:1.45; font-weight:500;
     padding:11px 14px; border-radius:13px; box-shadow:0 16px 40px rgba(15,23,42,.34);
     opacity:0; transform:translate(-50%,-100%) translateY(-8px); transition:opacity .15s ease}
@@ -218,30 +215,37 @@
   .tip.tip--below{transform:translate(-50%,0) translateY(8px)}
   .tip.tip--below::after{top:-5px; bottom:auto}
   .tip.show{opacity:1}
-  .tip b.tip-name{font-family:var(--display); font-weight:800; font-size:.92rem}
+  .tip b.tip-name{font-family:var(--display); font-weight:800; font-size:.92rem; display:block}
   .tip .tip-note{color:#CBD5E1; margin-top:5px}
-.tip .tip-fit{color:#E2E8F0;font-size:.82rem;line-height:1.5;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.14)}
-.tip .tip-fit b{color:#67E8F9;font-weight:700}
-.chip.is-on{background:var(--cc,var(--ink))}
+  .tip .tip-fit{color:#E2E8F0;font-size:.82rem;line-height:1.5;margin-top:8px;padding-top:8px;
+    border-top:1px solid rgba(255,255,255,.14)}
+  .tip .tip-fit b{color:#67E8F9;font-weight:700}
   .tip .tip-vac{color:#67E8F9; font-weight:700; font-size:.8rem; margin-top:7px}
   .tip-story{display:flex; gap:9px; align-items:center; margin-top:11px; padding-top:11px; border-top:1px solid rgba(255,255,255,.14)}
-  .tip-ava{width:32px;height:32px;border-radius:50%;flex:none;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:.72rem;color:#fff}
+  .tip-ava{width:32px;height:32px;border-radius:50%;flex:none;display:grid;place-items:center;
+    font-family:var(--display);font-weight:800;font-size:.72rem;color:#fff}
   .tip-story b{display:block;font-family:var(--display);font-weight:700;font-size:.84rem}
   .tip-story i{display:block;font-style:normal;font-size:.72rem;color:#94A3B8;margin-top:1px}
   .tip-quote{margin-top:8px;font-size:.82rem;line-height:1.5;color:#E2E8F0}
+  .story-note{display:flex;gap:11px;align-items:center;margin-top:16px;padding:13px 14px;
+    background:#F8FBFE;border:1px solid #E7EFF7;border-radius:14px;font-size:.88rem;line-height:1.5}
+  .story-note .tip-ava{width:36px;height:36px;font-size:.78rem}
 
-  .hint{color:var(--faint); font-size:.82rem; margin-top:14px; display:flex; align-items:flex-start; gap:8px; max-width:66em}
+  .hint{color:var(--faint); font-size:.82rem; margin-top:14px; display:flex; align-items:flex-start; gap:8px; max-width:70em}
+  .board{position:relative}
 
   @media (max-width:960px){
     .wrap{padding:0 18px}
+    .top{padding:34px 0 18px}
     .bar{gap:12px}
     .filters{flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:4px}
     .filters::-webkit-scrollbar{display:none}
-    .builder{margin-left:0; width:100%}
-    .board{position:relative}
+    .builder{width:100%}
+    .builder select{flex:1 1 120px; min-width:0; max-width:none}
+    .builder__go,.builder__reset{flex:1 1 auto}
+    .builder__lbl{flex:1 1 100%}
     .stage{overflow-x:auto; -webkit-overflow-scrolling:touch; touch-action:pan-x pan-y}
-    .map{min-width:1180px}
-    /* мягкая подсказка, что карту можно листать вбок */
+    .map{min-width:1320px}
     .board::after{content:""; position:absolute; top:1px; right:1px; bottom:1px; width:46px; pointer-events:none;
       border-radius:0 27px 27px 0; background:linear-gradient(90deg, rgba(246,250,254,0), rgba(246,250,254,.9))}
     .panel{padding:18px}
@@ -253,18 +257,7 @@
 <div class="wrap top">
 
   <div class="bar">
-    <div class="filters" id="filters">
-      <button class="chip is-on" data-line="all"><span class="dot"></span>Все</button>
-      <button class="chip" data-line="tech" style="--cc:#14B8A6"><span class="dot" style="background:#14B8A6"></span>⚙️&nbsp;Технологии</button>
-      <button class="chip" data-line="lab" style="--cc:#00AEEF"><span class="dot" style="background:#00AEEF"></span>🧪&nbsp;Лаборатория</button>
-      <button class="chip" data-line="eng" style="--cc:#64748B"><span class="dot" style="background:#64748B"></span>🔧&nbsp;Инженерия</button>
-      <button class="chip" data-line="rnd" style="--cc:#7C5CFC"><span class="dot" style="background:#7C5CFC"></span>🧬&nbsp;R&D</button>
-      <button class="chip" data-line="cs" style="--cc:#E24A8B"><span class="dot" style="background:#E24A8B"></span>💬&nbsp;Продажи</button>
-      <button class="chip" data-line="proc" style="--cc:#FF8C42"><span class="dot" style="background:#FF8C42"></span>🤖&nbsp;Процессы</button>
-      <button class="chip" data-line="hr" style="--cc:#2BB673"><span class="dot" style="background:#2BB673"></span>👥&nbsp;Персонал</button>
-      <button class="chip" data-line="fin" style="--cc:#F59E0B"><span class="dot" style="background:#F59E0B"></span>📊&nbsp;Финансы</button>
-      <button class="chip" data-line="ops" style="--cc:#EF4444"><span class="dot" style="background:#EF4444"></span>📦&nbsp;Приём</button>
-    </div>
+    <div class="filters" id="filters"></div>
     <div class="builder">
       <span class="builder__lbl">Маршрут</span>
       <select id="fromSel" aria-label="Откуда"></select>
@@ -281,693 +274,650 @@
 <div class="wrap">
   <div class="board">
     <div class="stage" id="stage">
-    <div class="stage__bg"><div class="stage__dna" id="dna"></div></div>
-    <div class="stage__light" id="light"></div>
-    <svg class="map" id="map" viewBox="0 0 1560 1300" role="img" aria-label="Карта карьеры Геномед"></svg>
-    <div class="tip" id="tip" aria-hidden="true"></div>
+      <div class="stage__bg"><div class="stage__dna" id="dna"></div></div>
+      <div class="stage__light" id="light"></div>
+      <svg class="map" id="map" viewBox="120 60 1580 1120" role="img" aria-label="Траектория карьеры в Геномед"></svg>
+      <div class="tip" id="tip" aria-hidden="true"></div>
     </div>
   </div>
   <aside class="panel" id="panel"><div id="panelBody"></div></aside>
   <p class="hint">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
-    Слева — старт работы, справа — должность мечты. Наведите на станцию — узнаете о роли; на пересадку&nbsp;⇄&nbsp;(там, где линии пересекаются) — всплывёт живая история роста. Пульсирующие точки — открытые вакансии. Нажмите — откроются карточка и отклик.
+    <span>Слева&nbsp;— роли, с которых начинают, справа&nbsp;— вершина трека. Точка с меткой-«вилкой»&nbsp;— развилка: отсюда путь расходится в несколько сторон. Пунктирный отрезок с меткой&nbsp;<b>⇄</b>&nbsp;— пересадка между направлениями. Пульсирующие точки&nbsp;— роли с открытым набором.</span>
   </p>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
+/* ============================================================================
+   ДАННЫЕ КАРТЫ.
+   Источник — реальные карьерные треки, присланные Пятовой М.В. 23.07.2026.
+   Модель: узлы (роли) + ЯВНЫЕ рёбра переходов. Развилки и слияния выражаются
+   напрямую, поэтому независимые треки больше не склеиваются в одну цепочку.
+   Правки: добавить роль в NODES, переход — в EDGES. Всё остальное считается само.
+   ЧЕГО НА КАРТЕ НЕТ: медицинского и ИТ-трека — реальных цепочек по ним от HR
+   пока не поступало. Как только придут, добавляются сюда же.
+   ============================================================================ */
+const MAP = {"lines":[{"key":"lab","name":"Лаборатория","short":"Лаборатория","hex":"#00AEEF","tag":"от пробирки до заключения","does":"Принимает биоматериал пациентов и превращает его в прочитанный геном: пробоподготовка, ПЦР, секвенирование, контроль качества.","fit":["нравится точная работа руками и с приборами","важен видимый результат: образец → готовый анализ","хотите освоить секвенирование с нуля"]},{"key":"tech","name":"Технологии и производство","short":"Технологии","hex":"#7C5CFC","tag":"приборы и методики, на которых стоит лаборатория","does":"Высокопроизводительное секвенирование, пробоподготовка в масштабе, приборный парк и техническое развитие компании.","fit":["интересны приборы, методики и автоматизация","хочется отвечать за участок, а не за одну пробирку","видите себя в техническом лидерстве"]},{"key":"rnd","name":"R&D и наука","short":"R&D","hex":"#0D9488","tag":"из идеи — в рабочую методику","does":"Научно-производственный отдел: эксперименты, разработка и валидация новых методик, доведение их до внедрения.","fit":["любите ставить эксперименты и проверять гипотезы","хочется довести идею до реального продукта","интересна наука с практическим выходом"]},{"key":"sales","name":"Продажи и клиентский сервис","short":"Продажи","hex":"#E24A8B","tag":"клиенты, продукты и научный сервис","does":"Сопровождение клиентов B2C, B2B и B2D, продуктовая линейка для исследований и продажи услуг научного сервиса.","fit":["любите общение и умеете объяснять сложное","интересны продукты и работа с заказчиком","хотите применить биологическое образование вне лаборатории"]},{"key":"proc","name":"Процессы и ИИ","short":"Процессы","hex":"#FF8C42","tag":"от порядка в процессах — к ИИ-инструментам","does":"Описывает и оптимизирует бизнес-процессы компании, внедряет автоматизацию и разрабатывает решения на основе искусственного интеллекта.","fit":["нравится наводить порядок и видеть систему целиком","интересны автоматизация и искусственный интеллект","хотите вырасти от процессов к разработке продуктов"]},{"key":"hr","name":"Персонал и управление","short":"Персонал","hex":"#2BB673","tag":"люди и управление компанией","does":"Подбор, адаптация и сопровождение сотрудников, кадровое сопровождение, операционное управление и HR-стратегия холдинга.","fit":["вам интересны люди и их развитие","нравится выстраивать процессы найма","видите себя в управлении"]},{"key":"fin","name":"Финансы и учёт","short":"Финансы","hex":"#F59E0B","tag":"цифры, на которые опирается компания","does":"Финансовый контроль, первичный и управленческий учёт, отчётность и финансовая аналитика.","fit":["внимательны к цифрам и деталям","любите порядок в документах","хотите видеть финансовую картину целиком"]},{"key":"ops","name":"Приём и качество","short":"Приём","hex":"#EF4444","tag":"с чего начинается каждый анализ","does":"Приём, регистрация и разбор биоматериала, а также система менеджмента качества и административная поддержка офиса.","fit":["аккуратны и ответственны","важно, чтобы поток не сбивался","цените стандарты и качество"]}],"nodes":[{"id":"lab-1","line":"lab","name":"Лаборант","short":"Лаборант","resp":"Приём и подготовка биоматериала, ПЦР","fit":"новичку после вуза: точная работа руками и вход в диагностику с нуля","x":300,"y":820,"lp":"left","lines":["Лаборант"],"shortName":"Лаборант"},{"id":"lab-2","line":"lab","name":"Старший лаборант","short":"Ст. лаборант","resp":"Секвенирование и контроль качества","fit":"кто освоил рутину и готов отвечать за качество данных","x":647,"y":762,"lp":"up","lines":["Ст. лаборант"],"shortName":"Ст. лаборант"},{"id":"lab-3","line":"lab","name":"Молекулярный биолог","short":"Молбиолог","resp":"Ведёт исследования, обучает новичков","fit":"кто хочет вести исследования и наставлять младших","x":910,"y":499,"lp":"up","lines":["Молбиолог"],"shortName":"Молбиолог"},{"id":"lab-4","line":"lab","name":"Старший молекулярный биолог","short":"Ст. молбиолог","resp":"Сложные исследования и методики","fit":"опытным биологам: сложные задачи и наставничество","x":1173,"y":236,"lp":"up","lines":["Ст. молбиолог"],"shortName":"Ст. молбиолог"},{"id":"lab-5","line":"lab","name":"Заведующий отделом лаборатории","short":"Зав. отделом лаборатории","resp":"Руководит отделом и развитием команды","fit":"кто хочет руководить, а не только исследовать","x":1520,"y":178,"lp":"right","lines":["Зав. отделом лаб."],"shortName":"Зав. отделом лаб."},{"id":"lab-s2","line":"lab","name":"Старший молекулярный биолог (лаборатория сервисных научных проектов)","short":"Ст. молбиолог (сервисные проекты)","resp":"Научная часть сервисных научных проектов","fit":"опытным биологам, которым интересны заказные исследования","x":300,"y":888,"lp":"left","lines":["Ст. молбиолог (серв.)"],"shortName":"Ст. молбиолог (серв.)"},{"id":"lab-s1","line":"lab","name":"Лаборант (лаборатория сервисных научных проектов)","short":"Лаборант (сервисные проекты)","resp":"Лабораторная часть сервисных научных проектов","fit":"кто хочет совмещать лабораторию и проектную работу","x":300,"y":956,"lp":"left","lines":["Лаборант (серв.)"],"shortName":"Лаборант (серв.)"},{"id":"tech-1","line":"tech","name":"Старший лаборант (высокопроизводительное секвенирование)","short":"Ст. лаборант (NGS)","resp":"Высокопроизводительное секвенирование и пробоподготовка","fit":"кто хочет углубиться в NGS и работать с потоком образцов","x":300,"y":684,"lp":"left","lines":["Ст. лаборант (NGS)"],"shortName":"Ст. лаборант (NGS)"},{"id":"tech-2","line":"tech","name":"Молекулярный биолог (высокопроизводительное секвенирование)","short":"Молбиолог (NGS)","resp":"Библиотеки и качество данных NGS","fit":"кто любит NGS и сложные библиотеки","x":643,"y":684,"lp":"up","lines":["Молбиолог (NGS)"],"shortName":"Молбиолог (NGS)"},{"id":"tech-3","line":"tech","name":"Заведующий отделом пробоподготовки","short":"Зав. отделом пробоподготовки","resp":"Организует участок пробоподготовки","fit":"кто готов отвечать за участок и команду","x":1017,"y":392,"lp":"up","lines":["Зав. пробоподгот."],"shortName":"Зав. пробоподгот."},{"id":"tech-4","line":"tech","name":"Заместитель заведующего лабораторией по технологиям","short":"Зам. зав. лабораторией по технологиям","resp":"Внедряет и развивает лабораторные технологии","fit":"кто хочет менять методики в масштабе всей лаборатории","x":1177,"y":314,"lp":"up","lines":["Зам. зав. лаб."],"shortName":"Зам. зав. лаб."},{"id":"tech-5","line":"tech","name":"Директор по техническому развитию (СТО)","short":"Директор по техническому развитию","resp":"Техническая стратегия компании","fit":"кто мыслит стратегически и готов отвечать за технологии","x":1520,"y":314,"lp":"right","lines":["Дир. тех. развития"],"shortName":"Дир. тех. развития"},{"id":"tech-e1","line":"tech","name":"Инженер-электроник","short":"Инженер-электроник","resp":"Обслуживание и ремонт лабораторного оборудования","fit":"кто дружит с электроникой и держит приборы в строю","x":300,"y":616,"lp":"left","lines":["Инженер-электроник"],"shortName":"Инженер-электроник"},{"id":"tech-e2","line":"tech","name":"Старший инженер-электроник","short":"Ст. инженер-электроник","resp":"Сложный ремонт и приборный парк","fit":"кто готов брать сложную технику и учить младших","x":966,"y":443,"lp":"up","lines":["Ст. инженер"],"shortName":"Ст. инженер"},{"id":"tech-e3","line":"tech","name":"Заместитель руководителя отдела производства, эксплуатации и ремонта","short":"Зам. рук. отдела производства","resp":"Эксплуатация и ремонт производственной базы","fit":"кто хочет вырасти в управление производством","x":1520,"y":382,"lp":"right","lines":["Зам. рук. произв."],"shortName":"Зам. рук. произв."},{"id":"rnd-1","line":"rnd","name":"Лаборант (научно-производственный отдел)","short":"Лаборант (НПО)","resp":"Эксперименты и отработка методик","fit":"кто любит эксперименты и пробовать то, чего ещё не делали","x":300,"y":752,"lp":"left","lines":["Лаборант (НПО)"],"shortName":"Лаборант (НПО)"},{"id":"rnd-2","line":"rnd","name":"Старший специалист (научно-производственный отдел)","short":"Ст. специалист (НПО)","resp":"Разработка и валидация методик","fit":"кто готов довести методику до рабочего состояния","x":742,"y":667,"lp":"up","lines":["Ст. спец. (НПО)"],"shortName":"Ст. спец. (НПО)"},{"id":"rnd-3","line":"rnd","name":"Ведущий специалист (научно-производственный отдел)","short":"Ведущий специалист (НПО)","resp":"Проекты разработки от идеи до внедрения","fit":"кто хочет вести проект целиком","x":1078,"y":331,"lp":"up","lines":["Вед. спец. (НПО)"],"shortName":"Вед. спец. (НПО)"},{"id":"rnd-4","line":"rnd","name":"Заместитель руководителя департамента R&D","short":"Зам. руководителя департамента R&D","resp":"Развитие исследований и разработок компании","fit":"кто хочет определять, какие методы появятся завтра","x":1520,"y":246,"lp":"right","lines":["Зам. рук. R&D"],"shortName":"Зам. рук. R&D"},{"id":"sal-1","line":"sales","name":"Менеджер по сопровождению клиентов B2C","short":"Менеджер B2C","resp":"Консультирует и ведёт частных клиентов","fit":"кто любит общение и умеет помогать людям","x":300,"y":480,"lp":"left","lines":["Менеджер B2C"],"shortName":"Менеджер B2C"},{"id":"sal-2","line":"sales","name":"Менеджер по сопровождению клиентов B2C, B2B, B2D","short":"Менеджер B2C/B2B/B2D","resp":"Работа со всеми сегментами клиентов","fit":"кто готов вести и людей, и партнёров, и врачей","x":1103,"y":586,"lp":"up","lines":["Менеджер B2B/B2D"],"shortName":"Менеджер B2B/B2D"},{"id":"sal-3","line":"sales","name":"Ведущий менеджер по сопровождению клиентов B2C, B2B, B2D","short":"Ведущий менеджер по сопровождению","resp":"Ключевые клиенты и наставничество","fit":"кто ведёт сложных клиентов и учит команду","x":1520,"y":586,"lp":"right","lines":["Вед. менеджер"],"shortName":"Вед. менеджер"},{"id":"sal-p1","line":"sales","name":"Продакт-менеджер направления продаж продукции для молекулярно-биологических исследований","short":"Продакт-менеджер","resp":"Развивает продуктовую линейку для исследований","fit":"кто хочет отвечать за продукт, а не за отдельную сделку","x":300,"y":548,"lp":"left","lines":["Продакт-менеджер"],"shortName":"Продакт-менеджер"},{"id":"sal-p2","line":"sales","name":"Руководитель отдела прикладных решений и клиентской поддержки","short":"Рук. отдела прикладных решений","resp":"Прикладные решения и клиентская поддержка","fit":"кто хочет отвечать за клиентские продукты целиком","x":1520,"y":518,"lp":"right","lines":["Рук. прикл. решений"],"shortName":"Рук. прикл. решений"},{"id":"sal-ns","line":"sales","name":"Менеджер по продажам услуг научного сервиса","short":"Менеджер по продажам научного сервиса","resp":"Продаёт исследования в молекулярной биологии и генетике","fit":"биологам, кто хочет говорить с заказчиком на одном языке","x":1520,"y":450,"lp":"right","lines":["Продажи науч. сервиса"],"shortName":"Продажи науч. сервиса"},{"id":"proc-1","line":"proc","name":"Специалист по процессному управлению","short":"Специалист по процессам","resp":"Описывает и оптимизирует бизнес-процессы","fit":"кто любит наводить порядок и видеть систему целиком","x":300,"y":140,"lp":"left","lines":["Спец. по процессам"],"shortName":"Спец. по процессам"},{"id":"proc-2","line":"proc","name":"Ведущий специалист по процессному управлению","short":"Ведущий специалист по процессам","resp":"Проектирует процессы и внедряет автоматизацию","fit":"кто хочет проектировать процессы и внедрять ИИ","x":738,"y":225,"lp":"up","lines":["Вед. спец. процессов"],"shortName":"Вед. спец. процессов"},{"id":"proc-3","line":"proc","name":"Руководитель отдела разработки искусственного интеллекта","short":"Рук. отдела разработки ИИ","resp":"Возглавляет разработку ИИ-решений компании","fit":"кто хочет возглавить разработку ИИ-инструментов","x":1520,"y":654,"lp":"right","lines":["Рук. разработки ИИ"],"shortName":"Рук. разработки ИИ"},{"id":"proc-4","line":"proc","name":"Заместитель директора департамента процессного управления и развития","short":"Зам. директора департамента ПУиР","resp":"Развитие процессов и управления компанией","fit":"кто хочет вырасти в управление департаментом","x":1520,"y":722,"lp":"right","lines":["Зам. директора ПУР"],"shortName":"Зам. директора ПУР"},{"id":"hr-1","line":"hr","name":"Менеджер по персоналу","short":"Менеджер по персоналу","resp":"Подбор и сопровождение сотрудников","fit":"кто хочет работать с людьми и их развитием","x":300,"y":208,"lp":"left","lines":["Менеджер по персоналу"],"shortName":"Менеджер по персоналу"},{"id":"hr-2","line":"hr","name":"Ведущий менеджер по персоналу","short":"Ведущий менеджер по персоналу","resp":"Ключевые процессы найма и адаптации","fit":"кто готов вести найм целиком","x":738,"y":327,"lp":"up","lines":["Вед. менеджер HR"],"shortName":"Вед. менеджер HR"},{"id":"hr-3","line":"hr","name":"Руководитель ОКС","short":"Руководитель ОКС","resp":"Кадровое сопровождение компании","fit":"кто хочет руководить кадровым блоком","x":1082,"y":671,"lp":"up","lines":["Рук. ОКС"],"shortName":"Рук. ОКС"},{"id":"hr-4","line":"hr","name":"Оперативный директор","short":"Оперативный директор","resp":"Операционное управление компанией","fit":"кто хочет отвечать за операционку целиком","x":1520,"y":790,"lp":"right","lines":["Оперативный директор"],"shortName":"Оперативный директор"},{"id":"hr-5","line":"hr","name":"Директор департамента процессного управления и развития","short":"Директор департамента ПУиР","resp":"Департамент процессного управления и развития","fit":"кто хочет возглавить департамент","x":1520,"y":858,"lp":"right","lines":["Директор ПУР"],"shortName":"Директор ПУР"},{"id":"hr-6","line":"hr","name":"Директор по персоналу","short":"Директор по персоналу","resp":"Вся работа с персоналом компании","fit":"кто хочет отвечать за HR-стратегию","x":910,"y":567,"lp":"up","lines":["Директор по персоналу"],"shortName":"Директор по персоналу"},{"id":"hr-7","line":"hr","name":"Заместитель генерального директора по управлению персоналом холдинга","short":"Зам. генерального директора по персоналу","resp":"Персонал на уровне холдинга","fit":"кто видит себя в топ-управлении","x":1520,"y":926,"lp":"right","lines":["Зам. ген. директора"],"shortName":"Зам. ген. директора"},{"id":"fin-1","line":"fin","name":"Финансовый контролёр","short":"Финансовый контролёр","resp":"Контроль финансовых операций","fit":"внимательным к цифрам и деталям","x":300,"y":344,"lp":"left","lines":["Фин. контролёр"],"shortName":"Фин. контролёр"},{"id":"fin-2","line":"fin","name":"Заместитель руководителя отдела первичного учёта","short":"Зам. рук. отдела первичного учёта","resp":"Первичный учёт и документация","fit":"кто любит порядок в документах","x":1520,"y":1062,"lp":"right","lines":["Зам. рук. перв. учёта"],"shortName":"Зам. рук. перв. учёта"},{"id":"fin-3","line":"fin","name":"Экономист по управленческому учёту","short":"Экономист по управленческому учёту","resp":"Управленческий учёт и отчётность","fit":"кто любит аналитику и работу с цифрами","x":300,"y":412,"lp":"left","lines":["Экономист упр. учёта"],"shortName":"Экономист упр. учёта"},{"id":"fin-4","line":"fin","name":"Руководитель отдела управленческого учёта","short":"Рук. отдела управленческого учёта","resp":"Управленческий учёт всей компании","fit":"кто хочет видеть финансовую картину целиком","x":1520,"y":1130,"lp":"right","lines":["Рук. упр. учёта"],"shortName":"Рук. упр. учёта"},{"id":"ops-1","line":"ops","name":"Специалист по приёму биоматериала","short":"Специалист по приёму биоматериала","resp":"Принимает и регистрирует образцы пациентов","fit":"аккуратным: вход в лабораторию с приёма образцов","x":300,"y":1024,"lp":"left","lines":["Спец. приёма"],"shortName":"Спец. приёма"},{"id":"ops-2","line":"ops","name":"Старший специалист по приёму биоматериала","short":"Ст. специалист по приёму","resp":"Контроль приёма и разбора биоматериала","fit":"кто готов контролировать поток образцов","x":639,"y":838,"lp":"up","lines":["Ст. спец. приёма"],"shortName":"Ст. спец. приёма"},{"id":"ops-3","line":"ops","name":"Руководитель отдела проборазбора","short":"Рук. отдела проборазбора","resp":"Отвечает за отдел проборазбора","fit":"кто хочет отвечать за отдел и качество приёма","x":1520,"y":110,"lp":"right","lines":["Рук. проборазбора"],"shortName":"Рук. проборазбора"},{"id":"ops-q1","line":"ops","name":"Офис-менеджер","short":"Офис-менеджер","resp":"Порядок в офисе, помощь командам","fit":"кто хочет войти в компанию с офисной роли","x":300,"y":276,"lp":"left","lines":["Офис-менеджер"],"shortName":"Офис-менеджер"},{"id":"ops-q2","line":"ops","name":"Специалист отдела СМК","short":"Специалист отдела СМК","resp":"Система менеджмента качества","fit":"кто ценит стандарты и порядок","x":910,"y":635,"lp":"up","lines":["Спец. СМК"],"shortName":"Спец. СМК"},{"id":"ops-q3","line":"ops","name":"Ведущий специалист отдела СМК","short":"Ведущий специалист отдела СМК","resp":"Ключевые процессы системы качества","fit":"кто хочет вырасти в эксперта по качеству","x":1520,"y":994,"lp":"right","lines":["Вед. спец. СМК"],"shortName":"Вед. спец. СМК"}],"edges":[["hr-1","hr-2"],["hr-2","hr-3"],["hr-3","hr-4"],["hr-3","hr-5"],["ops-q1","ops-q2"],["ops-q2","ops-q3"],["tech-1","tech-2"],["tech-2","tech-3"],["tech-3","tech-4"],["tech-4","tech-5"],["rnd-1","rnd-2"],["rnd-2","rnd-3"],["rnd-3","rnd-4"],["fin-1","fin-2"],["fin-3","fin-4"],["hr-1","hr-6"],["hr-6","hr-7"],["ops-1","ops-2"],["ops-2","ops-3"],["proc-1","proc-2"],["proc-2","proc-3"],["proc-2","proc-4"],["sal-1","sal-2"],["sal-2","sal-3"],["sal-p1","sal-p2"],["lab-s2","sal-ns"],["lab-s1","sal-ns"],["tech-e1","tech-e2"],["tech-e2","tech-e3"],["lab-1","lab-2"],["lab-2","lab-3"],["lab-3","lab-4"],["lab-4","lab-5"]],"edgePaths":{"hr-1>hr-2":[[300,208],[619,208],[738,327]],"hr-2>hr-3":[[738,327],[1082,671]],"hr-3>hr-4":[[1082,671],[1201,790],[1520,790]],"hr-3>hr-5":[[1082,671],[1208,671],[1394,858],[1520,858]],"ops-q1>ops-q2":[[300,276],[551,276],[910,635]],"ops-q2>ops-q3":[[910,635],[1269,994],[1520,994]],"tech-1>tech-2":[[300,684],[643,684]],"tech-2>tech-3":[[643,684],[725,684],[1017,392]],"tech-3>tech-4":[[1017,392],[1095,314],[1177,314]],"tech-4>tech-5":[[1177,314],[1520,314]],"rnd-1>rnd-2":[[300,752],[657,752],[742,667]],"rnd-2>rnd-3":[[742,667],[1078,331]],"rnd-3>rnd-4":[[1078,331],[1163,246],[1520,246]],"fin-1>fin-2":[[300,344],[551,344],[1269,1062],[1520,1062]],"fin-3>fin-4":[[300,412],[551,412],[1269,1130],[1520,1130]],"hr-1>hr-6":[[300,208],[426,208],[784,567],[910,567]],"hr-6>hr-7":[[910,567],[1269,926],[1520,926]],"ops-1>ops-2":[[300,1024],[453,1024],[639,838]],"ops-2>ops-3":[[639,838],[1367,110],[1520,110]],"proc-1>proc-2":[[300,140],[653,140],[738,225]],"proc-2>proc-3":[[738,225],[1167,654],[1520,654]],"proc-2>proc-4":[[738,225],[880,225],[1378,722],[1520,722]],"sal-1>sal-2":[[300,480],[857,480],[963,586],[1103,586]],"sal-2>sal-3":[[1103,586],[1520,586]],"sal-p1>sal-p2":[[300,548],[895,548],[925,518],[1520,518]],"lab-s2>sal-ns":[[300,888],[691,888],[1129,450],[1520,450]],"lab-s1>sal-ns":[[300,956],[657,956],[1163,450],[1520,450]],"tech-e1>tech-e2":[[300,616],[793,616],[966,443]],"tech-e2>tech-e3":[[966,443],[1027,382],[1520,382]],"lab-1>lab-2":[[300,820],[589,820],[647,762]],"lab-2>lab-3":[[647,762],[910,499]],"lab-3>lab-4":[[910,499],[1173,236]],"lab-4>lab-5":[[1173,236],[1231,178],[1520,178]]}};
+
+/* Реальные истории сотрудников. story на узле — рост внутри направления,
+   story на переходе — смена направления. */
+const STORIES = {
+  'lab-5': {mono:'ВД', name:'Васильченко Д.В.', role:'Заведующий отделом лаборатории',
+    text:'Пришёл старшим лаборантом ещё в университете. Через год стал молекулярным биологом, сейчас — заведующий отделом лаборатории.'},
+  'proc-3': {mono:'КН', name:'Коземаслова Н.В.', role:'Руководитель отдела разработки ИИ',
+    text:'Начинала в процессном управлении. Когда открыли отдел разработки ИИ — пригласили его возглавить.'}
+};
+/* история на конкретном переходе между направлениями */
+const EDGE_STORIES = {
+  'lab-s1>sal-ns': {mono:'ДЯ', name:'Данилевская Я.Е.', role:'сменила направление внутри компании',
+    text:'Пришла лаборантом, перешла в секвенирование и стала молекулярным биологом, затем попробовала себя в продажах.'}
+};
+
+/* Соответствие «роль на карте → открытая вакансия».
+   Считается из window.VACANCIES (массив лендинга) — на странице вакансий он уже есть.
+   Автономно файл использует FALLBACK. Ничего не хардкодим руками. */
+const ROLE_VACANCIES = {
+  'lab-1':  ['Лаборант (отдел пробоподготовки)', 'Лаборант'],
+  'lab-s1': ['Лаборант (отдел сервисных научных проектов)'],
+  'ops-1':  ['Специалист по приёму и регистрации биоматериала'],
+  'sal-1':  ['Менеджер по сопровождению клиентов В2С (г. Подольск)',
+             'Менеджер по сопровождению клиентов В2С (МЦ Хабаровск)'],
+  'sal-ns': ['Менеджер по продажам услуг научного сервиса (исследования в молекулярной биологии и генетике)']
+};
+const FALLBACK_VACANCIES = [
+  'Менеджер по продажам услуг научного сервиса (исследования в молекулярной биологии и генетике)',
+  'Менеджер по привлечению клиентов (лабораторное оборудование, реагенты и услуги)',
+  'Заведующий лабораторией молекулярной патологии/Врач КЛД',
+  'Ассистент функциональной диагностики (ЭЭГ/ПСГ)', 'Руководитель направлений патанатомии',
+  'Специалист по приёму и регистрации биоматериала', 'Специалист по NGS',
+  'Менеджер по продажам Raissol (молекулярно-генетические исследования)',
+  'Лаборант (отдел пробоподготовки)', 'Менеджер по продажам лабораторного оборудования',
+  'Лаборант (отдел сервисных научных проектов)', 'Рабочий по хозяйственной части',
+  'Врач акушер-гинеколог', 'Врач ультразвуковой диагностики',
+  'Медицинская сестра (медицинский брат) функциональной диагностики (Ростов-на-Дону)',
+  'Менеджер по сопровождению клиентов В2С (г. Подольск)', 'Рентгенолаборант (Хабаровск)',
+  'Врач функциональной диагностики (Хабаровск)', 'Врач ультразвуковой диагностики (Хабаровск)',
+  'Врач-гастроэнтеролог/эндоскопист (Хабаровск)', 'Врач-невролог (Хабаровск)',
+  'Врач акушер-гинеколог с УЗИ (Хабаровск)', 'Врач-кардиолог (Хабаровск)',
+  'Врач-терапевт (Хабаровск)', 'Медицинская сестра (МЦ Хабаровск)',
+  'Менеджер по сопровождению клиентов В2С (МЦ Хабаровск)', 'Лаборант',
+  'Менеджер по продажам оборудования и услуг научного и клинического сервиса в СНГ регионе',
+  'PHP-программист (Yii2)'
+].map(t => ({title:t}));
+
 (function(){
   "use strict";
-  const SVGNS = "http://www.w3.org/2000/svg";
+  const SVGNS="http://www.w3.org/2000/svg";
   const el = id => document.getElementById(id);
   const svg = el('map');
-
-  const ICON = {"lab": "🧪", "rnd": "🧬", "hr": "👥", "fin": "📊", "proc": "🤖", "cs": "💬", "tech": "⚙️", "eng": "🔧", "ops": "📦"};
-  const LINES = [
-    { key:"tech", name:"Технологии и производство", short:"Технологии", hex:"#14B8A6" },
-    { key:"lab", name:"Лаборатория", short:"Лаборатория", hex:"#00AEEF" },
-    { key:"eng", name:"Инженерия и производство", short:"Инженерия", hex:"#64748B" },
-    { key:"rnd", name:"R&D и наука", short:"R&D", hex:"#7C5CFC" },
-    { key:"cs", name:"Клиентский сервис и продажи", short:"Продажи", hex:"#E24A8B" },
-    { key:"proc", name:"Процессы и ИИ", short:"Процессы", hex:"#FF8C42" },
-    { key:"hr", name:"Персонал и управление", short:"Персонал", hex:"#2BB673" },
-    { key:"fin", name:"Финансы и учёт", short:"Финансы", hex:"#F59E0B" },
-    { key:"ops", name:"Приём и качество", short:"Приём", hex:"#EF4444" },
-  ];
-
-  const S=(line,col,name,resp,func,skills,mo,vac,type)=>({id:line+'-'+col,line,col,name,resp,func,skills,mo,vac,type:type||'regular'});
-  const STATIONS = [
-    S("lab",0,"Лаборант","Приём и подготовка биоматериала, ПЦР","Первым встречает образец пациента — принимает и запускает в работу.",[],0,2,"start"),
-    S("lab",1,"Старший лаборант","Секвенирование, контроль качества","Ведёт секвенирование и следит за чистотой данных.",[],12,1,"vacancy"),
-    S("lab",2,"Молекулярный биолог","Исследования, обучение новичков","Превращает пробирку в прочтённый геном.",[],24,0,"regular"),
-    S("lab",3,"Старший молекулярный биолог","Сложные исследования и методики","Ведёт сложные исследования и наставляет биологов.",[],36,0,"regular"),
-    S("lab",4,"Заведующий отделом лаборатории","Руководит отделом лаборатории","Отвечает за работу отдела и развитие команды.",[],54,0,"lead"),
-    S("tech",0,"Старший лаборант (ВПС)","Высокопроизводительное секвенирование","Ведёт высокопроизводительное секвенирование и пробоподготовку.",[],14,0,"start"),
-    S("tech",1,"Молекулярный биолог (ВПС)","Библиотеки и качество NGS","Отвечает за библиотеки и качество данных NGS.",[],26,0,"regular"),
-    S("tech",2,"Заведующий отделом пробоподготовки","Организует участок пробоподготовки","Отвечает за участок пробоподготовки и команду.",[],40,0,"regular"),
-    S("tech",3,"Заместитель заведующего лабораторией по технологиям","Технологии и методики лаборатории","Внедряет и развивает лабораторные технологии.",[],56,0,"regular"),
-    S("tech",4,"Директор по техническому развитию (СТО)","Техническая стратегия компании","Отвечает за технологическое развитие всей компании.",[],84,0,"lead"),
-    S("rnd",0,"Лаборант (НПО)","Эксперименты, отработка методик","Ставит эксперименты и отрабатывает новые методики.",[],0,0,"start"),
-    S("rnd",1,"Старший специалист (НПО)","Разработка и валидация методик","Разрабатывает и валидирует новые методики.",[],18,0,"regular"),
-    S("rnd",2,"Ведущий специалист (НПО)","Проекты разработки","Ведёт проекты разработки от идеи до внедрения.",[],36,0,"regular"),
-    S("rnd",3,"Заместитель руководителя департамента R&D","Развитие R&D-направления","Развивает исследования и разработки компании.",[],60,0,"lead"),
-    S("eng",0,"Инженер-электроник","Обслуживание и ремонт оборудования","Обслуживает и ремонтирует лабораторное оборудование.",[],0,0,"start"),
-    S("eng",1,"Старший инженер-электроник","Сложный ремонт и эксплуатация","Отвечает за сложный ремонт и приборный парк.",[],24,0,"regular"),
-    S("eng",2,"Заместитель руководителя отдела производства, эксплуатации и ремонта","Эксплуатация и ремонт производства","Руководит эксплуатацией и ремонтом производственной базы.",[],54,0,"lead"),
-    S("cs",0,"Лаборант (сервисные научные проекты)","Лабораторная часть сервисных проектов","Ведёт лабораторную часть сервисных научных проектов.",[],18,0,"start"),
-    S("cs",1,"Менеджер по сопровождению клиентов B2C","Поддержка и сопровождение клиентов","Сопровождает клиентов и помогает на всех этапах.",[],0,1,"regular"),
-    S("cs",2,"Старший молекулярный биолог (сервисные научные проекты)","Научная часть сервисных проектов","Отвечает за научную часть сервисных проектов.",[],36,0,"regular"),
-    S("cs",3,"Менеджер по сопровождению B2C/B2B/B2D","Работа с B2C, B2B и B2D","Ведёт клиентов всех сегментов — от людей до партнёров.",[],18,0,"regular"),
-    S("cs",4,"Менеджер по продажам услуг научного сервиса","Продажи услуг научного сервиса","Продаёт услуги научного сервиса — исследования в молекулярной биологии и генетике.",[],30,0,"regular"),
-    S("cs",5,"Ведущий менеджер по сопровождению","Ключевые клиенты и наставничество","Ведёт ключевых клиентов и обучает команду.",[],36,0,"regular"),
-    S("cs",6,"Продакт-менеджер направления продаж продукции для молекулярно-биологических исследований","Продуктовая линейка для исследований","Развивает продуктовую линейку для молекулярно-биологических исследований.",[],42,0,"regular"),
-    S("cs",7,"Руководитель отдела прикладных решений и клиентской поддержки","Развитие клиентских решений","Отвечает за прикладные решения и клиентскую поддержку.",[],60,0,"lead"),
-    S("proc",0,"Специалист по процессному управлению","Описывает и оптимизирует процессы","Наводит порядок в процессах и находит, что улучшить.",[],0,0,"start"),
-    S("proc",1,"Ведущий специалист по процессному управлению","Проектирует и автоматизирует процессы","Проектирует процессы и внедряет автоматизацию, в т.ч. на ИИ.",[],24,0,"regular"),
-    S("proc",2,"Руководитель отдела разработки ИИ","Развивает ИИ-инструменты компании","Возглавляет разработку решений на основе ИИ.",[],54,0,"regular"),
-    S("proc",3,"Заместитель директора департамента процессного управления и развития","Развитие процессов и управления","Развивает процессы и управление как заместитель директора департамента.",[],66,0,"lead"),
-    S("hr",0,"Менеджер по персоналу","Подбор и сопровождение сотрудников","Помогает людям найти место в компании и вырасти.",[],0,1,"start"),
-    S("hr",1,"Ведущий менеджер по персоналу","Ключевые HR-процессы","Ведёт ключевые процессы найма и адаптации.",[],18,0,"regular"),
-    S("hr",2,"Руководитель ОКС","Отдел кадрового сопровождения","Руководит кадровым сопровождением компании.",[],42,0,"regular"),
-    S("hr",3,"Оперативный директор","Операционное управление","Отвечает за операционное управление компанией.",[],78,0,"regular"),
-    S("hr",4,"Директор департамента процессного управления и развития","Департамент процессного управления","Возглавляет департамент процессного управления и развития.",[],90,0,"regular"),
-    S("hr",5,"Директор по персоналу","Вся работа с персоналом","Отвечает за всю работу с персоналом компании.",[],54,0,"regular"),
-    S("hr",6,"Заместитель генерального директора по управлению персоналом холдинга","Персонал на уровне холдинга","Управляет персоналом на уровне холдинга.",[],96,0,"lead"),
-    S("fin",0,"Финансовый контролёр","Контроль финансовых операций","Следит за корректностью финансовых операций.",[],0,0,"start"),
-    S("fin",1,"Заместитель руководителя отдела первичного учёта","Первичный учёт и документация","Отвечает за первичный учёт и документацию.",[],30,0,"regular"),
-    S("fin",2,"Экономист по управленческому учёту","Управленческий учёт и отчётность","Ведёт управленческий учёт и готовит отчётность.",[],18,0,"regular"),
-    S("fin",3,"Руководитель отдела управленческого учёта","Управленческий учёт компании","Отвечает за управленческий учёт всей компании.",[],48,0,"lead"),
-    S("ops",0,"Специалист по приёму биоматериала","Приём и регистрация биоматериала","Принимает и регистрирует образцы пациентов.",[],0,1,"start"),
-    S("ops",1,"Старший специалист по приёму биоматериала","Контроль приёма и разбора","Контролирует приём и разбор биоматериала.",[],18,0,"regular"),
-    S("ops",2,"Руководитель отдела проборазбора","Руководит проборазбором","Отвечает за отдел проборазбора и качество приёма.",[],42,0,"regular"),
-    S("ops",3,"Офис-менеджер","Порядок в офисе, помощь командам","Держит офис в порядке и помогает командам.",[],0,0,"regular"),
-    S("ops",4,"Специалист отдела СМК","Система менеджмента качества","Ведёт систему менеджмента качества (СМК).",[],24,0,"regular"),
-    S("ops",5,"Ведущий специалист отдела СМК","Ключевые процессы СМК","Отвечает за ключевые процессы системы качества.",[],42,0,"lead"),
-  ];
-  const byId = Object.fromEntries(STATIONS.map(s=>[s.id,s]));
-  const VAC = STATIONS.filter(s=>s.vac>0);
-  const totalVac = VAC.reduce((n,s)=>n+s.vac,0);
-  const MAXC={}; LINES.forEach(l=> MAXC[l.key]=Math.max.apply(null, STATIONS.filter(s=>s.line===l.key).map(s=>s.col)));
-  const lineColor = key => LINES.find(l=>l.key===key).hex;
-  const isLead = s => s.col===MAXC[s.line];
-
-  /* реальная история роста прямо на карте — на станции-вершине лаборатории */
-  byId['lab-4'].story = {mono:'ВД', name:'Васильченко Д.В.', role:'Заведующий отделом лаборатории',
-    text:'Пришёл старшим лаборантом ещё в университете. Через год стал молекулярным биологом, сейчас — заведующий отделом лаборатории.'};
-
-  /* ===== ГЕОМЕТРИЯ: пересекающиеся линии. У каждой свой старт (слева) и финиш (справа) ===== */
-  const ROUTES = {
-    lab: [[200, 540], [700, 540], [820, 420], [1300, 420]],
-    tech: [[380, 420], [490, 420], [750, 160], [1300, 160]],
-    rnd: [[200, 780], [315, 780], [805, 290], [1300, 290]],
-    eng: [[200, 1160], [220, 1160], [900, 480], [1300, 480]],
-    cs: [[200, 660], [760, 660], [880, 540], [1300, 540]],
-    proc: [[200, 290], [445, 290], [935, 780], [1300, 780]],
-    hr: [[200, 160], [220, 160], [960, 900], [1300, 900]],
-    fin: [[200, 900], [875, 900], [1025, 1050], [1300, 1050]],
-    ops: [[200, 1030], [925, 1030], [1075, 1180], [1300, 1180]],
-  };
-  const SHORT = {"lab-0": "Лаборант", "lab-1": "Ст. лаборант", "lab-2": "Молбиолог", "lab-3": "Ст. молбиолог", "lab-4": "Зав. отделом лаб.", "tech-0": "Ст. лаборант (ВПС)", "tech-1": "Молбиолог (ВПС)", "tech-2": "Зав. пробоподгот.", "tech-3": "Зам. зав. лаб.", "tech-4": "Дир. тех. развития", "rnd-0": "Лаборант (НПО)", "rnd-1": "Ст. спец. (НПО)", "rnd-2": "Вед. спец. (НПО)", "rnd-3": "Зам. рук. R&D", "eng-0": "Инженер-электроник", "eng-1": "Ст. инженер", "eng-2": "Зам. рук. произв.", "cs-0": "Лаборант (серв.)", "cs-1": "Менеджер B2C", "cs-2": "Ст. молбиолог (серв.)", "cs-3": "Менеджер B2B/B2D", "cs-4": "Продажи науч. сервиса", "cs-5": "Вед. менеджер", "cs-6": "Продакт-менеджер", "cs-7": "Рук. прикл. решений", "proc-0": "Спец. по процессам", "proc-1": "Вед. спец. процессов", "proc-2": "Рук. разработки ИИ", "proc-3": "Зам. директора ПУР", "hr-0": "Менеджер по персоналу", "hr-1": "Вед. менеджер HR", "hr-2": "Рук. ОКС", "hr-3": "Оперативный директор", "hr-4": "Директор ПУР", "hr-5": "Директор по персоналу", "hr-6": "Зам. ген. директора", "fin-0": "Фин. контролёр", "fin-1": "Зам. рук. перв. учёта", "fin-2": "Экономист упр. учёта", "fin-3": "Рук. упр. учёта", "ops-0": "Спец. приёма", "ops-1": "Ст. спец. приёма", "ops-2": "Рук. проборазбора", "ops-3": "Офис-менеджер", "ops-4": "Спец. СМК", "ops-5": "Вед. спец. СМК"};
-  const FIT = {"lab-0": "новичку после вуза: точная работа руками, войти в диагностику с нуля", "lab-1": "кто освоил рутину и готов отвечать за секвенирование и качество", "lab-2": "кто хочет вести исследования и обучать новичков", "lab-3": "опытным биологам: сложные исследования и наставничество", "lab-4": "кто хочет руководить отделом, а не только исследовать", "tech-0": "кто хочет углубиться в высокопроизводительное секвенирование", "tech-1": "кто любит NGS и сложные библиотеки", "tech-2": "кто готов отвечать за участок и команду", "tech-3": "кто хочет внедрять технологии и методики", "tech-4": "кто мыслит стратегически и хочет отвечать за технологии", "rnd-0": "кто любит эксперименты и отработку методик", "rnd-1": "кто готов разрабатывать и валидировать методики", "rnd-2": "кто хочет вести проекты от идеи до внедрения", "rnd-3": "кто хочет определять, какие методы появятся завтра", "eng-0": "кто дружит с электроникой и держит приборы в строю", "eng-1": "кто готов брать сложную технику и учить младших", "eng-2": "кто хочет вырасти в управление производством", "cs-0": "кто хочет совмещать лабораторию и сервисные проекты", "cs-1": "кто любит общение и помощь клиентам", "cs-2": "опытным биологам: сервисные научные проекты", "cs-3": "кто готов работать со всеми сегментами клиентов", "cs-4": "биологам, кто хочет перейти в продажи науч. сервиса", "cs-5": "кто ведёт ключевых клиентов и учит команду", "cs-6": "кто хочет отвечать за продукт и продажи", "cs-7": "кто хочет отвечать за клиентские продукты целиком", "proc-0": "кто любит наводить порядок в процессах", "proc-1": "кто хочет проектировать процессы и внедрять ИИ", "proc-2": "кто хочет возглавить разработку ИИ-инструментов", "proc-3": "кто хочет вырасти в управление департаментом", "hr-0": "кто хочет работать с людьми: подбор и адаптация", "hr-1": "кто готов вести ключевые процессы найма", "hr-2": "кто хочет руководить кадровым сопровождением", "hr-3": "кто хочет отвечать за операционное управление", "hr-4": "кто хочет возглавить департамент ПУиР", "hr-5": "кто хочет отвечать за HR-стратегию компании", "hr-6": "кто видит себя в топ-управлении персоналом", "fin-0": "внимательным к цифрам: контроль операций", "fin-1": "кто любит порядок в документах и учёте", "fin-2": "кто любит аналитику и управленческий учёт", "fin-3": "кто хочет видеть финансовую картину целиком", "ops-0": "аккуратным: войти в лабораторию с приёма образцов", "ops-1": "кто готов контролировать приём и разбор", "ops-2": "кто хочет отвечать за отдел и качество приёма", "ops-3": "кто любит порядок и хочет войти с офисной роли", "ops-4": "кто ценит стандарты и качество", "ops-5": "кто хочет вырасти в эксперта по качеству"};
-  const COORD = {
-    'lab-0':[200, 540],
-    'lab-1':[430, 540],
-    'lab-2':[660, 540],
-    'lab-3':[1013, 420],
-    'lab-4':[1300, 420],
-    'tech-0':[380, 420],
-    'tech-1':[594, 316],
-    'tech-2':[786, 160],
-    'tech-3':[1043, 160],
-    'tech-4':[1300, 160],
-    'rnd-0':[200, 780],
-    'rnd-1':[309, 780],
-    'rnd-2':[866, 290],
-    'rnd-3':[1300, 290],
-    'eng-0':[200, 1160],
-    'eng-1':[655, 725],
-    'eng-2':[1300, 480],
-    'cs-0':[200, 660],
-    'cs-1':[364, 660],
-    'cs-2':[528, 660],
-    'cs-3':[612, 660],
-    'cs-4':[829, 591],
-    'cs-5':[972, 540],
-    'cs-6':[1136, 540],
-    'cs-7':[1300, 540],
-    'proc-0':[200, 290],
-    'proc-1':[735, 580],
-    'proc-2':[886, 731],
-    'proc-3':[1300, 780],
-    'hr-0':[200, 160],
-    'hr-1':[451, 391],
-    'hr-2':[537, 477],
-    'hr-3':[703, 643],
-    'hr-4':[869, 809],
-    'hr-5':[1136, 900],
-    'hr-6':[1300, 900],
-    'fin-0':[200, 900],
-    'fin-1':[587, 900],
-    'fin-2':[946, 971],
-    'fin-3':[1300, 1050],
-    'ops-0':[200, 1030],
-    'ops-1':[432, 1030],
-    'ops-2':[665, 1030],
-    'ops-3':[897, 1030],
-    'ops-4':[1070, 1175],
-    'ops-5':[1300, 1180],
-  };
-  const POS = {}; for(const id in COORD) POS[id]={x:COORD[id][0], y:COORD[id][1]};
-  const X = s => POS[s.id].x, Y = s => POS[s.id].y;
-  const LP = {"lab-0": "up", "lab-1": "down", "lab-2": "up", "lab-3": "down", "lab-4": "right", "tech-0": "up", "tech-1": "down", "tech-2": "up", "tech-3": "down", "tech-4": "right", "rnd-0": "up", "rnd-1": "down", "rnd-2": "up", "rnd-3": "right", "eng-0": "up", "eng-1": "down", "eng-2": "right", "cs-0": "up", "cs-1": "down", "cs-2": "up", "cs-3": "down", "cs-4": "up", "cs-5": "down", "cs-6": "up", "cs-7": "right", "proc-0": "up", "proc-1": "down", "proc-2": "up", "proc-3": "right", "hr-0": "up", "hr-1": "down", "hr-2": "up", "hr-3": "down", "hr-4": "up", "hr-5": "down", "hr-6": "right", "fin-0": "up", "fin-1": "down", "fin-2": "up", "fin-3": "right", "ops-0": "up", "ops-1": "down", "ops-2": "up", "ops-3": "down", "ops-4": "up", "ops-5": "right"};
-
-  /* пересадочные узлы = перекрёстки линий, с живой историей */
-  const HUBS = [
-    { x:770, y:324, lines:["lab", "tech"], title:"Лаборатория ↔ технологии", note:"Освоив секвенирование, из лаборатории переходят в NGS-технологии и производство.", story:{mono:"ДЯ",name:"Данилевская Я.Е.",role:"сменила направление внутри компании",text:"Пришла лаборантом, перешла в секвенирование и стала молекулярным биологом, затем — сменила направление."}, edges:[["lab-2", "tech-1"]] },
-    { x:555, y:540, lines:["lab", "rnd"], title:"Лаборатория ↔ R&D", note:"С позиций лаборатории уходят в научно-производственный отдел и разработку методик.", edges:[["lab-0", "rnd-0"]] },
-    { x:740, y:423, lines:["eng", "tech"], title:"Технологии ↔ инженерия", note:"Из инженерии и эксплуатации переходят в технологии и производство лаборатории — приборы и методики рядом.", edges:[["eng-1", "tech-1"]] },
-    { x:776, y:840, lines:["ops", "cs"], title:"Приём ↔ лаборатория и продажи", note:"С приёма биоматериала переходят в лабораторию и клиентский сервис — образец начинает путь здесь.", edges:[["ops-1", "lab-1"]] },
-    { x:742, y:772, lines:["fin", "hr"], title:"Финансы ↔ управление", note:"Финансовый учёт и управление сходятся в большом руководстве компании.", edges:[["fin-1", "hr-3"]] },
-    { x:350, y:290, lines:["proc", "hr"], title:"Процессы ↔ управление", note:"Процессное управление и HR сходятся в большом управлении: департамент процессного управления и развития.", story:{mono:"КН",name:"Коземаслова Н.В.",role:"Руководитель отдела разработки ИИ",text:"Начинала в процессном управлении. Когда открыли отдел разработки ИИ — пригласили его возглавить."}, edges:[["proc-1", "hr-2"]] },
-  ];
-
-  const DEPT = {"lab": {"does": "Принимает биоматериал и превращает его в прочитанный геном.", "fit": ["точная работа руками", "видимый результат: образец → анализ", "освоить секвенирование с нуля"]}, "tech": {"does": "Развивает технологии лаборатории: NGS, методики, автоматизация, техническое развитие.", "fit": ["интересны приборы и технологии", "внедрять методики", "техническое лидерство"]}, "rnd": {"does": "Разработка и валидация методик, исследовательские проекты, R&D компании.", "fit": ["разрабатывать и проверять", "наука и новые методики", "доводить идею до внедрения"]}, "eng": {"does": "Обслуживание, эксплуатация и ремонт приборного парка и производства.", "fit": ["дружите с электроникой", "любите чинить и настраивать", "рост в управление производством"]}, "cs": {"does": "Клиенты B2C/B2B/B2D, прикладные решения, продажи продукции и услуг научного сервиса.", "fit": ["общение и помощь клиентам", "долгие отношения", "продукты и продажи"]}, "proc": {"does": "Процессное управление, автоматизация и разработка решений на основе ИИ.", "fit": ["порядок в процессах", "автоматизация и ИИ", "от процессов к ИИ"]}, "hr": {"does": "Подбор и сопровождение сотрудников, ОКС, рост до операционного и HR-директора.", "fit": ["люди и их развитие", "процессы найма", "управление"]}, "fin": {"does": "Финансовый контроль, управленческий и первичный учёт, отчётность.", "fit": ["внимательны к цифрам", "учёт и аналитика", "финансовая картина целиком"]}, "ops": {"does": "Приём и регистрация биоматериала, проборазбор, офис и система менеджмента качества (СМК).", "fit": ["порядок и точность", "ответственность за поток", "качество и стандарты"]}};
-  const TAG = {"lab": "от пробирки до заключения", "tech": "технологии и производство", "rnd": "из идеи — в методику", "eng": "приборы всегда в строю", "cs": "клиенты и продажи", "proc": "от процессов — к ИИ", "hr": "люди и управление", "fin": "финансы и учёт", "ops": "приём и качество"};
-
-  function make(tag, attrs){ const e=document.createElementNS(SVGNS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
-  function plural(n,one,few,many){ const d=n%10,w=n%100; return (w>=11&&w<=14)?many:(d===1?one:(d>=2&&d<=4?few:many)); }
+  const make=(tag,attrs)=>{const e=document.createElementNS(SVGNS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);return e;};
   const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const plural=(n,a,b,c)=>{const d=n%10,w=n%100;return (w>=11&&w<=14)?c:(d===1?a:(d>=2&&d<=4?b:c));};
 
-  const defs = make('defs',{}); svg.appendChild(defs);
+  const ICON={"lab": "🧪", "rnd": "🧬", "hr": "👥", "fin": "📊", "proc": "🤖", "sales": "💬", "tech": "⚙️", "ops": "📦"};
+  const LINES=MAP.lines, NODES=MAP.nodes, EDGES=MAP.edges;
+  const byId=Object.fromEntries(NODES.map(n=>[n.id,n]));
+  const lineOf=k=>LINES.find(l=>l.key===k);
+  const color=k=>lineOf(k).hex;
+  NODES.forEach(n=>{ n.story=STORIES[n.id]||null; });
 
-  /* три этапа над картой: старт → рост → мечта */
+  /* --- граф --- */
+  const out={}, inn={};
+  NODES.forEach(n=>{out[n.id]=[];inn[n.id]=[];});
+  EDGES.forEach(([a,b])=>{ out[a].push(b); inn[b].push(a); });
+  const isSwitch=(a,b)=>byId[a].line!==byId[b].line;
+  const isStart = n => inn[n.id].length===0;
+  const isTop   = n => out[n.id].length===0;
+  const isFork  = n => out[n.id].length>1;
+  const isMerge = n => inn[n.id].length>1;
+  const hasSwitchIn = n => inn[n.id].some(p=>isSwitch(p,n.id));
+
+  /* --- вакансии: считаем из массива лендинга, не хардкодим --- */
+  const norm=s=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,' ').trim();
+  const VSRC=(window.VACANCIES&&window.VACANCIES.length)?window.VACANCIES:FALLBACK_VACANCIES;
+  const vTitles=VSRC.map(v=>norm(v.title));
+  NODES.forEach(n=>{
+    const keys=(ROLE_VACANCIES[n.id]||[]).map(norm);
+    n.vac=vTitles.filter(t=>keys.indexOf(t)>=0).length;
+  });
+  const VAC=NODES.filter(n=>n.vac>0);
+  const onMapVac=VAC.reduce((s,n)=>s+n.vac,0);
+  const totalVac=VSRC.length;
+
+  const X=n=>n.x, Y=n=>n.y;
+
+  /* ================= отрисовка ================= */
+  const defs=make('defs',{}); svg.appendChild(defs);
   (function(){
-    const a=make('text',{x:200, y:60, class:'term','text-anchor':'start'}); a.textContent='Старт работы'; svg.appendChild(a);
-    const c=make('text',{x:690, y:60, class:'term','text-anchor':'middle'}); c.textContent='Карьерный рост'; svg.appendChild(c);
-    const b=make('text',{x:1200, y:60, class:'term','text-anchor':'end'}); b.textContent='Должность мечты'; svg.appendChild(b);
+    const a=make('text',{x:257,y:58,class:'term','text-anchor':'start'}); a.textContent='Роли, с которых начинают'; svg.appendChild(a);
+    const b=make('text',{x:1613,y:58,class:'term','text-anchor':'end'}); b.textContent='Вершина трека'; svg.appendChild(b);
   })();
 
-  /* ---- линии ---- */
-  /* v3: большие плавные дуги вместо прямых углов — как на настоящей схеме метро */
-  const CURVE = 120;
-  function curved(pts, R){
+  /* «хребет» каждой линии — самая длинная цепочка: для бегущего огонька и подсветки */
+  function longestChain(key){
+    const ns=NODES.filter(n=>n.line===key);
+    const memo={};
+    const walk=id=>{ if(memo[id])return memo[id];
+      let best=[id];
+      out[id].forEach(nx=>{ if(byId[nx].line!==key)return;
+        const c=[id].concat(walk(nx)); if(c.length>best.length)best=c; });
+      return memo[id]=best; };
+    let best=[]; ns.forEach(n=>{ const c=walk(n.id); if(c.length>best.length)best=c; });
+    return best;
+  }
+  const SPINE={}; LINES.forEach(l=>SPINE[l.key]=longestChain(l.key));
+
+  const lineLayer=make('g',{}); svg.appendChild(lineLayer);
+  /* геометрия рёбер посчитана заранее и лежит в данных: каждое ребро — кусок
+     ломаной своей линии, поэтому линии идут по диагоналям и честно пересекаются */
+  /* большие плавные сопряжения вместо прямых углов — как на настоящей схеме метро */
+  const CURVE=85;
+  function curved(pts,R){
     if(pts.length<3) return 'M '+pts.map(p=>p[0]+' '+p[1]).join(' L ');
     let d='M '+pts[0][0]+' '+pts[0][1];
     for(let i=1;i<pts.length-1;i++){
-      const a=pts[i-1], b=pts[i], c=pts[i+1];
-      const v1=[a[0]-b[0],a[1]-b[1]], v2=[c[0]-b[0],c[1]-b[1]];
-      const l1=Math.hypot(v1[0],v1[1])||1, l2=Math.hypot(v2[0],v2[1])||1;
-      const r=Math.min(R, l1*0.46, l2*0.46);
+      const a=pts[i-1],b=pts[i],c=pts[i+1];
+      const v1=[a[0]-b[0],a[1]-b[1]],v2=[c[0]-b[0],c[1]-b[1]];
+      const l1=Math.hypot(v1[0],v1[1])||1,l2=Math.hypot(v2[0],v2[1])||1;
+      const r=Math.min(R,l1*0.46,l2*0.46);
       d+=' L '+(b[0]+v1[0]/l1*r).toFixed(1)+' '+(b[1]+v1[1]/l1*r).toFixed(1);
       d+=' Q '+b[0]+' '+b[1]+' '+(b[0]+v2[0]/l2*r).toFixed(1)+' '+(b[1]+v2[1]/l2*r).toFixed(1);
     }
     const e=pts[pts.length-1];
     return d+' L '+e[0]+' '+e[1];
   }
-  function linePath(key){ return curved(ROUTES[key], CURVE); }
-  const RUNLIGHTS=[];
-  LINES.forEach(l=>{
-    const d=linePath(l.key);
-    svg.appendChild(make('path',{d, class:'mline mline--halo','data-line':l.key, stroke:l.hex,'stroke-width':20}));
-    /* белая обойма под цветом: на пересечениях линии «расступаются» и появляется воздух */
-    svg.appendChild(make('path',{d, class:'mline mline--casing','data-line':l.key, stroke:'#F7FAFD','stroke-width':17}));
-    const p=make('path',{d, id:'path-'+l.key, class:'mline','data-line':l.key, stroke:l.hex,'stroke-width':9});
-    svg.appendChild(p);
-    const light=make('circle',{r:5, class:'runlight','data-line':l.key});
-    svg.appendChild(light);
-    RUNLIGHTS.push({el:light, path:p, len:p.getTotalLength(), t:Math.random(), speed:0.05+Math.random()*0.03});
+  const edgePath = (a,b) => curved(MAP.edgePaths[a+'>'+b], CURVE);
+  function polyPoints(d){ const n=d.match(/-?[\d.]+/g).map(Number), p=[];
+    for(let i=0;i<n.length;i+=2) p.push([n[i],n[i+1]]); return p; }
+  function splitPoly(pts,frac){
+    const seg=pts.slice(1).map((p,i)=>Math.hypot(p[0]-pts[i][0],p[1]-pts[i][1]));
+    const cut=seg.reduce((s,l)=>s+l,0)*frac;
+    let acc=0,a=[pts[0]],b=null;
+    for(let i=0;i<seg.length;i++){
+      if(!b && acc+seg[i]>=cut){
+        const t=seg[i]?(cut-acc)/seg[i]:0;
+        const c=[pts[i][0]+(pts[i+1][0]-pts[i][0])*t, pts[i][1]+(pts[i+1][1]-pts[i][1])*t];
+        a.push(c); b=[c,pts[i+1]];
+      } else if(b) b.push(pts[i+1]); else a.push(pts[i+1]);
+      acc+=seg[i];
+    }
+    const D=p=>p.map((q,i)=>(i?'L':'M')+q[0].toFixed(1)+' '+q[1].toFixed(1)).join(' ');
+    return [D(a), D(b||[pts[pts.length-1],pts[pts.length-1]])];
+  }
+  /* рёбра «хребта» помечаем, чтобы спираль ДНК подменяла именно их */
+  const spineEdge={};
+  LINES.forEach(l=>SPINE[l.key].forEach((id,i,ch)=>{ if(i) spineEdge[ch[i-1]+'>'+id]=l.key; }));
+
+  EDGES.forEach(([a,b])=>{
+    const sw=isSwitch(a,b), d=edgePath(a,b);
+    const src=byId[a].line, dst=byId[b].line, col=color(src);
+    const sp=spineEdge[a+'>'+b];
+    const mark=p=>{ p.setAttribute('data-line',src); p.setAttribute('data-line2',dst);
+      if(sp) p.setAttribute('data-spine',sp); return p; };
+    if(!sw){
+      lineLayer.appendChild(mark(make('path',{d,class:'mline mline--halo',stroke:col,'stroke-width':20})));
+      lineLayer.appendChild(mark(make('path',{d,class:'mline mline--casing',stroke:'#F7FAFD','stroke-width':17})));
+      lineLayer.appendChild(mark(make('path',{d,class:'mline',stroke:col,'stroke-width':9})));
+    } else {
+      const [solid,dash]=splitPoly(polyPoints(d),0.6);
+      lineLayer.appendChild(mark(make('path',{d:solid,class:'mline mline--halo',stroke:col,'stroke-width':16})));
+      lineLayer.appendChild(mark(make('path',{d:solid,class:'mline',stroke:col,'stroke-width':9})));
+      lineLayer.appendChild(mark(make('path',{d:dash,class:'mline mline--switch',stroke:'#0F172A','stroke-width':4.5})));
+    }
   });
 
-  /* станции подтягиваются на изогнутую линию, чтобы не «сползали» на дугах */
-  function snap(pe,x,y){
-    const len=pe.getTotalLength(); let bl=0,bd=1e18;
-    for(let l=0;l<=len;l+=5){ const p=pe.getPointAtLength(l);
-      const d=(p.x-x)*(p.x-x)+(p.y-y)*(p.y-y); if(d<bd){bd=d;bl=l;} }
-    for(let step=2.5; step>0.2; step/=2)
-      for(const s2 of [bl-step,bl+step]){
-        if(s2<0||s2>len) continue;
-        const p=pe.getPointAtLength(s2), d=(p.x-x)*(p.x-x)+(p.y-y)*(p.y-y);
-        if(d<bd){bd=d;bl=s2;}
-      }
-    return pe.getPointAtLength(bl);
-  }
-  LINES.forEach(l=>{ const pe=document.getElementById('path-'+l.key);
-    STATIONS.filter(s2=>s2.line===l.key).forEach(s2=>{
-      const p=snap(pe, POS[s2.id].x, POS[s2.id].y); POS[s2.id].x=p.x; POS[s2.id].y=p.y; }); });
-  HUBS.forEach(h=>{ const pe=document.getElementById('path-'+h.lines[0]);
-    const p=snap(pe,h.x,h.y); h.x=p.x; h.y=p.y; });
-  (function(){
-    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  /* бегущие огоньки по хребтам линий */
+  const RUN=[];
+  LINES.forEach(l=>{
+    const ch=SPINE[l.key]; if(ch.length<2) return;
+    const d=ch.map((id,i)=>(i?'L':'M')+byId[id].x+' '+byId[id].y).join(' ');
+    const ghost=make('path',{d,fill:'none',stroke:'none'}); lineLayer.appendChild(ghost);
+    const light=make('circle',{r:4.5,class:'runlight','data-line':l.key,stroke:l.hex,'stroke-width':2.4}); svg.appendChild(light);
+    RUN.push({el:light,path:ghost,len:ghost.getTotalLength(),t:Math.random(),speed:.05+Math.random()*.03});
+  });
+  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     let last=performance.now();
-    function loop(now){ const dt=Math.min(0.05,(now-last)/1000); last=now;
-      RUNLIGHTS.forEach(r=>{ r.t=(r.t+dt*r.speed)%1; const pt=r.path.getPointAtLength(r.len*r.t);
-        r.el.setAttribute('cx', pt.x.toFixed(1)); r.el.setAttribute('cy', pt.y.toFixed(1)); });
-      requestAnimationFrame(loop);
-    } requestAnimationFrame(loop);
-  })();
+    (function loop(now){ const dt=Math.min(.05,(now-last)/1000); last=now;
+      RUN.forEach(r=>{ r.t=(r.t+dt*r.speed)%1; const p=r.path.getPointAtLength(r.len*r.t);
+        r.el.setAttribute('cx',p.x.toFixed(1)); r.el.setAttribute('cy',p.y.toFixed(1)); });
+      requestAnimationFrame(loop); })(last);
+  }
 
-  /* длина каждой станции вдоль её линии — для построения маршрута по рельсам */
-  LINES.forEach(l=>{ const pe=document.getElementById('path-'+l.key), tot=pe.getTotalLength();
-    STATIONS.filter(s=>s.line===l.key).forEach(s=>{ let best=0,bd=1e9;
-      for(let L=0;L<=tot;L+=4){ const p=pe.getPointAtLength(L); const dx=p.x-X(s),dy=p.y-Y(s),d=dx*dx+dy*dy; if(d<bd){bd=d;best=L;} }
-      s.len=best; }); });
-
-  const routeLayer = make('g',{class:'route-layer'}); svg.appendChild(routeLayer);
-
-  /* ---- спираль ДНК при наведении на линию ---- */
-  const helixG = make('g', {}); helixG.style.opacity='0'; helixG.style.pointerEvents='none'; helixG.style.transition='opacity .28s ease';
-  const strandA = make('path',{fill:'none','stroke-linecap':'round','stroke-width':3.2});
-  const strandB = make('path',{fill:'none','stroke-linecap':'round','stroke-width':3.2});
+  /* спираль ДНК при наведении на линию */
+  const helixG=make('g',{}); helixG.style.cssText='opacity:0;pointer-events:none;transition:opacity .28s ease';
+  const strandA=make('path',{fill:'none','stroke-linecap':'round','stroke-width':3.2});
+  const strandB=make('path',{fill:'none','stroke-linecap':'round','stroke-width':3.2});
   helixG.appendChild(strandA); helixG.appendChild(strandB);
-  const RUNGS=[]; for(let i=0;i<90;i++){ const ln=make('line',{'stroke-linecap':'round'}); helixG.appendChild(ln); RUNGS.push(ln); }
+  const RUNGS=[]; for(let i=0;i<110;i++){const ln=make('line',{'stroke-linecap':'round'});helixG.appendChild(ln);RUNGS.push(ln);}
   svg.appendChild(helixG);
-  function samplePath(pathEl){ const len=pathEl.getTotalLength(), step=6, arr=[];
-    for(let d=0; d<=len; d+=step){ const p=pathEl.getPointAtLength(d), p2=pathEl.getPointAtLength(Math.min(len,d+1));
-      let nx=-(p2.y-p.y), ny=(p2.x-p.x); const nl=Math.hypot(nx,ny)||1; arr.push({x:p.x,y:p.y,nx:nx/nl,ny:ny/nl,d}); }
+  const spinePaths={};
+  LINES.forEach(l=>{ const ch=SPINE[l.key]; if(ch.length<2)return;
+    const d=ch.map((id,i)=>(i?'L':'M')+byId[id].x+' '+byId[id].y).join(' ');
+    const p=make('path',{d,fill:'none',stroke:'none'}); lineLayer.appendChild(p); spinePaths[l.key]=p; });
+  function sample(pe){ const len=pe.getTotalLength(),arr=[];
+    for(let d=0;d<=len;d+=6){ const p=pe.getPointAtLength(d),p2=pe.getPointAtLength(Math.min(len,d+1));
+      let nx=-(p2.y-p.y),ny=(p2.x-p.x); const nl=Math.hypot(nx,ny)||1; arr.push({x:p.x,y:p.y,nx:nx/nl,ny:ny/nl,d}); }
     return arr; }
-  let hxSamples=null;
-  function drawHelix(phase, hex){
-    const A=13, kw=2*Math.PI/46; let a='',b='',ri=0;
-    hxSamples.forEach((s,i)=>{ const off=Math.sin(kw*s.d+phase);
-      a+=(i===0?'M':'L')+(s.x+s.nx*A*off).toFixed(1)+' '+(s.y+s.ny*A*off).toFixed(1)+' ';
-      b+=(i===0?'M':'L')+(s.x-s.nx*A*off).toFixed(1)+' '+(s.y-s.ny*A*off).toFixed(1)+' '; });
+  let hx=null,hxS=null,hxPhase=0,hxRAF=null,hxLast=0;
+  function drawHelix(phase,hex){ const A=13,kw=2*Math.PI/46; let a='',b='',ri=0;
+    hxS.forEach((s,i)=>{ const off=Math.sin(kw*s.d+phase);
+      a+=(i?'L':'M')+(s.x+s.nx*A*off).toFixed(1)+' '+(s.y+s.ny*A*off).toFixed(1)+' ';
+      b+=(i?'L':'M')+(s.x-s.nx*A*off).toFixed(1)+' '+(s.y-s.ny*A*off).toFixed(1)+' '; });
     strandA.setAttribute('d',a); strandB.setAttribute('d',b);
-    for(let i=3;i<hxSamples.length && ri<RUNGS.length;i+=4,ri++){ const s=hxSamples[i];
-      const ang=kw*s.d+phase, off=Math.sin(ang), asv=Math.abs(off), front=Math.cos(ang)>0, ln=RUNGS[ri];
+    for(let i=3;i<hxS.length&&ri<RUNGS.length;i+=4,ri++){ const s=hxS[i],ang=kw*s.d+phase,off=Math.sin(ang),
+      av=Math.abs(off),front=Math.cos(ang)>0,ln=RUNGS[ri];
       ln.setAttribute('x1',(s.x+s.nx*A*off).toFixed(1)); ln.setAttribute('y1',(s.y+s.ny*A*off).toFixed(1));
       ln.setAttribute('x2',(s.x-s.nx*A*off).toFixed(1)); ln.setAttribute('y2',(s.y-s.ny*A*off).toFixed(1));
-      ln.setAttribute('stroke',hex); ln.setAttribute('stroke-width',(1.3+1.7*asv).toFixed(1));
-      ln.setAttribute('opacity',((front?0.35:0.15)+0.6*asv).toFixed(2)); }
-    for(;ri<RUNGS.length;ri++) RUNGS[ri].setAttribute('opacity','0');
-  }
-  let hxLine=null, hxPhase=0, hxRAF=null, hxLast=0;
-  function hxActivate(key){
-    if(hxLine===key) return; hxDeactivate();
-    const l=LINES.find(x=>x.key===key); if(!l) return; hxLine=key;
-    hxSamples = samplePath(document.getElementById('path-'+key));
-    document.querySelectorAll('.mline[data-line="'+key+'"]').forEach(n=>n.style.opacity='0');
-    const rl=document.querySelector('.runlight[data-line="'+key+'"]'); if(rl) rl.style.opacity='0';
+      ln.setAttribute('stroke',hex); ln.setAttribute('stroke-width',(1.3+1.7*av).toFixed(1));
+      ln.setAttribute('opacity',((front?.35:.15)+.6*av).toFixed(2)); }
+    for(;ri<RUNGS.length;ri++) RUNGS[ri].setAttribute('opacity','0'); }
+  function hxOn(key){ if(hx===key||!spinePaths[key])return; hxOff(); hx=key; hxS=sample(spinePaths[key]);
+    const l=lineOf(key);
+    document.querySelectorAll('.mline[data-spine="'+key+'"]').forEach(n=>n.style.opacity='0');
+    const rl=document.querySelector('.runlight[data-line="'+key+'"]'); if(rl)rl.style.opacity='0';
     strandA.setAttribute('stroke',l.hex); strandB.setAttribute('stroke',l.hex);
     strandA.style.filter=strandB.style.filter='drop-shadow(0 0 5px '+l.hex+'80)';
-    helixG.style.opacity='1';
-    if(!hxRAF){ hxLast=performance.now(); hxRAF=requestAnimationFrame(hxLoop); }
-  }
-  function hxDeactivate(){
-    if(!hxLine) return;
-    document.querySelectorAll('.mline[data-line="'+hxLine+'"]').forEach(n=>n.style.opacity='');
-    const rl=document.querySelector('.runlight[data-line="'+hxLine+'"]'); if(rl) rl.style.opacity='';
-    hxLine=null; helixG.style.opacity='0'; if(hxRAF){ cancelAnimationFrame(hxRAF); hxRAF=null; }
-  }
-  function hxLoop(now){ const dt=Math.min(0.05,(now-hxLast)/1000); hxLast=now; hxPhase+=dt*2.2;
-    drawHelix(hxPhase, lineColor(hxLine)); hxRAF = hxLine ? requestAnimationFrame(hxLoop) : null; }
+    helixG.style.opacity='1'; if(!hxRAF){hxLast=performance.now();hxRAF=requestAnimationFrame(hxLoop);} }
+  function hxOff(){ if(!hx)return;
+    document.querySelectorAll('.mline[data-spine="'+hx+'"]').forEach(n=>n.style.opacity='');
+    const rl=document.querySelector('.runlight[data-line="'+hx+'"]'); if(rl)rl.style.opacity='';
+    hx=null; helixG.style.opacity='0'; if(hxRAF){cancelAnimationFrame(hxRAF);hxRAF=null;} }
+  function hxLoop(now){ const dt=Math.min(.05,(now-hxLast)/1000); hxLast=now; hxPhase+=dt*2.2;
+    drawHelix(hxPhase,color(hx)); hxRAF=hx?requestAnimationFrame(hxLoop):null; }
   if(window.matchMedia('(hover:hover) and (pointer:fine)').matches){
-    svg.addEventListener('pointermove', e=>{
-      const pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY;
+    svg.addEventListener('pointermove',e=>{ const pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY;
       const p=pt.matrixTransform(svg.getScreenCTM().inverse());
-      let best=null, bd=1e9;
-      STATIONS.forEach(s=>{ const dx=p.x-X(s), dy=p.y-Y(s), d=dx*dx+dy*dy; if(d<bd){ bd=d; best=s; } });
-      (best && bd < 5200) ? hxActivate(best.line) : hxDeactivate();
+      let best=null,bd=1e9; NODES.forEach(n=>{const dx=p.x-n.x,dy=p.y-n.y,d=dx*dx+dy*dy;if(d<bd){bd=d;best=n;}});
+      (best&&bd<5200)?hxOn(best.line):hxOff(); });
+    svg.addEventListener('pointerleave',hxOff);
+  }
+
+  const routeLayer=make('g',{class:'route-layer'}); svg.appendChild(routeLayer);
+
+  /* после скругления станции подтягиваются на дугу, чтобы не сползали с линии */
+  (function(){
+    const probe=make('path',{fill:'none',stroke:'none'}); svg.appendChild(probe);
+    const near={}; EDGES.forEach(([a,b])=>{ (near[a]=near[a]||[]).push([a,b]); (near[b]=near[b]||[]).push([a,b]); });
+    NODES.forEach(n=>{
+      const es=near[n.id]||[]; let bp=null,bd=1e18;
+      es.forEach(([a,b])=>{ probe.setAttribute('d',edgePath(a,b));
+        const len=probe.getTotalLength();
+        for(let l=0;l<=len;l+=5){ const p=probe.getPointAtLength(l);
+          const d=(p.x-n.x)*(p.x-n.x)+(p.y-n.y)*(p.y-n.y); if(d<bd){bd=d;bp=p;} } });
+      if(bp && bd<900){ n.x=bp.x; n.y=bp.y; }
     });
-    svg.addEventListener('pointerleave', hxDeactivate);
-  }
+    svg.removeChild(probe);
+  })();
 
-  /* ---- пересадочные узлы ---- */
-  HUBS.forEach((h,i)=>{
-    const cols=h.lines.map(lineColor);
-    const grad=make('linearGradient',{id:'hg'+i, gradientUnits:'userSpaceOnUse', x1:h.x-16,y1:h.y-16,x2:h.x+16,y2:h.y+16});
-    grad.appendChild(make('stop',{offset:'0%','stop-color':cols[0]}));
-    grad.appendChild(make('stop',{offset:'55%','stop-color':cols[Math.floor(cols.length/2)]}));
-    grad.appendChild(make('stop',{offset:'100%','stop-color':cols[cols.length-1]}));
-    defs.appendChild(grad);
-    const g=make('g',{class:'hub','data-hub':i, tabindex:0, role:'button'});
-    g.appendChild(make('circle',{cx:h.x, cy:h.y, r:27, class:'hub__halo', fill:'none', stroke:'url(#hg'+i+')','stroke-width':2.4}));
-    g.appendChild(make('circle',{cx:h.x, cy:h.y, r:34, class:'st__hit'}));
-    g.appendChild(make('circle',{cx:h.x, cy:h.y, r:25, class:'hub__r', stroke:'url(#hg'+i+')','stroke-width':6}));g.appendChild(make('circle',{cx:h.x, cy:h.y, r:16, class:'hub__r2', fill:'none', stroke:'url(#hg'+i+')','stroke-width':3}));
-    const ic=make('text',{x:h.x, y:h.y+7, class:'hub__i', fill:cols[Math.floor(cols.length/2)]}); ic.textContent='⇄'; g.appendChild(ic);
-    // маркер живой истории — иконка человечка на пересадке
-    if(h.story){
-      const bx=h.x+22, by=h.y-22;
-      g.appendChild(make('circle',{cx:bx, cy:by, r:9, class:'hub-story', fill:'#0A2540', stroke:'#fff','stroke-width':2}));
-      const ig=make('g',{transform:'translate('+(bx-6)+','+(by-6)+') scale(0.5)', fill:'none', stroke:'#fff','stroke-width':2.6,'stroke-linecap':'round','stroke-linejoin':'round'});
-      ig.appendChild(make('path',{d:'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'}));
-      ig.appendChild(make('circle',{cx:12, cy:7, r:4}));
-      ig.setAttribute('pointer-events','none'); g.appendChild(ig);
+  /* --- станции --- */
+  NODES.forEach(n=>{
+    const col=color(n.line), top=isTop(n);
+    const g=make('g',{class:'st','data-id':n.id,tabindex:0,role:'button'});
+    g.appendChild(make('circle',{cx:n.x,cy:n.y,r:22,class:'st__hit'}));
+    if(n.vac>0) g.appendChild(make('circle',{cx:n.x,cy:n.y,r:11,class:'st__vachalo',fill:'none',stroke:col,'stroke-width':2.4}));
+    const big = isFork(n)||hasSwitchIn(n);
+    if(big){
+      g.appendChild(make('circle',{cx:n.x,cy:n.y,r:24,class:'st__ring',stroke:col,'stroke-width':6,fill:'#fff'}));
+      g.appendChild(make('circle',{cx:n.x,cy:n.y,r:15,fill:'none',stroke:col,'stroke-width':3,opacity:.55}));
+    } else {
+      g.appendChild(make('circle',{cx:n.x,cy:n.y,r:top?13:11,class:'st__ring',stroke:col,'stroke-width':top?4:3.4,fill:'#fff'}));
     }
-    svg.appendChild(g); g._hub=h;
-    g.addEventListener('pointerenter', ()=>showTipFor(g, hubTipHTML(h)));
-    g.addEventListener('pointerleave', hideTip);
-    g.addEventListener('click', ()=>openHub(h));
+    if(isStart(n)){                       /* входная станция носит значок направления */
+      g.appendChild(make('circle',{cx:n.x,cy:n.y,r:16,fill:'#fff',stroke:col,'stroke-width':3.4}));
+      const em=make('text',{x:n.x,y:n.y+5.5,class:'st__icon'}); em.textContent=ICON[n.line]||''; g.appendChild(em);
+    }
+    else if(!big && (top||n.vac>0)) g.appendChild(make('circle',{cx:n.x,cy:n.y,r:top?5:6,fill:col}));
+    /* подпись — полное название должности, разбитое на строки; сторона выбрана
+       автоматически при расчёте геометрии, чтобы ничего не наезжало */
+    const L=n.lines, LH=15.5, h=L.length*LH;
+    let lx,ly,anc;
+    if(n.lp==='left'){      lx=n.x-18; anc='end';    ly=n.y-h/2+12; }
+    else if(n.lp==='right'){lx=n.x+18; anc='start';  ly=n.y-h/2+12; }
+    else if(n.lp==='down'){ lx=n.x;    anc='middle'; ly=n.y+20+12; }
+    else {                  lx=n.x;    anc='middle'; ly=n.y-20-h+12; }
+    const lb=make('text',{class:'st__label',x:lx,y:ly,'text-anchor':anc});
+    L.forEach((line,li)=>{ const ts=make('tspan',{x:lx, dy:li?LH:0}); ts.textContent=line; lb.appendChild(ts); });
+    g.appendChild(lb);
+    svg.appendChild(g); g._node=n;
+    g.addEventListener('pointerenter',()=>showTip(g,nodeTip(n)));
+    g.addEventListener('pointerleave',hideTip);
   });
 
-  /* ---- станции ---- */
-  STATIONS.forEach(s=>{
-    const x=X(s), y=Y(s), col=lineColor(s.line), lead=isLead(s), lp=LP[s.id]||'up';
-    const g=make('g',{class:'st'+(s.vac>0?' has-vac':''), 'data-id':s.id, tabindex:0});
-    g.appendChild(make('circle',{cx:x, cy:y, r:22, class:'st__hit'}));
-    if(s.vac>0) g.appendChild(make('circle',{cx:x, cy:y, r:11, class:'st__vachalo', fill:'none', stroke:col,'stroke-width':2.4}));
-    const rr = lead ? 13 : 11;
-    g.appendChild(make('circle',{cx:x, cy:y, r:rr, class:'st__ring', stroke:col,'stroke-width': lead?4:3.4, fill:'#fff'}));
-    if(s.col===0){       /* входная станция линии носит её иконку */
-      g.appendChild(make('circle',{cx:x, cy:y, r:16, fill:'#fff', stroke:col,'stroke-width':3.4}));
-      const em=make('text',{x:x, y:y+5.5, class:'st__icon'}); em.textContent=ICON[s.line]||''; g.appendChild(em);
-    }
-    else if(lead)        g.appendChild(make('circle',{cx:x, cy:y, r:5, class:'st__core', fill:col}));
-    else if(s.vac>0)     g.appendChild(make('circle',{cx:x, cy:y, r:6, class:'st__core', fill:col}));
-
-    const lb=make('text',{class:'st__label'});
-    if(lp==='left'){ lb.setAttribute('x',x-16); lb.setAttribute('y',y+4); lb.setAttribute('text-anchor','end'); }
-    else if(lp==='right'){ lb.setAttribute('x',x+16); lb.setAttribute('y',y+4); lb.setAttribute('text-anchor','start'); }
-    else if(lp==='down'){ lb.setAttribute('x',x); lb.setAttribute('y',y+28); lb.setAttribute('text-anchor','middle'); }
-    else { lb.setAttribute('x',x); lb.setAttribute('y',y-20); lb.setAttribute('text-anchor','middle'); }
-    lb.textContent=(SHORT[s.id]||s.name); g.appendChild(lb);
-    g.addEventListener('pointerenter', ()=>showTipFor(g, stationTipHTML(s)));
-    g.addEventListener('pointerleave', hideTip);
-    svg.appendChild(g); g._station=s;
+  /* --- бейджи: развилка ⑂ и пересадка ⇄ --- */
+  NODES.forEach(n=>{
+    const fork=isFork(n), sw=hasSwitchIn(n);
+    if(!fork&&!sw) return;
+    const bx=n.x+(n.lp==='right'?-26:26), by=n.y+(n.lp==='down'?-22:22), col=sw?'#0F172A':color(n.line);
+    const g=make('g',{class:'badge'});
+    g.appendChild(make('circle',{cx:bx,cy:by,r:12,class:'badge__halo',fill:'none',stroke:col,'stroke-width':1.8}));
+    g.appendChild(make('circle',{cx:bx,cy:by,r:11,class:'badge__c',fill:col}));
+    const ic=make('g',{fill:'none',stroke:'#fff','stroke-width':1.7,'stroke-linecap':'round','stroke-linejoin':'round',
+      transform:'translate('+(bx-6)+','+(by-6)+') scale(1.2)','pointer-events':'none'});
+    if(sw){ ic.appendChild(make('path',{d:'M1 3.2h7.4M6.4 1.2l2 2-2 2M9 6.8H1.6M3.6 4.8l-2 2 2 2'})); }
+    else  { ic.appendChild(make('path',{d:'M5 10V6M5 6L1.6 2.4M5 6l3.4-3.6'})); }
+    g.appendChild(ic);
+    svg.appendChild(g);
   });
 
-  /* ---- всплывающие подсказки ---- */
-  function storyBlock(st, hex){
+  /* --- тултипы --- */
+  function storyHTML(st,hex){
     return '<div class="tip-story"><span class="tip-ava" style="background:linear-gradient(135deg,'+hex+',#00C2FF)">'+esc(st.mono)+'</span>'+
-      '<div><b>'+esc(st.name)+'</b><i>'+esc(st.role)+'</i></div></div>'+
-      '<div class="tip-quote">«'+esc(st.text)+'»</div>';
+      '<div><b>'+esc(st.name)+'</b><i>'+esc(st.role)+'</i></div></div><div class="tip-quote">«'+esc(st.text)+'»</div>';
   }
-  function stationTipHTML(s){
-    let h='<b class="tip-name">'+esc(s.name)+'</b><div class="tip-note">'+esc(s.func)+'</div>';
-    if(FIT[s.id]) h+='<div class="tip-fit"><b>Кому подойдёт:</b> '+esc(FIT[s.id])+'</div>';
-    if(s.vac>0) h+='<div class="tip-vac">'+s.vac+' ваканс'+plural(s.vac,'ия','ии','ий')+' открыто</div>';
-    if(s.story) h+=storyBlock(s.story, lineColor(s.line));
+  function nodeTip(n){
+    let h='<b class="tip-name">'+esc(n.name)+'</b><div class="tip-note">'+esc(n.resp)+'</div>';
+    h+='<div class="tip-fit"><b>Кому подойдёт:</b> '+esc(n.fit)+'</div>';
+    if(isFork(n)) h+='<div class="tip-vac">⑂ Развилка — отсюда путь расходится в '+out[n.id].length+' стороны</div>';
+    if(hasSwitchIn(n)) h+='<div class="tip-vac">⇄ Сюда переходят из другого направления</div>';
+    if(n.vac>0) h+='<div class="tip-vac">'+n.vac+' ваканс'+plural(n.vac,'ия','ии','ий')+' открыто</div>';
+    const es=inn[n.id].map(p=>EDGE_STORIES[p+'>'+n.id]).filter(Boolean)[0];
+    if(n.story) h+=storyHTML(n.story,color(n.line));
+    else if(es) h+=storyHTML(es,color(n.line));
     return h;
   }
-  function hubTipHTML(h){
-    let s='<b class="tip-name">⇄ '+esc(h.title)+'</b><div class="tip-note">'+esc(h.note)+'</div>';
-    if(h.story) s+=storyBlock(h.story, lineColor(h.lines[h.lines.length-1]));
-    return s;
-  }
   const tip=el('tip'), stageEl=el('stage');
-  function showTipFor(g, html){ if(!html||!tip) return;
+  function showTip(g,html){ if(!html)return;
     const sr=g.getBoundingClientRect(), pr=stageEl.getBoundingClientRect();
     tip.innerHTML=html; tip.classList.add('show'); tip.classList.remove('tip--below');
-    const th=tip.offsetHeight, tw=tip.offsetWidth, gap=12, pad=10;
-    let cx=sr.left+sr.width/2-pr.left;
-    cx=Math.max(tw/2+pad, Math.min(pr.width-tw/2-pad, cx));
+    const th=tip.offsetHeight,tw=tip.offsetWidth,pad=10;
+    let cx=sr.left+sr.width/2-pr.left+stageEl.scrollLeft;
+    cx=Math.max(tw/2+pad,Math.min(stageEl.scrollWidth-tw/2-pad,cx));
     tip.style.left=cx+'px';
     const topRel=sr.top-pr.top;
-    if(topRel - th - gap < 4){ tip.classList.add('tip--below'); tip.style.top=(sr.bottom-pr.top)+'px'; }
-    else { tip.style.top=topRel+'px'; }
+    if(topRel-th-12<4){ tip.classList.add('tip--below'); tip.style.top=(sr.bottom-pr.top)+'px'; }
+    else tip.style.top=topRel+'px';
   }
-  function hideTip(){ if(tip) tip.classList.remove('show'); }
+  function hideTip(){ tip.classList.remove('show'); }
 
-  /* ===== панель ===== */
-  const panelBody = el('panelBody');
+  /* ================= панель ================= */
+  const panelBody=el('panelBody');
+  const FORKS=NODES.filter(isFork);
+  const SWITCHES=EDGES.filter(([a,b])=>isSwitch(a,b));
+
   function showDefault(){
     clearHiring();
     panelBody.innerHTML=
       '<div class="p-default">'+
-        '<div class="p-stats"><div class="p-stat p-stat--vac"><b data-count="'+totalVac+'">0</b><span>открытых позиций</span></div>'+
-        '<div class="p-stat"><b>'+LINES.length+'</b><span>направлений</div></div>'+
-        '<div class="p-invite">Слева — старт работы, справа — должность мечты. Наведите на станцию, чтобы узнать о роли, на <b>пересадку&nbsp;⇄</b> — увидеть живую историю роста. Или постройте маршрут между любыми ролями наверху.</div>'+
+        '<div class="p-stats">'+
+          '<div class="p-stat p-stat--vac"><b data-count="'+onMapVac+'">0</b><span>ролей с набором на карте</span></div>'+
+          '<div class="p-stat"><b>'+NODES.length+'</b><span>реальных ролей</span></div>'+
+          '<div class="p-stat"><b>'+LINES.length+'</b><span>направлений</span></div>'+
+        '</div>'+
+        '<div class="p-invite">Каждая линия — отдельное направление, каждая точка — реальная роль, а каждая связь между ними — путь, который у нас <b>кто-то уже прошёл</b>. Выберите направление наверху или постройте маршрут между любыми двумя ролями.</div>'+
         '<button class="btn btn--primary" id="seeVac">Показать, где сейчас нанимают</button>'+
       '</div>';
-    countUp(panelBody.querySelector('[data-count]'), totalVac);
+    countUp(panelBody.querySelector('[data-count]'),onMapVac);
     el('seeVac').onclick=showVacancies;
   }
   function showVacancies(){
     highlightHiring();
-    panelBody.innerHTML=
-      '<div class="routecard"><div class="route__h">Открытые позиции · '+totalVac+'</div>'+
-      '<ul class="vac-list">'+VAC.map(s=>'<li class="vac-item" data-goto="'+s.id+'">'+
-        '<span class="vdot" style="background:'+lineColor(s.line)+'"></span>'+
-        '<b>'+s.name+'</b><span>'+s.vac+' ваканс'+plural(s.vac,'ия','ии','ий')+'</span></li>').join('')+'</ul>'+
+    panelBody.innerHTML='<div class="routecard"><div class="route__h">Роли с открытым набором</div>'+
+      '<ul class="vac-list">'+VAC.map(n=>'<li class="vac-item" data-goto="'+n.id+'">'+
+        '<span class="vdot" style="background:'+color(n.line)+'"></span><b>'+esc(n.name)+'</b>'+
+        '<span>'+n.vac+' ваканс'+plural(n.vac,'ия','ии','ий')+'</span></li>').join('')+'</ul>'+
+      '<div class="card__fit" style="margin-top:14px"><span>Это роли, которые есть на карте карьеры. Всего в компании сейчас открыто <b>'+totalVac+'</b> вакансий — весь список в разделе «Открытые позиции».</span></div>'+
       '<button class="btn btn--ghost" id="vacBack" style="width:100%;margin-top:12px">← Назад</button></div>';
-    [...panelBody.querySelectorAll('.vac-item')].forEach(li=>li.onclick=()=>openStation(byId[li.dataset.goto]));
-    el('vacBack').onclick=()=>{ clearHiring(); showDefault(); };
+    [...panelBody.querySelectorAll('.vac-item')].forEach(li=>li.onclick=()=>openNode(byId[li.dataset.goto]));
+    el('vacBack').onclick=()=>{clearHiring();showDefault();};
   }
-  function highlightHiring(){ VAC.forEach(s=>{ const g=document.querySelector('.st[data-id="'+s.id+'"]'); if(g) g.classList.add('hiring'); }); }
+  function highlightHiring(){ VAC.forEach(n=>{const g=document.querySelector('.st[data-id="'+n.id+'"]'); if(g)g.classList.add('hiring');}); }
   function clearHiring(){ document.querySelectorAll('.st.hiring').forEach(g=>g.classList.remove('hiring')); }
 
-  function showLine(key){
-    const l=LINES.find(x=>x.key===key), hex=l.hex, d=DEPT[key];
+  function openNode(n){
+    const col=color(n.line), l=lineOf(n.line), reserve=n.vac===0;
+    const nexts=out[n.id].map(id=>byId[id]);
+    const prevs=inn[n.id].map(id=>byId[id]);
+    const es=inn[n.id].map(p=>EDGE_STORIES[p+'>'+n.id]).filter(Boolean)[0];
+    const st=n.story||es;
     panelBody.innerHTML=
-      '<div class="linecard">'+
-      '<div class="card__tag" style="color:'+hex+'"><span class="dot" style="background:'+hex+'"></span>'+l.name+'</div>'+
-      '<div class="card__title">'+l.name+'</div>'+
-      '<div class="card__resp">'+TAG[key]+'.</div>'+
-      '<div class="dept" style="--lc:'+hex+'">'+
-        '<h4>Чем занимается направление</h4><p>'+d.does+'</p>'+
-        '<h4>Вам подойдёт, если</h4><ul>'+d.fit.map(f=>'<li>'+f+'</li>').join('')+'</ul>'+
+      '<div class="card2"><div>'+
+        '<div class="card__tag" style="color:'+col+'"><span class="dot" style="background:'+col+'"></span>'+esc(l.name)+'</div>'+
+        '<div class="card__title">'+esc(n.name)+'</div>'+
+        '<div class="card__resp">'+esc(n.resp)+'</div>'+
+        '<div class="card__fit"><b>Кому подойдёт:</b>&nbsp;'+esc(n.fit)+'</div>'+
+        (prevs.length? '<div class="dept" style="--lc:'+col+'"><h4>Сюда приходят с ролей</h4><ul>'+
+          prevs.map(p=>'<li>'+esc(p.name)+(isSwitch(p.id,n.id)?' <b style="color:'+color(p.line)+'">⇄ другое направление</b>':'')+'</li>').join('')+'</ul></div>':'')+
+        (nexts.length? '<div class="dept" style="--lc:'+col+'"><h4>'+(nexts.length>1?'Отсюда путь расходится':'Следующая роль')+'</h4><ul>'+
+          nexts.map(p=>'<li>'+esc(p.name)+'</li>').join('')+'</ul></div>'
+          : '<div class="dept" style="--lc:'+col+'"><h4>Вершина трека</h4><p>Дальше по этому направлению у нас пока никто не поднимался — но маршруты не заканчиваются на схеме.</p></div>')+
+        (st?'<div class="story-note"><span class="tip-ava" style="background:linear-gradient(135deg,'+col+',#00C2FF)">'+esc(st.mono)+'</span>'+
+          '<span><b>'+esc(st.name)+'</b> — '+esc(st.role)+'.<br>«'+esc(st.text)+'»</span></div>':'')+
+      '</div><div class="card2__aside">'+
+        '<div class="metric">'+
+          '<div class="m-vac '+(reserve?'m-vac--zero':'')+'"><b data-count="'+n.vac+'">0</b><span>'+(reserve?'нет открытых':'открытых вакансий')+'</span></div>'+
+          '<div><b>'+(prevs.length+nexts.length)+'</b><span>связей на карте</span></div>'+
+        '</div>'+
+        '<div class="card__cta">'+
+          '<button class="btn btn--primary '+(reserve?'is-reserve':'')+'" id="cardApply">'+(reserve?'В кадровый резерв':'Откликнуться')+'</button>'+
+          (nexts.length?'<button class="btn btn--ghost" id="cardPath">Путь наверх</button>':'')+
+        '</div>'+
+      '</div></div>';
+    countUp(panelBody.querySelector('[data-count]'),n.vac);
+    el('cardApply').onclick=goApply;
+    const cp=el('cardPath'); if(cp) cp.onclick=()=>{ const t=topFrom(n.id);
+      el('fromSel').value=n.id; fillTo(n.id); el('toSel').value=t; runRoute(); };
+  }
+  function topFrom(id){ let cur=id, guard=0;
+    while(out[cur].length&&guard++<50) cur=out[cur][0];
+    return cur; }
+
+  function showLine(key){
+    const l=lineOf(key);
+    const ns=NODES.filter(n=>n.line===key);
+    const chains=ns.filter(isStart).length;
+    panelBody.innerHTML='<div class="linecard">'+
+      '<div class="card__tag" style="color:'+l.hex+'"><span class="dot" style="background:'+l.hex+'"></span>'+esc(l.name)+'</div>'+
+      '<div class="card__title">'+esc(l.name)+'</div>'+
+      '<div class="card__resp">'+esc(l.tag)+'.</div>'+
+      '<div class="dept" style="--lc:'+l.hex+'">'+
+        '<h4>Чем занимается направление</h4><p>'+esc(l.does)+'</p>'+
+        '<h4>Вам подойдёт, если</h4><ul>'+l.fit.map(f=>'<li>'+esc(f)+'</li>').join('')+'</ul>'+
       '</div>'+
-      '<div class="card__cta" style="margin-top:18px"><button class="btn btn--primary" id="lineRoute">Показать весь путь</button></div>'+
-      '</div>';
-    el('lineRoute').onclick=()=>{ el('fromSel').value=key+'-0'; el('toSel').value=lastOf(key); runRoute(); };
+      '<div class="metric" style="margin-top:18px"><div><b>'+ns.length+'</b><span>ролей</span></div>'+
+        '<div><b>'+chains+'</b><span>'+plural(chains,'точка входа','точки входа','точек входа')+'</span></div></div>'+
+      '<div class="card__cta"><button class="btn btn--primary" id="lineRoute">Показать путь целиком</button></div></div>';
+    el('lineRoute').onclick=()=>{ const ch=SPINE[key];
+      el('fromSel').value=ch[0]; fillTo(ch[0]); el('toSel').value=ch[ch.length-1]; runRoute(); };
   }
 
   function focusLine(key){
-    clearHiring();
-    routeLayer.innerHTML=''; svg.classList.remove('routing');
+    clearHiring(); routeLayer.innerHTML=''; svg.classList.remove('routing');
     document.querySelectorAll('.st.on-route').forEach(g=>g.classList.remove('on-route'));
-    [...el('filters').children].forEach(c=>c.classList.toggle('is-on', c.dataset.line===key));
+    [...el('filters').children].forEach(c=>c.classList.toggle('is-on',c.dataset.line===key));
     document.querySelectorAll('.mline,.runlight').forEach(n=>{
-      const on = n.getAttribute('data-line')===key;
-      if(n.classList.contains('mline--halo')) n.style.opacity = on?'':'0';
-      else { n.style.opacity = on?'':'.12'; if(n.classList.contains('mline')) n.setAttribute('stroke-width', on?11:9); }
+      const on=n.getAttribute('data-line')===key||n.getAttribute('data-line2')===key;
+      if(n.classList.contains('mline--halo')) n.style.opacity=on?'':'0';
+      else n.style.opacity=on?'':'.09';
     });
-    document.querySelectorAll('.st[data-id]').forEach(g=>g.classList.toggle('faded', g._station.line!==key));
-    document.querySelectorAll('.hub').forEach(g=>g.classList.toggle('dim', g._hub.lines.indexOf(key)<0));
-    const path=document.getElementById('path-'+key);
-    if(path){ try{ const len=path.getTotalLength();
-      path.style.transition='none'; path.style.strokeDasharray=len; path.style.strokeDashoffset=len;
-      requestAnimationFrame(()=>{ path.style.transition='stroke-dashoffset .9s cubic-bezier(.22,1,.36,1)'; path.style.strokeDashoffset='0'; });
-    }catch(e){} }
-    STATIONS.filter(s=>s.line===key).sort((a,b)=>a.col-b.col).forEach((s,i)=>{
-      const g=document.querySelector('.st[data-id="'+s.id+'"]'); if(!g) return;
+    document.querySelectorAll('.st[data-id]').forEach(g=>g.classList.toggle('faded',g._node.line!==key));
+    document.querySelectorAll('.badge').forEach(g=>g.style.opacity='.25');
+    NODES.filter(n=>n.line===key).forEach((n,i)=>{
+      const g=document.querySelector('.st[data-id="'+n.id+'"]'); if(!g)return;
       g.classList.remove('pop'); void g.getBoundingClientRect();
-      g.style.animationDelay=(0.4+i*0.1)+'s'; g.classList.add('pop');
-      g.addEventListener('animationend', ()=>{ g.classList.remove('pop'); g.style.animationDelay=''; }, {once:true});
+      g.style.animationDelay=(0.15+i*0.07)+'s'; g.classList.add('pop');
+      g.addEventListener('animationend',()=>{g.classList.remove('pop');g.style.animationDelay='';},{once:true});
     });
     showLine(key);
   }
   function unfocus(){
-    [...el('filters').children].forEach(c=>c.classList.toggle('is-on', c.dataset.line==='all'));
-    document.querySelectorAll('.mline,.runlight').forEach(n=>{ n.style.opacity='';
-      if(n.classList.contains('mline')&&!n.classList.contains('mline--halo')) n.setAttribute('stroke-width','9'); });
-    document.querySelectorAll('.st').forEach(g=>{ g.classList.remove('faded','pop'); g.style.animationDelay=''; });
-    document.querySelectorAll('.hub').forEach(g=>g.classList.remove('dim'));
-    routeLayer.innerHTML=''; svg.classList.remove('routing'); document.querySelectorAll('.st.on-route').forEach(g=>g.classList.remove('on-route'));
+    [...el('filters').children].forEach(c=>c.classList.toggle('is-on',c.dataset.line==='all'));
+    document.querySelectorAll('.mline,.runlight').forEach(n=>n.style.opacity='');
+    document.querySelectorAll('.st').forEach(g=>{g.classList.remove('faded','pop');g.style.animationDelay='';});
+    document.querySelectorAll('.badge').forEach(g=>g.style.opacity='');
+    routeLayer.innerHTML=''; svg.classList.remove('routing');
+    document.querySelectorAll('.st.on-route').forEach(g=>g.classList.remove('on-route'));
     showDefault();
   }
-  el('filters').addEventListener('click', e=>{ const c=e.target.closest('.chip'); if(!c) return;
-    c.dataset.line==='all' ? unfocus() : focusLine(c.dataset.line); });
 
-  /* ---- карточки ---- */
-  function openStation(s){
-    const col=lineColor(s.line), lname=LINES.find(l=>l.key===s.line).name;
-    const grow = s.mo===0 ? 'старт' : (s.mo<12? s.mo+' мес.' : ruYears(s.mo));
-    const reserve = s.vac===0;
-    panelBody.innerHTML =
-      '<div class="card2"><div>'+
-        '<div class="card__tag" style="color:'+col+'"><span class="dot" style="background:'+col+'"></span>'+lname+'</div>'+
-        '<div class="card__title">'+s.name+'</div>'+
-        '<div class="card__resp">'+s.resp+'</div>'+
-        '<div class="card__skills">'+s.skills.map(k=>'<span class="card__skill">'+k+'</span>').join('')+'</div>'+
-      '</div><div class="card2__aside">'+
-        '<div class="card__meta" style="border:none;padding:0;margin:0 0 16px">'+
-          '<div class="card__grow"><b>'+grow+'</b><span>средний рост</span></div>'+
-          '<div class="card__vac '+(reserve?'card__vac--zero':'')+'"><b data-count="'+s.vac+'">0</b><span>'+(reserve?'нет открытых':'открытых вакансий')+'</span></div>'+
-        '</div>'+
-        '<div class="card__cta">'+
-          '<button class="btn btn--primary '+(reserve?'is-reserve':'')+'" id="cardApply">'+(reserve?'В кадровый резерв':'Откликнуться')+'</button>'+
-          '<button class="btn btn--ghost" id="cardPath">Путь</button>'+
-        '</div>'+
-      '</div></div>';
-    countUp(panelBody.querySelector('[data-count]'), s.vac);
-    el('cardApply').onclick=goApply;
-    el('cardPath').onclick=()=>{ el('fromSel').value=s.line+'-0'; el('toSel').value=lastOf(s.line); runRoute(); };
-  }
-  function openHub(h){
-    const hex=lineColor(h.lines[h.lines.length-1]);
-    panelBody.innerHTML=
-      '<div class="hubcard">'+
-      '<div class="card__tag" style="color:#64748B"><span class="dot" style="background:#94A3B8"></span>Пересадка · смена направления</div>'+
-      '<div class="card__title">⇄ '+h.title+'</div>'+
-      '<div class="hub-lines">'+h.lines.map(k=>'<span class="card__skill" style="color:'+lineColor(k)+';font-weight:700">● '+LINES.find(l=>l.key===k).name+'</span>').join('')+'</div>'+
-      '<div class="card__resp" style="margin-top:12px">'+h.note+'</div>'+
-      (h.story ? '<div class="p-note" style="align-items:center"><span class="tip-ava" style="background:linear-gradient(135deg,'+hex+',#00C2FF);width:34px;height:34px;flex:none">'+h.story.mono+'</span>'+
-        '<span><b>'+h.story.name+'</b> — '+h.story.role+'.<br>«'+h.story.text+'»</span></div>' : '')+
-      '<div class="card__cta" style="margin-top:16px"><button class="btn btn--primary" id="cardApply">Хочу так вырасти</button></div>'+
-      '</div>';
-    el('cardApply').onclick=goApply;
-  }
-  function countUp(node, target){ if(!node) return; const t0=performance.now(), dur=650;
+  /* --- фильтры --- */
+  (function(){
+    const f=el('filters');
+    const all=document.createElement('button');
+    all.className='chip is-on'; all.dataset.line='all';
+    all.innerHTML='<span class="dot"></span>Все направления'; f.appendChild(all);
+    LINES.forEach(l=>{ const b=document.createElement('button');
+      b.className='chip'; b.dataset.line=l.key; b.style.setProperty('--cc',l.hex);
+      b.innerHTML='<span class="dot" style="background:'+l.hex+'"></span>'+(ICON[l.key]||'')+' '+l.short; f.appendChild(b); });
+    f.addEventListener('click',e=>{ const c=e.target.closest('.chip'); if(!c)return;
+      c.dataset.line==='all'?unfocus():focusLine(c.dataset.line); });
+  })();
+
+  function countUp(node,target){ if(!node)return; const t0=performance.now(),dur=650;
     (function step(t){ const p=Math.min(1,(t-t0)/dur); node.textContent=Math.round(p*target);
-      if(p<1) requestAnimationFrame(step); })(t0); }
+      if(p<1)requestAnimationFrame(step); })(t0); }
 
-  svg.addEventListener('click', e=>{ const g=e.target.closest('.st'); if(g && g._station){ openStation(g._station); } });
-  svg.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){
-    const st=e.target.closest('.st'); if(st){ e.preventDefault(); openStation(st._station); return; }
-    const hb=e.target.closest('.hub'); if(hb){ e.preventDefault(); openHub(hb._hub); } } });
+  svg.addEventListener('click',e=>{ const g=e.target.closest('.st'); if(g&&g._node) openNode(g._node); });
+  svg.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){
+    const g=e.target.closest('.st'); if(g){e.preventDefault();openNode(g._node);} } });
 
-  /* ---- уровни ролей + НАПРАВЛЕННЫЙ граф (только вверх) ---- */
-  // явный уровень роли (не col: у веток разное число ступеней)
-  const LV = { 'lab-0':0,'lab-1':1,'lab-2':2,'lab-3':3,'lab-4':4,
-    'bioinf-0':0,'bioinf-1':1,'bioinf-2':3,'bioinf-3':4,
-    'ai-0':0,'ai-1':1,'ai-2':3,
-    'it-0':0,'it-1':1,'it-2':3,'it-3':4,
-    'med-0':0,'med-1':1,'med-2':3,'med-3':4 };
-  STATIONS.forEach(s=> s.lv = LV[s.id]);
-  const SWITCH_MO = 12; // «смена направления» на своём уровне ≈ год адаптации
-  const adj = {}; STATIONS.forEach(s=>adj[s.id]=[]);
-  // внутри ветки — только вверх (col N → col N+1), вес = время повышения
-  LINES.forEach(l=>{ const sts=STATIONS.filter(s=>s.line===l.key).sort((a,b)=>a.col-b.col);
-    for(let i=0;i<sts.length-1;i++) adj[sts[i].id].push({to:sts[i+1].id, w:Math.max(6, sts[i+1].mo-sts[i].mo), type:'up'}); });
-  // переход между ветками — только «в бок», строго на своём уровне (никаких скачков через ступень)
-  const ENTRY_PENALTY = 24; // штраф за «рестарт с нуля»: не уводим маршрут в чужую входную роль (Лаборант и т.п.)
-  const byLv={}; STATIONS.forEach(s=>{ (byLv[s.lv]=byLv[s.lv]||[]).push(s); });
-  Object.keys(byLv).forEach(k=>{ const g=byLv[k];
-    for(let i=0;i<g.length;i++) for(let j=0;j<g.length;j++)
-      if(i!==j && g[i].line!==g[j].line) adj[g[i].id].push({to:g[j].id, w:SWITCH_MO+(g[j].lv===0?ENTRY_PENALTY:0), type:'switch'}); });
-  // кратчайший по времени путь на ациклическом «только вверх» графе (Дейкстра)
+  /* ================= маршрут ================= */
+  /* Граф направленный и ациклический. Вес каждого перехода — 1 станция.
+     Никаких месяцев: время роста зависит от человека, а не от схемы. */
   function findRoute(from,to){
-    const dist={}, prev={}; STATIONS.forEach(s=>dist[s.id]=Infinity);
-    dist[from]=0; const pq=[[0,from]], done=new Set();
-    while(pq.length){ pq.sort((a,b)=>a[0]-b[0]); const [d,u]=pq.shift();
-      if(done.has(u)) continue; done.add(u); if(u===to) break;
-      for(const e of adj[u]) if(d+e.w < dist[e.to]){ dist[e.to]=d+e.w; prev[e.to]=u; pq.push([dist[e.to], e.to]); } }
-    if(dist[to]===Infinity) return null;
-    const path=[to]; let cur=to; while(cur!==from){ cur=prev[cur]; if(cur===undefined) return null; path.unshift(cur); }
-    return path;
+    if(from===to) return null;
+    const prev={}, q=[from], seen={[from]:1};
+    while(q.length){ const u=q.shift();
+      for(const v of out[u]) if(!seen[v]){ seen[v]=1; prev[v]=u; if(v===to){ const p=[to]; let c=to;
+        while(c!==from){ c=prev[c]; p.unshift(c); } return p; } q.push(v); } }
+    return null;
   }
-  const lastOf = key => { const s=STATIONS.filter(x=>x.line===key); return s[s.length-1].id; };
+  function reachable(from){ const seen={}, q=[from];
+    while(q.length){ const u=q.shift(); for(const v of out[u]) if(!seen[v]){seen[v]=1;q.push(v);} }
+    return Object.keys(seen); }
 
-  function fillSel(sel){ LINES.forEach(l=>{ const og=document.createElement('optgroup'); og.label=l.name;
-    STATIONS.filter(s=>s.line===l.key).forEach(s=>{ const o=document.createElement('option'); o.value=s.id; o.textContent=s.name; og.appendChild(o); });
-    sel.appendChild(og); }); }
-  fillSel(el('fromSel')); fillSel(el('toSel'));
-  el('fromSel').value='lab-0'; el('toSel').value='lab-4';
+  function optionLabel(n){ return n.name; }
+  function fillFrom(){ const sel=el('fromSel'); sel.innerHTML='';
+    LINES.forEach(l=>{ const ns=NODES.filter(n=>n.line===l.key&&out[n.id].length);
+      if(!ns.length)return; const og=document.createElement('optgroup'); og.label=l.name;
+      ns.forEach(n=>{ const o=document.createElement('option'); o.value=n.id; o.textContent=optionLabel(n); og.appendChild(o); });
+      sel.appendChild(og); }); }
+  function fillTo(fromId){ const sel=el('toSel'); const keep=sel.value; sel.innerHTML='';
+    const ok=new Set(reachable(fromId));
+    LINES.forEach(l=>{ const ns=NODES.filter(n=>n.line===l.key&&ok.has(n.id));
+      if(!ns.length)return; const og=document.createElement('optgroup'); og.label=l.name;
+      ns.forEach(n=>{ const o=document.createElement('option'); o.value=n.id; o.textContent=optionLabel(n); og.appendChild(o); });
+      sel.appendChild(og); });
+    if(!sel.options.length){ const o=document.createElement('option'); o.textContent='— выше по этому треку ролей нет —'; o.value=''; sel.appendChild(o); }
+    else if([...sel.options].some(o=>o.value===keep)) sel.value=keep;
+    else sel.selectedIndex=sel.options.length-1;
+  }
+  fillFrom(); el('fromSel').value='lab-1'; fillTo('lab-1'); el('toSel').value='lab-5';
+  el('fromSel').addEventListener('change',()=>fillTo(el('fromSel').value));
 
-  function ruYears(mo){
-    if(mo<12){ return mo+' '+plural(mo,'месяц','месяца','месяцев'); }
-    const y=Math.max(1, Math.round(mo/12)); return y+' '+plural(y,'год','года','лет'); }
-  function stepTime(mo){ if(mo<12) return mo+' мес.'; const y=mo/12;
-    return Number.isInteger(y) ? ruYears(mo) : y.toFixed(1).replace('.',',')+' года'; }
-  function goApply(){ window.location.hash='reserv'; toast('Переход к анкете →'); }
-
-  /* короткие «отбивки» — тёплая реакция на построенный маршрут */
-  const BLURBS = {
-    pivot:[
-      'Неожиданный карьерный трек — как раз то, что мы любим.',
-      'Сменить направление и продолжить расти? У нас так можно.'
-    ],
-    lead:[
-      'Амбициозная цель — и вполне достижимая. Будем рады поддержать вас на этом пути.',
-      'Дорасти до руководителя — у нас это реальная история, а не мечта.'
-    ],
-    any:[
-      'Интересный выбор — будем рады поддержать вас на этом пути.',
-      'Понятный путь роста — по такому у нас растут многие.',
-      'Хороший маршрут. Начните с отклика — а дальше поможем.',
-      'Нам нравится, когда заглядывают вперёд. Такой путь у нас реально пройти.'
-    ]
+  const BLURBS={
+    pivot:['Смена направления в середине пути — как раз то, что мы любим.',
+           'Перейти на другую линию и продолжить расти? У нас так можно.'],
+    top:['Амбициозная цель — и вполне достижимая. Будем рады поддержать вас на этом пути.',
+         'Дорасти до руководителя — у нас это реальная история, а не мечта.'],
+    any:['Понятный путь роста — по такому у нас растут многие.',
+         'Хороший маршрут. Начните с отклика — дальше поможем.',
+         'Нам нравится, когда заглядывают вперёд. Такой путь у нас реально пройти.']
   };
-  function pickBlurb(path){
-    let pool=BLURBS.any.slice();
-    if(path.some((id,i)=> i>0 && byId[path[i-1]].line!==byId[id].line)) pool=pool.concat(BLURBS.pivot);
-    if(isLead(byId[path[path.length-1]])) pool=pool.concat(BLURBS.lead);
-    return pool[Math.floor(Math.random()*pool.length)];
-  }
+  function blurb(path){ let pool=BLURBS.any.slice();
+    if(path.some((id,i)=>i>0&&isSwitch(path[i-1],id))) pool=pool.concat(BLURBS.pivot);
+    if(isTop(byId[path[path.length-1]])) pool=pool.concat(BLURBS.top);
+    return pool[Math.floor(Math.random()*pool.length)]; }
 
-  /* маршрут рисуется посегментно прямо в runRoute (рельсы + арки-пересадки с белой подложкой) */
+  function noRoute(a,b){
+    routeLayer.innerHTML=''; svg.classList.remove('routing');
+    document.querySelectorAll('.st.on-route').forEach(g=>g.classList.remove('on-route'));
+    panelBody.innerHTML='<div class="routecard"><div class="route__h">Маршрут</div>'+
+      '<div class="route-none"><b>«'+esc(byId[a].name)+'» → «'+esc(byId[b].name)+'»</b><br><br>'+
+      'Такого перехода у нас пока никто не проходил, поэтому мы не рисуем его на схеме — на карте только реальные истории роста. '+
+      'Но наши маршруты не заканчиваются на этой схеме: расскажите о себе, и мы вместе найдём или придумаем роль именно под вас.</div>'+
+      '<div class="card__cta" style="margin-top:16px"><button class="btn btn--primary" id="routeApply">Рассказать о себе</button>'+
+      '<button class="btn btn--ghost" id="routeBack">← Вся карта</button></div></div>';
+    el('routeApply').onclick=goApply; el('routeBack').onclick=()=>unfocus();
+  }
 
   function runRoute(){
     clearHiring();
     let from=el('fromSel').value, to=el('toSel').value;
+    if(!to){ toast('У этой роли нет ролей выше по треку'); return; }
     if(from===to){ toast('Выберите разные роли'); return; }
-    // авто-разворот: карьера всегда снизу вверх
-    let swapped=false;
-    if(byId[to].lv < byId[from].lv){ const t=from; from=to; to=t; swapped=true; }
-    const path=findRoute(from,to); if(!path){ toast('Маршрут не найден — выберите другую пару'); return; }
+    let path=findRoute(from,to), swapped=false;
+    if(!path){ const back=findRoute(to,from); if(back){ path=back; swapped=true; } }
+    if(!path){ noRoute(from,to); return; }
 
     routeLayer.innerHTML=''; svg.classList.add('routing');
     document.querySelectorAll('.st.on-route').forEach(g=>g.classList.remove('on-route'));
-    const nodes=path.map(id=>document.querySelector('.st[data-id="'+id+'"]'));
-    nodes.forEach((g,i)=> g && setTimeout(()=>g.classList.add('on-route'), 200+i*160));
+    path.forEach((id,i)=>{ const g=document.querySelector('.st[data-id="'+id+'"]');
+      if(g) setTimeout(()=>g.classList.add('on-route'),200+i*160); });
 
-    let months=0, li='', delay=0;
+    let li='', delay=0, switches=0;
+    li='<li class="route__step" style="--dotc:'+color(byId[path[0]].line)+'"><b>'+esc(byId[path[0]].name)+'</b><i>старт маршрута</i></li>';
     for(let i=1;i<path.length;i++){
-      const prev=byId[path[i-1]], s=byId[path[i]];
-      const isTransfer = prev.line!==s.line;
-      let d='M '+X(prev).toFixed(1)+' '+Y(prev).toFixed(1);
-      if(!isTransfer){
-        // строго по рельсам ветки
-        const pe=document.getElementById('path-'+s.line);
-        let a=prev.len, b=s.len; const steps=Math.max(1,Math.ceil(Math.abs(b-a)/16)); const dl=(b-a)/steps;
-        for(let k=1;k<=steps;k++){ const p=pe.getPointAtLength(a+dl*k); d+=' L '+p.x.toFixed(1)+' '+p.y.toFixed(1); }
-      } else {
-        // пересадка — арка-прыжок над картой
-        const ax=X(prev),ay=Y(prev),bx=X(s),by=Y(s);
-        if(Math.abs(ay-by)<10){ const mx=(ax+bx)/2; d+=' C '+mx+' '+(ay-70)+', '+mx+' '+(by-70)+', '+bx+' '+by; }
-        else if(Math.abs(ax-bx)<10){ d+=' C '+(ax-90)+' '+ay+', '+(bx-90)+' '+by+', '+bx+' '+by; }
-        else { const mx=(ax+bx)/2; d+=' C '+mx+' '+ay+', '+mx+' '+by+', '+bx+' '+by; }
-      }
-      // белая подложка + цветной/пунктирный сегмент поверх
-      const outline=make('path',{d, class:'route-outline', fill:'none', stroke:'#fff','stroke-width':isTransfer?8:12,'stroke-linecap':'round','stroke-linejoin':'round'});
-      const seg=make('path',{d, class:'route-segment', fill:'none', stroke:isTransfer?'#0F172A':lineColor(s.line),'stroke-width':isTransfer?4:6,'stroke-linecap':'round','stroke-linejoin':'round'});
-      if(isTransfer) seg.setAttribute('stroke-dasharray','8 8');
+      const a=path[i-1], b=path[i], sw=isSwitch(a,b);
+      if(sw) switches++;
+      const d=edgePath(a,b);
+      const outline=make('path',{d,class:'route-outline',fill:'none',stroke:'#fff','stroke-width':sw?9:13,'stroke-linecap':'round','stroke-linejoin':'round'});
+      const seg=make('path',{d,class:'route-segment',fill:'none',stroke:sw?'#0F172A':color(byId[b].line),'stroke-width':sw?4.5:6.5,'stroke-linecap':'round','stroke-linejoin':'round'});
+      if(sw) seg.setAttribute('stroke-dasharray','9 9');
       routeLayer.appendChild(outline); routeLayer.appendChild(seg);
       const len=outline.getTotalLength();
       outline.style.strokeDasharray=len; outline.style.strokeDashoffset=len;
-      if(!isTransfer){ seg.style.strokeDasharray=len; seg.style.strokeDashoffset=len; } else { seg.style.opacity='0'; }
-      outline.getBoundingClientRect(); // reflow — чтобы анимация стартовала с нуля
-      setTimeout(()=>{
-        outline.style.transition='stroke-dashoffset .35s ease-in-out'; outline.style.strokeDashoffset='0';
-        if(!isTransfer){ seg.style.transition='stroke-dashoffset .35s ease-in-out'; seg.style.strokeDashoffset='0'; }
-        else { seg.style.transition='opacity .3s ease-in'; seg.style.opacity='1'; }
-      }, delay);
-      delay += isTransfer?300:350;
-      const stepMo = isTransfer?SWITCH_MO:Math.max(6, s.mo-prev.mo); months+=stepMo;
-      const sub = isTransfer?'смена направления · +'+stepTime(stepMo):'+'+stepTime(stepMo);
-      li+='<li class="route__step" style="--dotc:'+lineColor(s.line)+'"><b>'+s.name+'</b><span>'+sub+'</span></li>';
+      if(!sw){ seg.style.strokeDasharray=len; seg.style.strokeDashoffset=len; } else seg.style.opacity='0';
+      outline.getBoundingClientRect();
+      setTimeout(()=>{ outline.style.transition='stroke-dashoffset .35s ease-in-out'; outline.style.strokeDashoffset='0';
+        if(!sw){ seg.style.transition='stroke-dashoffset .35s ease-in-out'; seg.style.strokeDashoffset='0'; }
+        else { seg.style.transition='opacity .3s ease-in'; seg.style.opacity='1'; } },delay);
+      delay+=sw?300:340;
+      li+='<li class="route__step'+(sw?' route__step--switch':'')+'" style="--dotc:'+(sw?'#0F172A':color(byId[b].line))+'">'+
+          '<b>'+esc(byId[b].name)+'</b><i>'+(sw?'⇄ пересадка на «'+esc(lineOf(byId[b].line).name)+'»':'следующая станция')+'</i></li>';
     }
-    const dest=byId[to];
-    li='<li class="route__step" style="--dotc:'+lineColor(byId[from].line)+'"><b>'+byId[from].name+'</b><span>старт</span></li>'+li;
-    panelBody.innerHTML =
-      '<div class="routecard"><div class="route__h">Ваш маршрут'+(swapped?' <span style="color:var(--faint);font-weight:600;letter-spacing:0;text-transform:none">· снизу вверх</span>':'')+'</div>'+
-      '<ul class="route__steps" id="routeSteps">'+li+'</ul>'+
-      '<div class="route-blurb">✨ '+esc(pickBlurb(path))+'</div>'+
-      '<div class="route__foot"><div class="route__time"><span>весь путь ≈</span><b>'+ruYears(months)+'</b></div>'+
-      '<button class="btn btn--primary" id="routeApply" style="flex:none">'+(dest.vac>0?'Откликнуться':'В резерв')+'</button></div></div>';
-    [...panelBody.querySelectorAll('.route__step')].forEach((n,i)=>setTimeout(()=>n.classList.add('show'), i*140+80));
+    const stops=path.length, dest=byId[path[path.length-1]];
+    panelBody.innerHTML='<div class="routecard"><div class="route__h">Ваш маршрут'+
+      (swapped?' <span style="color:var(--faint);font-weight:600;letter-spacing:0;text-transform:none">· развернули снизу вверх</span>':'')+'</div>'+
+      '<ul class="route__steps">'+li+'</ul>'+
+      '<div class="route-blurb">✨ '+esc(blurb(path))+'</div>'+
+      '<div class="route__foot"><div class="route__metric"><span>длина маршрута</span>'+
+        stops+' '+plural(stops,'станция','станции','станций')+
+        (switches?' · '+switches+' '+plural(switches,'пересадка','пересадки','пересадок'):' · без пересадок')+'</div>'+
+      '<button class="btn btn--primary" id="routeApply" style="flex:none">'+(dest.vac>0?'Откликнуться':'В кадровый резерв')+'</button></div></div>';
+    [...panelBody.querySelectorAll('.route__step')].forEach((n,i)=>setTimeout(()=>n.classList.add('show'),i*130+80));
     el('routeApply').onclick=goApply;
   }
   el('goRoute').onclick=runRoute;
-  function resetMap(){ clearHiring(); unfocus(); }
-  el('resetMap').onclick=resetMap;
+  el('resetMap').onclick=()=>{clearHiring();unfocus();};
+  function goApply(){ window.location.hash='reserv'; toast('Переход к анкете →'); }
 
-  /* ---- фон ДНК + свет за курсором ---- */
+  /* --- фон ДНК + свет за курсором --- */
   (function(){
-    const w=1560,h=1300, dna=el('dna');
-    let path1='', path2='', rungs='';
-    for(let x=0;x<=w;x+=6){ const a=Math.sin(x/120)*46; path1+=(x===0?'M':'L')+x+' '+(h/2+a)+' '; path2+=(x===0?'M':'L')+x+' '+(h/2-a)+' '; }
-    for(let x=0;x<=w;x+=48){ const a=Math.sin(x/120)*46; rungs+='<line x1="'+x+'" y1="'+(h/2+a)+'" x2="'+x+'" y2="'+(h/2-a)+'" />'; }
+    const w=1420,h=1640,dna=el('dna');
+    let p1='',p2='',rg='';
+    for(let x=0;x<=w;x+=6){ const a=Math.sin(x/120)*46; p1+=(x?'L':'M')+x+' '+(h/2+a)+' '; p2+=(x?'L':'M')+x+' '+(h/2-a)+' '; }
+    for(let x=0;x<=w;x+=48){ const a=Math.sin(x/120)*46; rg+='<line x1="'+x+'" y1="'+(h/2+a)+'" x2="'+x+'" y2="'+(h/2-a)+'"/>'; }
     dna.innerHTML='<svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none">'+
-      '<g fill="none" stroke="#00AEEF" stroke-width="2" opacity=".2"><path d="'+path1+'"/><path d="'+path2+'"/></g>'+
-      '<g stroke="#7C5CFC" stroke-width="1.4" opacity=".14">'+rungs+'</g></svg>';
-    const stage=el('stage'), light=el('light');
-    let tx=0.5,ty=0.5,x=0.5,y=0.5,run=false;
-    stage.addEventListener('pointermove', e=>{ const r=stage.getBoundingClientRect();
+      '<g fill="none" stroke="#00AEEF" stroke-width="2" opacity=".2"><path d="'+p1+'"/><path d="'+p2+'"/></g>'+
+      '<g stroke="#7C5CFC" stroke-width="1.4" opacity=".14">'+rg+'</g></svg>';
+    const stage=el('stage'),light=el('light');
+    let tx=.5,ty=.5,x=.5,y=.5,run=false;
+    stage.addEventListener('pointermove',e=>{ const r=stage.getBoundingClientRect();
       tx=(e.clientX-r.left)/r.width; ty=(e.clientY-r.top)/r.height;
-      light.style.left=(e.clientX-r.left)+'px'; light.style.top=(e.clientY-r.top)+'px';
-      if(!run){ run=true; requestAnimationFrame(loop); } });
+      light.style.left=(e.clientX-r.left+stage.scrollLeft)+'px'; light.style.top=(e.clientY-r.top)+'px';
+      if(!run){run=true;requestAnimationFrame(loop);} });
     function loop(){ x+=(tx-x)*.06; y+=(ty-y)*.06;
       dna.style.transform='translate('+((x-.5)*-16)+'px,'+((y-.5)*-12)+'px)';
-      if(Math.abs(tx-x)>.001||Math.abs(ty-y)>.001) requestAnimationFrame(loop); else run=false; }
+      if(Math.abs(tx-x)>.001||Math.abs(ty-y)>.001)requestAnimationFrame(loop); else run=false; }
   })();
 
   let toTimer; const toastEl=el('toast');
   function toast(msg){ toastEl.textContent=msg; toastEl.classList.add('show');
-    clearTimeout(toTimer); toTimer=setTimeout(()=>toastEl.classList.remove('show'), 2200); }
+    clearTimeout(toTimer); toTimer=setTimeout(()=>toastEl.classList.remove('show'),2200); }
 
   showDefault();
+
+  /* самопроверка данных — молча в консоль, чтобы правки не ломали карту незаметно */
+  (function(){
+    const bad=[];
+    EDGES.forEach(([a,b])=>{ if(!byId[a]||!byId[b]) bad.push('нет узла в ребре '+a+'→'+b);
+      else if(byId[b].x<=byId[a].x) bad.push('ребро идёт не вправо: '+a+'→'+b); });
+    NODES.forEach(n=>{ if(!inn[n.id].length&&!out[n.id].length) bad.push('узел без связей: '+n.id); });
+    if(bad.length) console.warn('[карта карьеры] проверьте данные:',bad);
+    else console.info('[карта карьеры] ок:',NODES.length,'ролей,',EDGES.length,'переходов,',LINES.length,'направлений');
+  })();
 })();
 </script>
 </body>
