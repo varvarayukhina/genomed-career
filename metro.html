@@ -256,6 +256,13 @@
     letter-spacing:-.02em; margin:26px 0 0; line-height:1.15}
   .vsplit p.lead{margin-top:12px}
   .vframe{width:100%; border:0; display:block; margin-top:8px; background:transparent}
+
+  .about{margin:26px 0 0;background:#fff;border:1px solid #E7EDF4;border-radius:18px;
+    padding:22px 26px;box-shadow:var(--shadow-sm)}
+  .about h3{font-family:var(--display);font-weight:800;font-size:1.18rem;margin:0 0 10px}
+  .about p{margin:0 0 10px;font-size:.95rem;line-height:1.65;color:var(--muted);max-width:62em}
+  .about p:last-child{margin-bottom:0}
+  .about b{color:var(--ink);font-weight:700}
 </style>
 </head>
 <body>
@@ -263,7 +270,7 @@
 <div class="wrap top">
   <span class="eyebrow">Карта карьеры</span>
   <h1>Как бывает в Геномед</h1>
-  <p class="lead">У каждого направления свой вход и своя вершина. Линии пересекаются там, где можно сменить профессию, не уходя из компании: наведите на пересадку&nbsp;⇄&nbsp;— увидите живую историю роста реального сотрудника. Или постройте маршрут сами.</p>
+  <p class="lead">У каждого направления свой вход и своя вершина. Линии пересекаются там, где можно сменить профессию, не уходя из компании: посмотрите, сколько ролей есть в компании, и постройте маршрут между любыми двумя из них.</p>
 
   <span class="vlabel"><b>Вариант 1</b> · схема, которую вы уже смотрели</span>
 
@@ -303,9 +310,22 @@
     </div>
   </div>
   <aside class="panel" id="panel"><div id="panelBody"></div></aside>
+
+  <div class="about">
+    <h3>Здесь много дорог, и все они рабочие</h3>
+    <p>На схеме&nbsp;— <b>46 должностей</b> из девяти направлений: лаборатория и технологии, наука и разработка,
+    приём биоматериала и качество, клиентский сервис и продажи, процессы, персонал, финансы, инженерия.
+    Все они существуют в компании прямо сейчас, и за каждой стоят живые люди, которые работают бок о бок.</p>
+    <p>Мы не считаем, что путь у всех должен быть один. Кто-то растёт вглубь своей профессии,
+    кто-то через несколько лет пробует соседнее направление и начинает заново&nbsp;— и это нормально.
+    Линии на схеме идут рядом и пересекаются именно поэтому: <b>вы выбираете маршрут сами</b>,
+    а мы помогаем его пройти.</p>
+    <p>Наведите на любую станцию, чтобы узнать о роли. Или соберите маршрут наверху&nbsp;—
+    от той должности, с которой начинаете, до той, к которой хотите прийти.</p>
+  </div>
   <p class="hint">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
-    Слева — старт работы, справа — должность мечты. Наведите на станцию — узнаете о роли; на пересадку&nbsp;⇄&nbsp;(там, где линии пересекаются) — всплывёт живая история роста. Пульсирующие точки — открытые вакансии. Нажмите — откроются карточка и отклик.
+    Слева — старт работы, справа — должность мечты. Наведите на станцию — узнаете о роли; Пульсирующие точки — открытые вакансии. Нажмите — откроются карточка и отклик.
   </p>
 </div>
 
@@ -418,11 +438,11 @@
   /* ===== ГЕОМЕТРИЯ: пересекающиеся линии. У каждой свой старт (слева) и финиш (справа) ===== */
   const ROUTES = {
     lab: [[200, 540], [700, 540], [820, 420], [1300, 420]],
-    tech: [[380, 420], [490, 420], [750, 160], [1300, 160]],
+    tech: [[230, 420], [490, 420], [750, 160], [1300, 160]],
     rnd: [[200, 780], [315, 780], [805, 290], [1300, 290]],
     eng: [[200, 1160], [220, 1160], [900, 480], [1300, 480]],
     cs: [[200, 660], [760, 660], [880, 540], [1300, 540]],
-    proc: [[200, 290], [445, 290], [935, 780], [1300, 780]],
+    proc: [[200, 290], [445, 290], [875, 720], [1300, 720]],
     hr: [[200, 160], [220, 160], [960, 900], [1300, 900]],
     fin: [[200, 900], [875, 900], [1025, 1050], [1300, 1050]],
     ops: [[200, 1030], [925, 1030], [1075, 1180], [1300, 1180]],
@@ -433,15 +453,15 @@
     'lab-0':[200, 540],
     'lab-1':[326, 540],
     'lab-2':[712, 528],
-    'lab-3':[955, 420],
+    'lab-3':[1075, 420],
     'lab-4':[1300, 420],
-    'tech-0':[380, 420],
+    'tech-0':[230, 420],
     'tech-1':[630, 280],
     'tech-2':[786, 160],
     'tech-3':[1043, 160],
     'tech-4':[1300, 160],
     'rnd-0':[200, 780],
-    'rnd-1':[716, 379],
+    'rnd-1':[452, 643],
     'rnd-2':[866, 290],
     'rnd-3':[1300, 290],
     'eng-0':[200, 1160],
@@ -450,15 +470,15 @@
     'cs-0':[200, 660],
     'cs-1':[364, 660],
     'cs-2':[528, 660],
-    'cs-3':[612, 660],
+    'cs-3':[693, 660],
     'cs-4':[829, 591],
     'cs-5':[972, 540],
     'cs-6':[1136, 540],
     'cs-7':[1300, 540],
     'proc-0':[200, 290],
     'proc-1':[450, 295],
-    'proc-2':[886, 731],
-    'proc-3':[1300, 780],
+    'proc-2':[985, 720],
+    'proc-3':[1300, 720],
     'hr-0':[200, 160],
     'hr-1':[292, 232],
     'hr-2':[537, 477],
@@ -479,15 +499,15 @@
   };
   const POS = {}; for(const id in COORD) POS[id]={x:COORD[id][0], y:COORD[id][1]};
   const X = s => POS[s.id].x, Y = s => POS[s.id].y;
-  const LP = {"lab-0": "up", "lab-1": "down", "lab-2": "up", "lab-3": "down", "lab-4": "right", "tech-0": "down", "tech-1": "down", "tech-2": "up", "tech-3": "down", "tech-4": "right", "rnd-0": "up", "rnd-1": "left", "rnd-2": "up", "rnd-3": "right", "eng-0": "up", "eng-1": "left", "eng-2": "right", "cs-0": "up", "cs-1": "down", "cs-2": "up", "cs-3": "down", "cs-4": "up", "cs-5": "down", "cs-6": "up", "cs-7": "right", "proc-0": "up", "proc-1": "down", "proc-2": "up", "proc-3": "right", "hr-0": "up", "hr-1": "up", "hr-2": "up", "hr-3": "down", "hr-4": "up", "hr-5": "down", "hr-6": "right", "fin-0": "up", "fin-1": "down", "fin-2": "up", "fin-3": "right", "ops-0": "up", "ops-1": "down", "ops-2": "up", "ops-3": "down", "ops-4": "up", "ops-5": "right"};
+  const LP = {"lab-0": "up", "lab-1": "down", "lab-2": "up", "lab-3": "down", "lab-4": "right", "tech-0": "down", "tech-1": "down", "tech-2": "up", "tech-3": "down", "tech-4": "right", "rnd-0": "up", "rnd-1": "up", "rnd-2": "up", "rnd-3": "right", "eng-0": "up", "eng-1": "left", "eng-2": "right", "cs-0": "up", "cs-1": "down", "cs-2": "down", "cs-3": "down", "cs-4": "up", "cs-5": "down", "cs-6": "down", "cs-7": "right", "proc-0": "up", "proc-1": "up", "proc-2": "up", "proc-3": "right", "hr-0": "up", "hr-1": "up", "hr-2": "up", "hr-3": "down", "hr-4": "up", "hr-5": "down", "hr-6": "right", "fin-0": "up", "fin-1": "down", "fin-2": "up", "fin-3": "right", "ops-0": "up", "ops-1": "down", "ops-2": "up", "ops-3": "down", "ops-4": "up", "ops-5": "right"};
 
   /* пересадочные узлы = перекрёстки линий, с живой историей */
   const HUBS = [
-    { x:770, y:324, lines:["lab", "tech"], title:"Лаборатория ↔ технологии", note:"Освоив секвенирование, из лаборатории переходят в NGS-технологии и производство.", story:{mono:"ДЯ",name:"Данилевская Я.Е.",role:"сменила направление внутри компании",text:"Пришла лаборантом, перешла в секвенирование и стала молекулярным биологом, затем — сменила направление."}, edges:[["lab-2", "tech-1"]] },
+    { x:785, y:290, lines:["lab", "tech"], title:"Лаборатория ↔ технологии", note:"Освоив секвенирование, из лаборатории переходят в NGS-технологии и производство.", story:{mono:"ДЯ",name:"Данилевская Я.Е.",role:"сменила направление внутри компании",text:"Пришла лаборантом, перешла в секвенирование и стала молекулярным биологом, затем — сменила направление."}, edges:[["lab-2", "tech-1"]] },
     { x:555, y:540, lines:["lab", "rnd"], title:"Лаборатория ↔ R&D", note:"С позиций лаборатории уходят в научно-производственный отдел и разработку методик.", edges:[["lab-0", "rnd-0"]] },
-    { x:740, y:423, lines:["eng", "tech"], title:"Технологии ↔ инженерия", note:"Из инженерии и эксплуатации переходят в технологии и производство лаборатории — приборы и методики рядом.", edges:[["eng-1", "tech-1"]] },
-    { x:776, y:840, lines:["ops", "cs"], title:"Приём ↔ лаборатория и продажи", note:"С приёма биоматериала переходят в лабораторию и клиентский сервис — образец начинает путь здесь.", edges:[["ops-1", "lab-1"]] },
-    { x:742, y:772, lines:["fin", "hr"], title:"Финансы ↔ управление", note:"Финансовый учёт и управление сходятся в большом руководстве компании.", edges:[["fin-1", "hr-3"]] },
+    { x:825, y:320, lines:["eng", "tech"], title:"Технологии ↔ инженерия", note:"Из инженерии и эксплуатации переходят в технологии и производство лаборатории — приборы и методики рядом.", edges:[["eng-1", "tech-1"]] },
+    { x:978, y:860, lines:["ops", "cs"], title:"Приём ↔ лаборатория и продажи", note:"С приёма биоматериала переходят в лабораторию и клиентский сервис — образец начинает путь здесь.", edges:[["ops-1", "lab-1"]] },
+    { x:992, y:975, lines:["fin", "hr"], title:"Финансы ↔ управление", note:"Финансовый учёт и управление сходятся в большом руководстве компании.", edges:[["fin-1", "hr-3"]] },
     { x:350, y:290, lines:["proc", "hr"], title:"Процессы ↔ управление", note:"Процессное управление и HR сходятся в большом управлении: департамент процессного управления и развития.", story:{mono:"КН",name:"Коземаслова Н.В.",role:"Руководитель отдела разработки ИИ",text:"Начинала в процессном управлении. Когда открыли отдел разработки ИИ — пригласили его возглавить."}, edges:[["proc-1", "hr-2"]] },
   ];
 
@@ -594,33 +614,7 @@
     svg.addEventListener('pointerleave', hxDeactivate);
   }
 
-  /* ---- пересадочные узлы ---- */
-  HUBS.forEach((h,i)=>{
-    const cols=h.lines.map(lineColor);
-    const grad=make('linearGradient',{id:'hg'+i, gradientUnits:'userSpaceOnUse', x1:h.x-16,y1:h.y-16,x2:h.x+16,y2:h.y+16});
-    grad.appendChild(make('stop',{offset:'0%','stop-color':cols[0]}));
-    grad.appendChild(make('stop',{offset:'55%','stop-color':cols[Math.floor(cols.length/2)]}));
-    grad.appendChild(make('stop',{offset:'100%','stop-color':cols[cols.length-1]}));
-    defs.appendChild(grad);
-    const g=make('g',{class:'hub','data-hub':i, tabindex:0, role:'button'});
-    g.appendChild(make('circle',{cx:h.x, cy:h.y, r:26, class:'hub__halo', fill:'none', stroke:'url(#hg'+i+')','stroke-width':2.4}));
-    g.appendChild(make('circle',{cx:h.x, cy:h.y, r:34, class:'st__hit'}));
-    g.appendChild(make('circle',{cx:h.x, cy:h.y, r:22, class:'hub__r', stroke:'url(#hg'+i+')','stroke-width':5.5}));g.appendChild(make('circle',{cx:h.x, cy:h.y, r:13, class:'hub__r2', fill:'none', stroke:'url(#hg'+i+')','stroke-width':2.6}));
-    const ic=make('text',{x:h.x, y:h.y+6.5, class:'hub__i', fill:cols[Math.floor(cols.length/2)]}); ic.textContent='⇄'; g.appendChild(ic);
-    // маркер живой истории — иконка человечка на пересадке
-    if(h.story){
-      const bx=h.x+19, by=h.y-19;
-      g.appendChild(make('circle',{cx:bx, cy:by, r:9, class:'hub-story', fill:'#0A2540', stroke:'#fff','stroke-width':2}));
-      const ig=make('g',{transform:'translate('+(bx-6)+','+(by-6)+') scale(0.5)', fill:'none', stroke:'#fff','stroke-width':2.6,'stroke-linecap':'round','stroke-linejoin':'round'});
-      ig.appendChild(make('path',{d:'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'}));
-      ig.appendChild(make('circle',{cx:12, cy:7, r:4}));
-      ig.setAttribute('pointer-events','none'); g.appendChild(ig);
-    }
-    svg.appendChild(g); g._hub=h;
-    g.addEventListener('pointerenter', ()=>showTipFor(g, hubTipHTML(h)));
-    g.addEventListener('pointerleave', hideTip);
-    g.addEventListener('click', ()=>openHub(h));
-  });
+  /* кружки пересадок убраны — вместо них общий текст под картой */
 
   /* ---- станции ---- */
   STATIONS.forEach(s=>{
@@ -701,7 +695,7 @@
       '<div class="p-default">'+
         '<div class="p-stats"><div class="p-stat p-stat--vac"><b data-count="'+totalVac+'">0</b><span>открытых позиций</span></div>'+
         '<div class="p-stat"><b>'+LINES.length+'</b><span>направлений</div></div>'+
-        '<div class="p-invite">Слева — старт работы, справа — должность мечты. Наведите на станцию, чтобы узнать о роли, на <b>пересадку&nbsp;⇄</b> — увидеть живую историю роста. Или постройте маршрут между любыми ролями наверху.</div>'+
+        '<div class="p-invite">Слева — старт работы, справа — должность мечты. Наведите на станцию, чтобы узнать о роли, Или постройте маршрут между любыми ролями наверху.</div>'+
         '<button class="btn btn--primary" id="seeVac">Показать, где сейчас нанимают</button>'+
       '</div>';
     countUp(panelBody.querySelector('[data-count]'), totalVac);
