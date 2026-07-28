@@ -25,7 +25,7 @@
   a{color:inherit; text-decoration:none}
   .wrap{max-width:1320px; margin:0 auto; padding:0 32px}
 
-  .top{padding:8px 0 22px}
+  .top{padding:8px 0 18px}
   .eyebrow{font-family:var(--display); font-weight:700; font-size:.74rem; letter-spacing:.14em;
     text-transform:uppercase; color:var(--lab); display:inline-flex; align-items:center; gap:.5em}
   .eyebrow::before{content:""; width:22px; height:2px; background:var(--lab); border-radius:2px}
@@ -89,7 +89,8 @@
   .hub__glow{opacity:.0}
   .hub__r{fill:#fff; stroke-width:4; transition:filter .2s}
   .hub:hover .hub__r{filter:drop-shadow(0 6px 18px rgba(30,41,59,.32))}
-  .hub__i{font-family:var(--sans); font-weight:800; font-size:14px; text-anchor:middle}
+  .hub__i{font-family:var(--sans); font-weight:800; font-size:18px; text-anchor:middle}
+  .hub__r2{opacity:.5}
   .hub-story{filter:drop-shadow(0 2px 5px rgba(10,37,64,.35))}
   .hub.dim{opacity:.18; pointer-events:none}
   @keyframes hubpulse{0%,100%{opacity:.5; transform:scale(1)}50%{opacity:0; transform:scale(1.9)}}
@@ -256,23 +257,12 @@
   .vsplit p.lead{margin-top:12px}
   .vframe{width:100%; border:0; display:block; margin-top:8px; background:transparent}
 
-  /* ---- легенда пересадок под картой ---- */
-  .xlist{margin:22px 0 0;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
-  .xitem{display:flex;gap:13px;align-items:flex-start;background:#fff;border:1px solid #E7EDF4;
-    border-radius:16px;padding:14px 16px;box-shadow:var(--shadow-sm)}
-  .xdot{width:30px;height:30px;border-radius:50%;flex:none;margin-top:1px;position:relative;
-    display:grid;place-items:center;color:#fff;font-weight:800;font-size:14px;
-    box-shadow:0 4px 14px rgba(30,41,59,.18)}
-  .xitem h4{font-family:var(--display);font-weight:800;font-size:.94rem;margin:0 0 5px}
-  .xitem p{margin:0;font-size:.85rem;line-height:1.55;color:var(--muted)}
-  .xstory{display:flex;gap:9px;align-items:center;margin-top:10px;padding-top:10px;
-    border-top:1px solid #EEF2F7;font-size:.82rem;line-height:1.45}
-  .xava{width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;
-    font-family:var(--display);font-weight:800;font-size:.7rem;color:#fff}
-  .xstory b{font-weight:700}
-  .xhead{display:flex;align-items:baseline;gap:12px;margin-top:34px;flex-wrap:wrap}
-  .xhead h3{font-family:var(--display);font-weight:800;font-size:1.15rem;margin:0}
-  .xhead span{font-size:.85rem;color:var(--muted)}
+  .about{margin:26px 0 0;background:#fff;border:1px solid #E7EDF4;border-radius:18px;
+    padding:22px 26px;box-shadow:var(--shadow-sm)}
+  .about h3{font-family:var(--display);font-weight:800;font-size:1.18rem;margin:0 0 10px}
+  .about p{margin:0 0 10px;font-size:.95rem;line-height:1.65;color:var(--muted);max-width:62em}
+  .about p:last-child{margin-bottom:0}
+  .about b{color:var(--ink);font-weight:700}
 </style>
 </head>
 <body>
@@ -328,6 +318,9 @@
   const el = id => document.getElementById(id);
   const svg = el('map');
 
+  const EDGES = [["hr-0", "hr-1"], ["hr-1", "hr-2"], ["hr-2", "hr-3"], ["hr-2", "hr-4"], ["hr-0", "hr-5"], ["hr-5", "hr-6"], ["ops-3", "ops-4"], ["ops-4", "ops-5"], ["ops-0", "ops-1"], ["ops-1", "ops-2"], ["tech-0", "tech-1"], ["tech-1", "tech-2"], ["tech-2", "tech-3"], ["tech-3", "tech-4"], ["rnd-0", "rnd-1"], ["rnd-1", "rnd-2"], ["rnd-2", "rnd-3"], ["fin-0", "fin-1"], ["fin-2", "fin-3"], ["proc-0", "proc-1"], ["proc-1", "proc-2"], ["proc-1", "proc-3"], ["cs-1", "cs-3"], ["cs-3", "cs-5"], ["cs-6", "cs-7"], ["cs-2", "cs-4"], ["cs-0", "cs-4"], ["eng-0", "eng-1"], ["eng-1", "eng-2"], ["lab-0", "lab-1"], ["lab-1", "lab-2"], ["lab-2", "lab-3"], ["lab-3", "lab-4"]];
+  const OWNER = {"hr-4": "hrB", "hr-5": "hrC", "hr-6": "hrC", "proc-3": "procB", "cs-0": "csS1", "cs-4": "csS1", "cs-2": "csS2"};
+  const SPURLINE = {"hrB": "hr", "hrC": "hr", "procB": "proc", "csS1": "cs", "csS2": "cs"};
   const LINES = [
     { key:"tech", name:"Технологии и производство", short:"Технологии", hex:"#14B8A6" },
     { key:"lab", name:"Лаборатория", short:"Лаборатория", hex:"#00AEEF" },
@@ -402,26 +395,31 @@
 
   /* ===== ГЕОМЕТРИЯ: пересекающиеся линии. У каждой свой старт (слева) и финиш (справа) ===== */
   const ROUTES = {
+    hrB: [[534, 455], [534, 155]],
+    hrC: [[200, 160], [200, 360], [200, 620]],
+    procB: [[450, 295], [257, 347]],
+    csS1: [[500, 960], [700, 1050]],
+    csS2: [[500, 1140], [700, 1050]],
     lab: [[200, 540], [700, 540], [820, 420], [1300, 420]],
     tech: [[230, 420], [490, 420], [750, 160], [1300, 160]],
     rnd: [[200, 780], [315, 780], [805, 290], [1300, 290]],
-    eng: [[200, 1160], [220, 1160], [900, 480], [1300, 480]],
-    cs: [[200, 660], [760, 660], [880, 540], [1300, 540]],
+    eng: [[200, 1070], [220, 1070], [880, 480], [1300, 480]],
+    cs: [[200, 760], [760, 760], [880, 640], [1300, 640]],
     proc: [[200, 290], [445, 290], [875, 720], [1300, 720]],
-    hr: [[200, 160], [220, 160], [960, 900], [1300, 900]],
-    fin: [[200, 900], [875, 900], [1025, 1050], [1300, 1050]],
-    ops: [[200, 1030], [925, 1030], [1075, 1180], [1300, 1180]],
+    hr: [[200, 160], [220, 160], [900, 800], [1300, 800]],
+    fin: [[200, 880], [880, 880], [1010, 1010], [1300, 1010]],
+    ops: [[200, 1000], [930, 1000], [1065, 1140], [1300, 1140]],
   };
-  const SHORT = {"lab-0": "Лаборант", "lab-1": "Старший лаборант", "lab-2": "Молекулярный биолог", "lab-3": "Старший молекулярный биолог", "lab-4": "Заведующий отделом лаборатории", "tech-0": "Старший лаборант (ВПС)", "tech-1": "Молекулярный биолог (ВПС)", "tech-2": "Заведующий отделом пробоподготовки", "tech-3": "Зам. заведующего лабораторией по технологиям", "tech-4": "Директор по техническому развитию (СТО)", "rnd-0": "Лаборант (научно-производственного отдела)", "rnd-1": "Старший специалист (НПО)", "rnd-2": "Ведущий специалист (НПО)", "rnd-3": "Зам. руководителя департамента R&D", "eng-0": "Инженер-электроник", "eng-1": "Старший инженер-электроник", "eng-2": "Зам. руководителя отдела производства", "cs-0": "Лаборант (сервисные научные проекты)", "cs-1": "Менеджер по сопровождению клиентов B2C", "cs-2": "Старший молекулярный биолог (сервисные проекты)", "cs-3": "Менеджер по сопровождению B2C/B2B/B2D", "cs-4": "Менеджер по продажам услуг научного сервиса", "cs-5": "Ведущий менеджер по сопровождению", "cs-6": "Продакт-менеджер направления продаж", "cs-7": "Руководитель отдела прикладных решений", "proc-0": "Специалист по процессному управлению", "proc-1": "Ведущий специалист по процессному управлению", "proc-2": "Руководитель отдела разработки ИИ", "proc-3": "Зам. директора департамента ПУиР", "hr-0": "Менеджер по персоналу", "hr-1": "Ведущий менеджер по персоналу", "hr-2": "Руководитель ОКС", "hr-3": "Оперативный директор", "hr-4": "Директор департамента ПУиР", "hr-5": "Директор по персоналу", "hr-6": "Зам. генерального директора по персоналу", "fin-0": "Финансовый контролёр", "fin-1": "Зам. руководителя отдела первичного учёта", "fin-2": "Экономист по управленческому учёту", "fin-3": "Руководитель отдела управленческого учёта", "ops-0": "Специалист по приёму биоматериала", "ops-1": "Старший специалист по приёму биоматериала", "ops-2": "Руководитель отдела проборазбора", "ops-3": "Офис-менеджер", "ops-4": "Специалист отдела СМК", "ops-5": "Ведущий специалист отдела СМК"};
+  const SHORT = {"lab-0": "Лаборант", "lab-1": "Старший лаборант", "lab-2": "Молекулярный биолог", "lab-3": "Старший молекулярный биолог", "lab-4": "Заведующий отделом лаборатории", "tech-0": "Старший лаборант (ВПС)", "tech-1": "Молекулярный биолог (ВПС)", "tech-2": "Заведующий отделом пробоподготовки", "tech-3": "Зам. заведующего лабораторией по технологиям", "tech-4": "Директор по техническому развитию (СТО)", "rnd-0": "Лаборант (научно-производственный отдел)", "rnd-1": "Старший специалист (НПО)", "rnd-2": "Ведущий специалист (НПО)", "rnd-3": "Зам. руководителя департамента R&D", "eng-0": "Инженер-электроник", "eng-1": "Старший инженер-электроник", "eng-2": "Зам. руководителя отдела производства", "cs-0": "Лаборант (сервисные проекты)", "cs-1": "Менеджер по сопровождению клиентов B2C", "cs-2": "Ст. молбиолог (сервисные проекты)", "cs-3": "Менеджер по сопровождению B2C/B2B/B2D", "cs-4": "Менеджер по продажам научного сервиса", "cs-5": "Ведущий менеджер по сопровождению", "cs-6": "Продакт-менеджер направления продаж", "cs-7": "Руководитель отдела прикладных решений", "proc-0": "Специалист по процессному управлению", "proc-1": "Ведущий специалист по процессному управлению", "proc-2": "Руководитель отдела разработки ИИ", "proc-3": "Зам. директора департамента ПУиР", "hr-0": "Менеджер по персоналу", "hr-1": "Ведущий менеджер по персоналу", "hr-2": "Руководитель ОКС", "hr-3": "Оперативный директор", "hr-4": "Директор департамента ПУиР", "hr-5": "Директор по персоналу", "hr-6": "Зам. генерального директора по персоналу", "fin-0": "Финансовый контролёр", "fin-1": "Зам. руководителя отдела первичного учёта", "fin-2": "Экономист по управленческому учёту", "fin-3": "Руководитель отдела управленческого учёта", "ops-0": "Специалист по приёму биоматериала", "ops-1": "Старший специалист по приёму биоматериала", "ops-2": "Руководитель отдела проборазбора", "ops-3": "Офис-менеджер", "ops-4": "Специалист отдела СМК", "ops-5": "Ведущий специалист отдела СМК"};
   const FIT = {"lab-0": "новичку после вуза: точная работа руками, войти в диагностику с нуля", "lab-1": "кто освоил рутину и готов отвечать за секвенирование и качество", "lab-2": "кто хочет вести исследования и обучать новичков", "lab-3": "опытным биологам: сложные исследования и наставничество", "lab-4": "кто хочет руководить отделом, а не только исследовать", "tech-0": "кто хочет углубиться в высокопроизводительное секвенирование", "tech-1": "кто любит NGS и сложные библиотеки", "tech-2": "кто готов отвечать за участок и команду", "tech-3": "кто хочет внедрять технологии и методики", "tech-4": "кто мыслит стратегически и хочет отвечать за технологии", "rnd-0": "кто любит эксперименты и отработку методик", "rnd-1": "кто готов разрабатывать и валидировать методики", "rnd-2": "кто хочет вести проекты от идеи до внедрения", "rnd-3": "кто хочет определять, какие методы появятся завтра", "eng-0": "кто дружит с электроникой и держит приборы в строю", "eng-1": "кто готов брать сложную технику и учить младших", "eng-2": "кто хочет вырасти в управление производством", "cs-0": "кто хочет совмещать лабораторию и сервисные проекты", "cs-1": "кто любит общение и помощь клиентам", "cs-2": "опытным биологам: сервисные научные проекты", "cs-3": "кто готов работать со всеми сегментами клиентов", "cs-4": "биологам, кто хочет перейти в продажи науч. сервиса", "cs-5": "кто ведёт ключевых клиентов и учит команду", "cs-6": "кто хочет отвечать за продукт и продажи", "cs-7": "кто хочет отвечать за клиентские продукты целиком", "proc-0": "кто любит наводить порядок в процессах", "proc-1": "кто хочет проектировать процессы и внедрять ИИ", "proc-2": "кто хочет возглавить разработку ИИ-инструментов", "proc-3": "кто хочет вырасти в управление департаментом", "hr-0": "кто хочет работать с людьми: подбор и адаптация", "hr-1": "кто готов вести ключевые процессы найма", "hr-2": "кто хочет руководить кадровым сопровождением", "hr-3": "кто хочет отвечать за операционное управление", "hr-4": "кто хочет возглавить департамент ПУиР", "hr-5": "кто хочет отвечать за HR-стратегию компании", "hr-6": "кто видит себя в топ-управлении персоналом", "fin-0": "внимательным к цифрам: контроль операций", "fin-1": "кто любит порядок в документах и учёте", "fin-2": "кто любит аналитику и управленческий учёт", "fin-3": "кто хочет видеть финансовую картину целиком", "ops-0": "аккуратным: войти в лабораторию с приёма образцов", "ops-1": "кто готов контролировать приём и разбор", "ops-2": "кто хочет отвечать за отдел и качество приёма", "ops-3": "кто любит порядок и хочет войти с офисной роли", "ops-4": "кто ценит стандарты и качество", "ops-5": "кто хочет вырасти в эксперта по качеству"};
   const COORD = {
     'lab-0':[200, 540],
     'lab-1':[326, 540],
-    'lab-2':[753, 487],
+    'lab-2':[712, 528],
     'lab-3':[1075, 420],
     'lab-4':[1300, 420],
     'tech-0':[230, 420],
-    'tech-1':[594, 316],
+    'tech-1':[630, 280],
     'tech-2':[786, 160],
     'tech-3':[1043, 160],
     'tech-4':[1300, 160],
@@ -429,42 +427,42 @@
     'rnd-1':[452, 643],
     'rnd-2':[866, 290],
     'rnd-3':[1300, 290],
-    'eng-0':[200, 1160],
-    'eng-1':[1037, 480],
+    'eng-0':[200, 1070],
+    'eng-1':[630, 703],
     'eng-2':[1300, 480],
-    'cs-0':[200, 660],
-    'cs-1':[364, 660],
-    'cs-2':[528, 660],
-    'cs-3':[693, 660],
-    'cs-4':[829, 591],
-    'cs-5':[972, 540],
-    'cs-6':[1136, 540],
-    'cs-7':[1300, 540],
+    'cs-0':[500, 960],
+    'cs-1':[364, 760],
+    'cs-2':[500, 1140],
+    'cs-3':[693, 760],
+    'cs-4':[700, 1050],
+    'cs-5':[972, 640],
+    'cs-6':[1136, 640],
+    'cs-7':[1300, 640],
     'proc-0':[200, 290],
-    'proc-1':[625, 470],
+    'proc-1':[450, 295],
     'proc-2':[985, 720],
-    'proc-3':[1300, 720],
+    'proc-3':[257, 347],
     'hr-0':[200, 160],
-    'hr-1':[330, 270],
-    'hr-2':[537, 477],
-    'hr-3':[753, 693],
-    'hr-4':[869, 809],
-    'hr-5':[1136, 900],
-    'hr-6':[1300, 900],
-    'fin-0':[200, 900],
-    'fin-1':[587, 900],
-    'fin-2':[946, 971],
-    'fin-3':[1300, 1050],
-    'ops-0':[200, 1030],
-    'ops-1':[432, 1030],
-    'ops-2':[665, 1030],
-    'ops-3':[897, 1030],
-    'ops-4':[1070, 1175],
-    'ops-5':[1300, 1180],
+    'hr-1':[291, 227],
+    'hr-2':[534, 455],
+    'hr-3':[649, 563],
+    'hr-4':[534, 155],
+    'hr-5':[200, 360],
+    'hr-6':[200, 620],
+    'fin-0':[200, 880],
+    'fin-1':[584, 880],
+    'fin-2':[944, 944],
+    'fin-3':[1300, 1010],
+    'ops-0':[200, 1000],
+    'ops-1':[431, 1000],
+    'ops-2':[664, 1000],
+    'ops-3':[895, 1000],
+    'ops-4':[1068, 1140],
+    'ops-5':[1300, 1140],
   };
   const POS = {}; for(const id in COORD) POS[id]={x:COORD[id][0], y:COORD[id][1]};
   const X = s => POS[s.id].x, Y = s => POS[s.id].y;
-  const LP = {"lab-0": "up", "lab-1": "down", "lab-2": "up", "lab-3": "up", "lab-4": "right", "tech-0": "down", "tech-1": "down", "tech-2": "up", "tech-3": "down", "tech-4": "right", "rnd-0": "up", "rnd-1": "up", "rnd-2": "up", "rnd-3": "right", "eng-0": "up", "eng-1": "up", "eng-2": "right", "cs-0": "up", "cs-1": "down", "cs-2": "down", "cs-3": "up", "cs-4": "up", "cs-5": "down", "cs-6": "down", "cs-7": "right", "proc-0": "up", "proc-1": "down", "proc-2": "up", "proc-3": "right", "hr-0": "up", "hr-1": "up", "hr-2": "up", "hr-3": "down", "hr-4": "up", "hr-5": "down", "hr-6": "right", "fin-0": "up", "fin-1": "down", "fin-2": "up", "fin-3": "right", "ops-0": "up", "ops-1": "down", "ops-2": "up", "ops-3": "down", "ops-4": "up", "ops-5": "right"};
+  const LP = {"lab-0": "up", "lab-1": "down", "lab-2": "up", "lab-3": "up", "lab-4": "right", "tech-0": "down", "tech-1": "down", "tech-2": "up", "tech-3": "down", "tech-4": "right", "rnd-0": "up", "rnd-1": "up", "rnd-2": "up", "rnd-3": "right", "eng-0": "up", "eng-1": "left", "eng-2": "right", "cs-0": "left", "cs-1": "down", "cs-2": "down", "cs-3": "down", "cs-4": "down", "cs-5": "up", "cs-6": "down", "cs-7": "right", "proc-0": "up", "proc-1": "up", "proc-2": "up", "proc-3": "right", "hr-0": "up", "hr-1": "up", "hr-2": "up", "hr-3": "down", "hr-4": "up", "hr-5": "left", "hr-6": "left", "fin-0": "down", "fin-1": "left", "fin-2": "up", "fin-3": "right", "ops-0": "up", "ops-1": "down", "ops-2": "up", "ops-3": "down", "ops-4": "up", "ops-5": "right"};
 
   /* пересадочные узлы = перекрёстки линий, с живой историей */
   const HUBS = [
@@ -492,33 +490,40 @@
     const b=make('text',{x:1200, y:60, class:'term','text-anchor':'end'}); b.textContent='Должность мечты'; svg.appendChild(b);
   })();
 
-  /* ---- линии ---- */
-  /* мягкие дуги вместо угловых переходов — единственное отличие от верхней схемы */
-  const CURVE=95;
-  function curved(pts,R){
-    if(pts.length<3) return 'M '+pts.map(p=>p[0]+' '+p[1]).join(' L ');
-    let d='M '+pts[0][0]+' '+pts[0][1];
-    for(let i=1;i<pts.length-1;i++){
-      const a=pts[i-1],b=pts[i],c=pts[i+1];
-      const v1=[a[0]-b[0],a[1]-b[1]],v2=[c[0]-b[0],c[1]-b[1]];
-      const l1=Math.hypot(v1[0],v1[1])||1,l2=Math.hypot(v2[0],v2[1])||1;
-      const r=Math.min(R,l1*0.47,l2*0.47);
-      d+=' L '+(b[0]+v1[0]/l1*r).toFixed(1)+' '+(b[1]+v1[1]/l1*r).toFixed(1);
-      d+=' Q '+b[0]+' '+b[1]+' '+(b[0]+v2[0]/l2*r).toFixed(1)+' '+(b[1]+v2[1]/l2*r).toFixed(1);
-    }
-    const e=pts[pts.length-1]; return d+' L '+e[0]+' '+e[1];
-  }
-  function linePath(key){ return curved(ROUTES[key], CURVE); }
+  /* линии: видимы только реальные переходы; развилки — короткими отводами */
+  function linePath(key){ const v=ROUTES[key]; return 'M '+v.map(p=>p[0]+' '+p[1]).join(' L '); }
   const RUNLIGHTS=[];
-  LINES.forEach(l=>{
-    const d=linePath(l.key);
-    svg.appendChild(make('path',{d, class:'mline mline--halo','data-line':l.key, stroke:l.hex,'stroke-width':16}));
-    const p=make('path',{d, id:'path-'+l.key, class:'mline','data-line':l.key, stroke:l.hex,'stroke-width':9});
-    svg.appendChild(p);
-    const light=make('circle',{r:5, class:'runlight','data-line':l.key});
-    svg.appendChild(light);
-    RUNLIGHTS.push({el:light, path:p, len:p.getTotalLength(), t:Math.random(), speed:0.05+Math.random()*0.03});
+  Object.keys(ROUTES).forEach(k=>{ svg.appendChild(make('path',{d:linePath(k), id:'path-'+k, fill:'none', stroke:'none'})); });
+  const own = id => OWNER[id] || byId[id].line;
+  function lenOn(k,x,y){
+    const pe=document.getElementById('path-'+k), L=pe.getTotalLength(); let bl=0,bd=1e18;
+    for(let d=0;d<=L;d+=4){ const q=pe.getPointAtLength(d);
+      const dd=(q.x-x)*(q.x-x)+(q.y-y)*(q.y-y); if(dd<bd){bd=dd;bl=d;} }
+    return bl; }
+  STATIONS.forEach(s2=>{ s2.seg=own(s2.id); s2.len=lenOn(s2.seg,POS[s2.id].x,POS[s2.id].y); });
+  function subPath(k,d0,d1){
+    const pe=document.getElementById('path-'+k), a=Math.min(d0,d1), b=Math.max(d0,d1), o=[];
+    for(let d=a; d<=b; d+=6){ const p=pe.getPointAtLength(d); o.push([p.x,p.y]); }
+    const e=pe.getPointAtLength(b); o.push([e.x,e.y]);
+    return 'M '+o.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' L '); }
+  EDGES.forEach(([a,b])=>{
+    const A=byId[a], B=byId[b];
+    let key=A.seg;
+    if(A.seg!==B.seg){                    /* берём ломаную, к которой ближе обе станции */
+      const dist=(k,p)=>{const pe=document.getElementById('path-'+k),L=pe.getTotalLength();
+        let m=1e18; for(let d=0;d<=L;d+=4){const q=pe.getPointAtLength(d);
+          const v=(q.x-p.x)*(q.x-p.x)+(q.y-p.y)*(q.y-p.y); if(v<m)m=v;} return Math.sqrt(m);};
+      key = (dist(A.seg,POS[a])+dist(A.seg,POS[b])) <= (dist(B.seg,POS[a])+dist(B.seg,POS[b])) ? A.seg : B.seg;
+    }
+    const la = lenOn(key,POS[a].x,POS[a].y);
+    const d  = subPath(key, la, lenOn(key,POS[b].x,POS[b].y));
+    const ln = SPURLINE[key]||key, col=lineColor(ln);
+    svg.appendChild(make('path',{d, class:'mline mline--halo','data-line':ln, stroke:col,'stroke-width':16}));
+    svg.appendChild(make('path',{d, class:'mline','data-line':ln, stroke:col,'stroke-width':9}));
   });
+  LINES.forEach(l=>{ const light=make('circle',{r:5, class:'runlight','data-line':l.key}); svg.appendChild(light);
+    const pe=document.getElementById('path-'+l.key);
+    RUNLIGHTS.push({el:light, path:pe, len:pe.getTotalLength(), t:Math.random(), speed:0.05+Math.random()*0.03}); });
   (function(){
     if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     let last=performance.now();
@@ -529,27 +534,6 @@
     } requestAnimationFrame(loop);
   })();
 
-  /* после скругления станции садятся точно на дугу, чтобы не сползали с линии */
-  (function(){
-    function nearest(pe,x,y){
-      const len=pe.getTotalLength(); let bl=0,bd=1e18;
-      for(let l=0;l<=len;l+=5){ const p=pe.getPointAtLength(l);
-        const d=(p.x-x)*(p.x-x)+(p.y-y)*(p.y-y); if(d<bd){bd=d;bl=l;} }
-      for(let st=2.5;st>0.2;st/=2) for(const c of [bl-st,bl+st]){
-        if(c<0||c>len) continue; const p=pe.getPointAtLength(c);
-        const d=(p.x-x)*(p.x-x)+(p.y-y)*(p.y-y); if(d<bd){bd=d;bl=c;} }
-      return pe.getPointAtLength(bl);
-    }
-    LINES.forEach(l=>{ const pe=document.getElementById('path-'+l.key);
-      STATIONS.filter(s=>s.line===l.key).forEach(s=>{
-        const p=nearest(pe,POS[s.id].x,POS[s.id].y); POS[s.id].x=p.x; POS[s.id].y=p.y; }); });
-  })();
-
-  /* длина каждой станции вдоль её линии — для построения маршрута по рельсам */
-  LINES.forEach(l=>{ const pe=document.getElementById('path-'+l.key), tot=pe.getTotalLength();
-    STATIONS.filter(s=>s.line===l.key).forEach(s=>{ let best=0,bd=1e9;
-      for(let L=0;L<=tot;L+=4){ const p=pe.getPointAtLength(L); const dx=p.x-X(s),dy=p.y-Y(s),d=dx*dx+dy*dy; if(d<bd){bd=d;best=L;} }
-      s.len=best; }); });
 
   const routeLayer = make('g',{class:'route-layer'}); svg.appendChild(routeLayer);
 
@@ -610,7 +594,7 @@
     svg.addEventListener('pointerleave', hxDeactivate);
   }
 
-  /* кружки пересадок убраны с карты — вынесены в легенду под ней */
+  /* кружки пересадок убраны — вместо них общий текст под картой */
 
   /* ---- станции ---- */
   STATIONS.forEach(s=>{
@@ -625,12 +609,13 @@
     else if(s.col===0)   g.appendChild(make('circle',{cx:x, cy:y, r:5, class:'st__core', fill:col}));
     /* длинные названия — ровно в две строки, по границе слов ближайшей к середине */
     const LH2=14.5;
+    /* делим на 2–3 строки так, чтобы самая длинная строка была минимальной */
     const wrapLabel=(t,n)=>{ const w=t.split(' '); if(w.length<n) n=w.length;
       if(n<2) return [t];
       let best=null,bd=1e9;
       const rec=(i,parts)=>{ if(parts.length===n-1){ const last=w.slice(i).join(' ');
-          if(!last) return; const c=parts.concat([last]);
-          const d=Math.max.apply(null,c.map(x=>x.length)); if(d<bd){bd=d;best=c;} return; }
+          if(!last) return; const cand=parts.concat([last]);
+          const d=Math.max(...cand.map(x=>x.length)); if(d<bd){bd=d;best=cand;} return; }
         for(let k=i+1;k<w.length;k++) rec(k,parts.concat([w.slice(i,k).join(' ')])); };
       rec(0,[]); return best||[t]; };
     const txt=(SHORT[s.id]||s.name);
@@ -820,10 +805,8 @@
     'med-0':0,'med-1':1,'med-2':3,'med-3':4 };
   STATIONS.forEach(s=> s.lv = LV[s.id]);
   const SWITCH_MO = 12; // «смена направления» на своём уровне ≈ год адаптации
-  const adj = {}; STATIONS.forEach(s=>adj[s.id]=[]);
-  // внутри ветки — только вверх (col N → col N+1), вес = время повышения
-  LINES.forEach(l=>{ const sts=STATIONS.filter(s=>s.line===l.key).sort((a,b)=>a.col-b.col);
-    for(let i=0;i<sts.length-1;i++) adj[sts[i].id].push({to:sts[i+1].id, w:Math.max(6, sts[i+1].mo-sts[i].mo), type:'up'}); });
+  const adj = {}; STATIONS.forEach(x=>adj[x.id]=[]);
+  EDGES.forEach(([a,b])=>{ adj[a].push({to:b, w:1, type:'up'}); });
   // переход между ветками — только «в бок», строго на своём уровне (никаких скачков через ступень)
   const ENTRY_PENALTY = 24; // штраф за «рестарт с нуля»: не уводим маршрут в чужую входную роль (Лаборант и т.п.)
   const byLv={}; STATIONS.forEach(s=>{ (byLv[s.lv]=byLv[s.lv]||[]).push(s); });
@@ -970,23 +953,6 @@
   let toTimer; const toastEl=el('toast');
   function toast(msg){ toastEl.textContent=msg; toastEl.classList.add('show');
     clearTimeout(toTimer); toTimer=setTimeout(()=>toastEl.classList.remove('show'), 2200); }
-
-
-  /* ---- легенда пересадок: где можно сменить направление ---- */
-  (function(){
-    const box=document.getElementById('xlist'); if(!box) return;
-    HUBS.forEach((h,i)=>{
-      const a=lineColor(h.lines[0]), b=lineColor(h.lines[h.lines.length-1]);
-      const el=document.createElement('div'); el.className='xitem';
-      el.innerHTML=
-        '<span class="xdot" style="background:linear-gradient(135deg,'+a+' 0%,'+b+' 100%)">⇄</span>'+
-        '<div><h4>'+esc(h.title)+'</h4><p>'+esc(h.note)+'</p>'+
-        (h.story?'<div class="xstory"><span class="xava" style="background:linear-gradient(135deg,'+a+','+b+')">'+
-          esc(h.story.mono)+'</span><span><b>'+esc(h.story.name)+'</b> — '+esc(h.story.role)+
-          '.<br>«'+esc(h.story.text)+'»</span></div>':'')+'</div>';
-      box.appendChild(el);
-    });
-  })();
 
   showDefault();
 })();
