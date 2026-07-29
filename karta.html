@@ -19,6 +19,8 @@
 <iframe class="fr" id="f1" src="karta-shema.html" title="Карта карьерных путей" style="height:1750px"></iframe>
 <div class="sep"><span></span><b>Те же 17 треков прямыми линиями</b><span></span></div>
 <iframe class="fr" id="f2" src="relsy.html" title="Карьерные пути прямыми линиями" style="height:2700px"></iframe>
+<div class="sep"><span></span><b>Те же 17 треков по направлениям</b><span></span></div>
+<iframe class="fr" id="f3" src="napravleniya.html" title="Карьерные пути по направлениям" style="height:2200px"></iframe>
 <script>
 /* подгоняем высоту под содержимое; если документ недоступен — остаётся запасная высота из style */
 (function(){
@@ -26,11 +28,11 @@
       var h=Math.max(d.body.scrollHeight, d.documentElement.scrollHeight);
       if(h>200) f.style.height=(h+32)+'px';
     }catch(e){} }
-  ['f1','f2'].forEach(function(id){ var f=document.getElementById(id);
+  ['f1','f2','f3'].forEach(function(id){ var f=document.getElementById(id);
     f.addEventListener('load',function(){ fit(f); [300,900,2000,4000].forEach(function(t){setTimeout(function(){fit(f);},t);}); });
     if(f.contentDocument&&f.contentDocument.readyState==='complete') fit(f);
   });
-  addEventListener('resize',function(){ ['f1','f2'].forEach(function(id){ fit(document.getElementById(id)); }); });
+  addEventListener('resize',function(){ ['f1','f2','f3'].forEach(function(id){ fit(document.getElementById(id)); }); });
 })();
 </script>
 </body>

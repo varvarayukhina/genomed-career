@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Геномед — карьерные пути по направлениям</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#1E293B;--muted:#64748B;--faint:#94A3B8;--blue:#00AEEF;
+    --sans:"Inter",-apple-system,sans-serif;--display:"Montserrat",var(--sans);
+    --sh:0 6px 20px rgba(30,41,59,.08)}
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:transparent;font-family:var(--sans);color:var(--ink);line-height:1.5;
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:1320px;margin:0 auto;padding:8px 32px 40px}
+
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 22px}
+  .chip{display:inline-flex;align-items:center;gap:8px;cursor:pointer;user-select:none;white-space:nowrap;
+    background:#fff;border:1px solid #E2E8F0;border-radius:999px;padding:9px 15px;
+    font-family:var(--display);font-weight:600;font-size:.86rem;color:var(--muted);
+    box-shadow:var(--sh);transition:.16s cubic-bezier(.22,1,.36,1)}
+  .chip .dot{width:9px;height:9px;border-radius:50%;background:#CBD5E1}
+  .chip:hover{transform:translateY(-1px);color:var(--ink)}
+  .chip.on{color:#fff;border-color:transparent;background:var(--cc,#1E293B)}
+  .chip.on .dot{background:rgba(255,255,255,.9)}
+
+  .dir{background:#fff;border:1px solid #E7EDF4;border-radius:18px;padding:20px 22px;
+    box-shadow:var(--sh);margin-bottom:14px;border-left:5px solid var(--cc)}
+  .dir__h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+  .dir__h h3{font-family:var(--display);font-weight:800;font-size:1.05rem;margin:0;color:var(--cc)}
+  .dir__h span{font-size:.78rem;color:var(--faint);font-weight:600}
+
+  .path{display:flex;align-items:stretch;flex-wrap:wrap;gap:6px;padding:12px 0;
+    border-top:1px dashed #EEF2F7}
+  .dir .path:first-of-type{border-top:none}
+  .path.br{padding-left:26px;position:relative}
+  .path.br::before{content:"";position:absolute;left:9px;top:0;bottom:50%;width:2px;background:var(--cc);opacity:.35}
+  .path.br::after{content:"";position:absolute;left:9px;top:50%;width:12px;height:2px;background:var(--cc);opacity:.35}
+
+  .st{display:inline-flex;align-items:center;gap:9px;background:#F8FAFC;border:1px solid #EEF2F7;
+    border-radius:12px;padding:8px 13px 8px 10px;font-size:.88rem;font-weight:600;line-height:1.35;
+    max-width:100%;transition:.15s}
+  .st:hover{border-color:var(--cc);background:#fff;box-shadow:var(--sh)}
+  .st b{width:9px;height:9px;border-radius:50%;background:var(--cc);flex:none}
+  .st.start{background:#fff;border-color:var(--cc)}
+  .st.top{background:var(--cc);border-color:transparent;color:#fff}
+  .st.top b{background:rgba(255,255,255,.85)}
+  .st.rep{opacity:.5;border-style:dashed}
+  .arr{display:flex;align-items:center;color:var(--faint);font-size:1rem;padding:0 1px}
+  .vac{font-family:var(--display);font-weight:700;font-size:.62rem;letter-spacing:.05em;
+    text-transform:uppercase;background:#fff;color:var(--cc);border:1px solid currentColor;
+    border-radius:999px;padding:2px 7px;margin-left:4px}
+  .st.top .vac{background:rgba(255,255,255,.22);color:#fff;border-color:rgba(255,255,255,.5)}
+
+  .note{margin:24px 0 0;font-size:.84rem;color:var(--faint);line-height:1.6}
+  @media(max-width:720px){ .wrap{padding:8px 16px 32px} .st{font-size:.84rem;padding:7px 11px 7px 9px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="chips" id="chips"></div>
+  <div id="body"></div>
+  <p class="note" id="note"></p>
+</div>
+
+<script>
+const D = {"dirs": [["lab", "Лаборатория", "#00AEEF"], ["tech", "Технологии и производство", "#14B8A6"], ["rnd", "R&D и наука", "#7C5CFC"], ["eng", "Инженерия", "#64748B"], ["cs", "Клиентский сервис и продажи", "#E24A8B"], ["proc", "Процессы и ИИ", "#FF8C42"], ["hr", "Персонал и управление", "#2BB673"], ["fin", "Финансы и учёт", "#F59E0B"], ["ops", "Приём и качество", "#EF4444"]], "tracks": [["lab", ["Лаборант", "Старший лаборант", "Молекулярный биолог", "Старший молекулярный биолог", "Заведующий отделом лаборатории"], 0], ["tech", ["Старший лаборант (NGS)", "Молекулярный биолог (NGS)", "Заведующий отделом пробоподготовки", "Заместитель заведующего лабораторией по технологиям", "Директор по техническому развитию (СТО)"], 0], ["eng", ["Инженер-электроник", "Старший инженер-электроник", "Заместитель руководителя отдела производства, эксплуатации и ремонта"], 0], ["rnd", ["Лаборант (научно-производственный отдел)", "Старший специалист (научно-производственный отдел)", "Ведущий специалист (научно-производственный отдел)", "Заместитель руководителя департамента R&D"], 0], ["cs", ["Менеджер по сопровождению клиентов B2C", "Менеджер по сопровождению клиентов В2С, В2В, B2D", "Ведущий менеджер по сопровождению клиентов В2С, В2В, B2D"], 0], ["cs", ["Продакт-менеджер направления продаж продукции для молекулярно-биологических исследований", "Руководитель отдела прикладных решений и клиентской поддержки"], 0], ["cs", ["Старший молекулярный биолог (лаборатория сервисных научных проектов)", "Менеджер по продажам услуг научного сервиса"], 0], ["cs", ["Лаборант (лаборатория сервисных научных проектов)", "Менеджер по продажам услуг научного сервиса"], 0], ["proc", ["Специалист по процессному управлению", "Ведущий специалист по процессному управлению", "Руководитель отдела разработки искусственного интеллекта"], 0], ["proc", ["Специалист по процессному управлению", "Ведущий специалист по процессному управлению", "Заместитель директора департамента процессного управления и развития"], 2], ["hr", ["Менеджер по персоналу", "Ведущий менеджер по персоналу", "Руководитель ОКС", "Оперативный директор"], 0], ["hr", ["Руководитель ОКС", "Директор департамента процессного управления и развития"], 1], ["hr", ["Менеджер по персоналу", "Директор по персоналу", "Заместитель генерального директора по управлению персоналом холдинга"], 1], ["fin", ["Финансовый контролёр", "Заместитель руководителя отдела первичного учёта", "Руководитель отдела первичного учёта"], 0], ["fin", ["Экономист по управленческому учёту", "Руководитель отдела управленческого учёта"], 0], ["ops", ["Специалист по приёму биоматериала", "Старший специалист по приёму биоматериала", "Руководитель отдела проборазбора"], 0], ["ops", ["Офис-менеджер", "Специалист отдела СМК", "Ведущий специалист отдела СМК"], 0]]};
+/* роли, где сейчас открыт набор */
+const VAC = ["Лаборант","Специалист по приему биоматериала","Менеджер по сопровождению клиентов B2C",
+             "Менеджер по продажам услуг научного сервиса (исследования в области молекулярной биологии и генетики)",
+             "Лаборант (лаборатория сервисных научных проектов)"];
+
+(function(){
+  "use strict";
+  const $=i=>document.getElementById(i);
+  const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const plural=(n,a,b,c)=>{const d=n%10,w=n%100;return (w>=11&&w<=14)?c:(d===1?a:(d>=2&&d<=4?b:c));};
+  const HEX={},NAME={};
+  D.dirs.forEach(([k,n,h])=>{HEX[k]=h;NAME[k]=n;});
+  const norm=s=>s.trim().toLowerCase().replace(/ё/g,'е');
+  const isVac=s=>VAC.some(v=>norm(v)===norm(s));
+
+  /* чипы направлений */
+  const ch=$('chips');
+  const all=document.createElement('button');
+  all.className='chip on'; all.dataset.k='all';
+  all.innerHTML='<span class="dot"></span>Все направления'; ch.appendChild(all);
+  D.dirs.forEach(([k,n,h])=>{
+    const c=document.createElement('button'); c.className='chip'; c.dataset.k=k;
+    c.style.setProperty('--cc',h);
+    c.innerHTML='<span class="dot" style="background:'+h+'"></span>'+esc(n); ch.appendChild(c);
+  });
+
+  /* карточки направлений */
+  const body=$('body');
+  D.dirs.forEach(([k,n,h])=>{
+    const tr=D.tracks.filter(t=>t[0]===k);
+    if(!tr.length) return;
+    const el=document.createElement('section');
+    el.className='dir'; el.dataset.k=k; el.style.setProperty('--cc',h);
+    let html='<div class="dir__h"><h3>'+esc(n)+'</h3><span>'+tr.length+' '+
+      plural(tr.length,'карьерный путь','карьерных пути','карьерных путей')+'</span></div>';
+    tr.forEach(([,path,fork])=>{
+      html+='<div class="path'+(fork?' br':'')+'">';
+      path.forEach((role,i)=>{
+        if(i) html+='<span class="arr">→</span>';
+        const cls='st'+(i===0?' start':'')+(i===path.length-1?' top':'')+(i<fork?' rep':'');
+        html+='<span class="'+cls+'"><b></b>'+esc(role)+
+              (isVac(role)?'<span class="vac">есть вакансия</span>':'')+'</span>';
+      });
+      html+='</div>';
+    });
+    el.innerHTML=html; body.appendChild(el);
+  });
+
+  const roles=new Set(); D.tracks.forEach(t=>t[1].forEach(r=>roles.add(norm(r))));
+  $('note').textContent='Каждая строка — отдельный карьерный путь, который в компании уже кто-то прошёл. '+
+    'Всего '+D.tracks.length+' путей и '+roles.size+' должностей. Отступом показаны развилки: '+
+    'бледные звенья — общая часть пути, дальше он расходится.';
+
+  ch.addEventListener('click',e=>{
+    const c=e.target.closest('.chip'); if(!c) return;
+    [...ch.children].forEach(x=>x.classList.toggle('on',x===c));
+    [...body.children].forEach(s=>s.style.display=(c.dataset.k==='all'||s.dataset.k===c.dataset.k)?'':'none');
+  });
+  console.info('[плоская схема] путей:',D.tracks.length,'| должностей:',roles.size);
+})();
+</script>
+</body>
+</html>
