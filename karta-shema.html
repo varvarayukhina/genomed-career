@@ -409,6 +409,9 @@ document.addEventListener('DOMContentLoaded', async function() {
       if(!keep && e.style.display!=='none') e.style.setProperty('display','none','important');
     });
     if(host.style.paddingTop!=='0px') host.style.paddingTop='0px';
+    /* без этого страница всегда тянется на 100vh и в кадре снизу пустота */
+    document.body.style.minHeight='0'; document.documentElement.style.minHeight='0';
+    document.body.style.height='auto'; document.body.style.display='block';
   }
   strip(); addEventListener('load',strip); setInterval(strip,400);
 })();
