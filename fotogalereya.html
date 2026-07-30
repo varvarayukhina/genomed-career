@@ -93,9 +93,7 @@
   .lb__nosup{max-width:30em;text-align:center;color:#E2E8F0;background:rgba(255,255,255,.07);
     border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:28px 30px}
   .lb__nosup b{display:block;font-family:var(--display);font-size:1.05rem;color:#fff}
-  .lb__nosup span{display:block;margin:8px 0 16px;font-size:.9rem;color:#AFC0D4;line-height:1.5}
-  .lb__nosup a{display:inline-block;color:#0F172A;background:#fff;border-radius:999px;
-    padding:9px 18px;font-family:var(--display);font-weight:700;font-size:.86rem;text-decoration:none}
+  .lb__nosup span{display:block;margin:8px 0 0;font-size:.9rem;color:#AFC0D4;line-height:1.5}
 
   .note{margin:44px 0 60px;padding:16px 18px;border-radius:16px;background:#fff;
     border:1px solid #E7EDF4;box-shadow:var(--shadow-sm);color:var(--muted);font-size:.9rem;line-height:1.6}
@@ -278,14 +276,14 @@ const SECTIONS = [{"id": 1, "name": "Закулисье лаборатории",
     slot.innerHTML = p.video
       ? '<video src="'+esc(p.src)+'" controls autoplay playsinline></video>'
       : '<img src="'+esc(p.src)+'" alt="'+esc(p.sec)+'">';
-    /* два ролика в галерее сняты на iPhone в HEVC — Chrome и Firefox их не декодируют
-       (метаданные приходят, а видеодорожки нет). Вместо чёрного плеера — ссылка на файл */
+    /* два ролика сняты на iPhone в HEVC — Chrome и Firefox их не декодируют вообще
+       (метаданные приходят, видеодорожки нет). Вместо чёрного плеера — короткая
+       подпись, чтобы человек понимал, почему пусто. Лечится перекодированием в H.264 */
     if(p.video){
       const v=slot.querySelector('video'), fail=()=>{
         if(!lb.classList.contains('on')||slot.querySelector('.lb__nosup')) return;
-        slot.innerHTML='<div class="lb__nosup"><b>Этот ролик в формате HEVC</b>'+
-          '<span>Браузер не умеет его показывать — Safari или плеер на компьютере откроют файл нормально.</span>'+
-          '<a href="'+esc(p.src)+'" target="_blank" rel="noopener">Открыть файл</a></div>';
+        slot.innerHTML='<div class="lb__nosup"><b>Этот ролик браузер показать не может</b>'+
+          '<span>Он записан в формате HEVC — откроется в Safari.</span></div>';
       };
       v.addEventListener('loadedmetadata',()=>{ setTimeout(()=>{ if(v.videoWidth===0) fail(); },500); },{once:true});
       v.addEventListener('error',fail,{once:true});

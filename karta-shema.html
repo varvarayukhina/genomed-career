@@ -412,6 +412,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     /* без этого страница всегда тянется на 100vh и в кадре снизу пустота */
     document.body.style.minHeight='0'; document.documentElement.style.minHeight='0';
     document.body.style.height='auto'; document.body.style.display='block';
+    /* обёртки самой страницы держат min-height:100vh и нижний отступ 60px:
+       из-за них iframe на сайте получался почти на 230px выше самой схемы */
+    for(var p=host; p && p!==document.body; p=p.parentElement){
+      if(p.style.minHeight!=='0px') p.style.setProperty('min-height','0','important');
+      if(p.style.paddingBottom!=='0px') p.style.setProperty('padding-bottom','0','important');
+    }
   }
   strip(); addEventListener('load',strip); setInterval(strip,400);
 })();
