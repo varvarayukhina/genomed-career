@@ -2,7 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Bundled Page</title>
+  <title>Карта карьерных путей Геномед</title>
+  <!-- страница живёт только внутри iframe на главной, отдельно её индексировать нечего -->
+  <meta name="robots" content="noindex, follow">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #F7F9FC; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
@@ -418,6 +420,14 @@ document.addEventListener('DOMContentLoaded', async function() {
       if(p.style.minHeight!=='0px') p.style.setProperty('min-height','0','important');
       if(p.style.paddingBottom!=='0px') p.style.setProperty('padding-bottom','0','important');
     }
+    /* узкий экран: вписанная по ширине схема давала подписи по 2px, читать
+       нечего. Держим её крупной (подписи ~11px) и листаем по горизонтали */
+    var wide = 1400, narrow = innerWidth < 1000;   /* кадр уже 1000px — это планшеты и телефоны */
+    var minW = narrow ? wide+'px' : '';
+    if(document.body.style.minWidth!==minW) document.body.style.minWidth=minW;
+    var ovx = narrow ? 'auto' : 'hidden';
+    if(document.documentElement.style.overflowX!==ovx) document.documentElement.style.overflowX=ovx;
+    if(document.documentElement.style.overflowY!=='hidden') document.documentElement.style.overflowY='hidden';
   }
   strip(); addEventListener('load',strip); setInterval(strip,400);
 })();

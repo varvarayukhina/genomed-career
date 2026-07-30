@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://varvarayukhina.github.io/genomed-career/sitemap.xml
