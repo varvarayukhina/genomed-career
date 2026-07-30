@@ -158,7 +158,9 @@
   .gm-btn:focus-visible{outline:3px solid var(--cyan); outline-offset:2px}
 
   /* ================= HERO · голубой баннер (306C) ================= */
-  .gm-hero{position:relative; padding:34px 0 40px; overflow:hidden;
+  /* --hero-measure: одна мера ширины для заголовка и описания, чтобы описание
+     не было уже заголовка и не растягивалось на лишние строки */
+  .gm-hero{--hero-measure:740px; position:relative; padding:34px 0 40px; overflow:hidden;
     background:
       radial-gradient(900px 380px at 84% -18%, rgba(255,255,255,.35), transparent 60%),
       linear-gradient(135deg, #33C9EE 0%, #00B5E2 48%, #0092BC 100%);
@@ -182,12 +184,13 @@
   .gm-hero__sub{margin-inline:auto; max-width:40em}
   .gm-hero__cta{justify-content:center}
   .gm-hero h1{
-    font-size:clamp(1.8rem, 3.2vw, 2.7rem); font-weight:800; margin:10px 0 0; max-width:17em; color:#fff;
+    font-size:clamp(1.8rem, 3.2vw, 2.7rem); font-weight:800; margin:10px 0 0;
+    max-width:var(--hero-measure); color:#fff;
   }
   /* text-wrap:balance выравнивает строки по длине — без него на последней строке
      оставалось одно слово («движения.») */
   .gm-hero__sub{margin-top:16px; font-size:clamp(1rem,1.35vw,1.16rem); color:rgba(255,255,255,.92);
-    max-width:34em; text-wrap:balance}
+    max-width:var(--hero-measure); text-wrap:balance}
   .gm-hero__cta{display:flex; flex-wrap:wrap; gap:14px; margin-top:22px}
   .gm-hero__scope{
     margin-top:34px; display:flex; flex-wrap:wrap; gap:10px 8px; align-items:center;
@@ -248,18 +251,6 @@
   @media (max-width:600px){ .gm-metro-cta{padding:22px 20px} .gm-metro-cta .gm-btn{width:100%; justify-content:center} }
 
   /* ---------- Почему Геномед ---------- */
-  .gm-why{display:grid; grid-template-columns:repeat(2,1fr); gap:20px}
-  .gm-why__item{
-    background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:26px 26px 24px;
-    position:relative; overflow:hidden; transition:transform .15s, box-shadow .15s, border-color .15s;
-  }
-  .gm-sec--stripe .gm-why__item{background:#fff}
-  .gm-why__item:hover{transform:translateY(-3px); box-shadow:var(--shadow-sm); border-color:var(--line-2)}
-  .gm-why__k{font-family:var(--mono); font-size:.72rem; color:var(--cyan); letter-spacing:.1em}
-  .gm-why__item h3{font-size:1.28rem; margin:12px 0 8px}
-  .gm-why__item p{color:var(--ink-2); font-size:1rem}
-  .gm-why--3 .gm-why__item{padding-top:30px}
-  .gm-why--3 .gm-why__item::before{content:""; position:absolute; top:0; left:0; right:0; height:5px; background:linear-gradient(135deg,var(--cyan),var(--blue))}
 
   /* ---------- Направления ---------- */
   .gm-dirs{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
@@ -494,7 +485,6 @@
     .gm-burger{display:grid; place-items:center; width:40px;height:40px;border:1px solid var(--line);border-radius:9px;background:#fff;cursor:pointer}
     .gm-burger svg{width:20px;height:20px;color:var(--ink)}
     .gm-logo img{width:158px}
-    .gm-why{grid-template-columns:1fr}
     .gm-dirs{grid-template-columns:1fr}
     .gm-hero{padding:52px 0 30px}
     .gm-sec{padding:56px 0}
@@ -510,17 +500,6 @@
     .gm-steps{grid-template-columns:1fr}
   }
   /* ===== реальные цифры компании ===== */
-  .gm-stats{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:30px}
-  .gm-stat{position:relative; background:#fff; border:1px solid var(--line); border-radius:var(--radius);
-    padding:28px 22px 24px; box-shadow:var(--shadow-sm); overflow:hidden}
-  .gm-stat::before{content:""; position:absolute; top:0; left:0; right:0; height:5px;
-    background:linear-gradient(135deg,var(--cyan),var(--blue))}
-  .gm-stat b{display:block; font-family:var(--display); font-weight:800; font-size:2.2rem;
-    color:var(--ink); line-height:1; letter-spacing:-.02em}
-  .gm-stat b::after{content:""; display:block; width:34px; height:3px; border-radius:3px;
-    background:linear-gradient(135deg,var(--cyan),var(--blue)); margin:12px 0}
-  .gm-stat span{display:block; color:var(--ink-3); font-size:.9rem; line-height:1.4}
-  .gm-why--3{grid-template-columns:repeat(3,1fr)}
 
   /* ===== навигация вакансий: боковое меню + поиск ===== */
   .gm-vaclayout{display:grid; grid-template-columns:250px minmax(0,1fr); gap:28px; align-items:start}
@@ -720,10 +699,6 @@
 
   /* ===== адаптив новых блоков ===== */
   @media (max-width:1000px){ .gm-steps--5{grid-template-columns:repeat(3,1fr)} }
-  @media (max-width:900px){
-    .gm-stats{grid-template-columns:repeat(2,1fr)}
-    .gm-why--3{grid-template-columns:1fr}
-  }
   @media (max-width:760px){
     .gm-vc{flex-direction:column; gap:16px}
     .gm-vc__side{width:100%; flex-direction:row; flex-wrap:wrap}
@@ -733,25 +708,10 @@
     .gm-steps--5{grid-template-columns:repeat(2,1fr)}
   }
   @media (max-width:520px){
-    .gm-stats{grid-template-columns:1fr}
-    .gm-stat b{font-size:1.9rem}
     .gm-vc__side{flex-direction:column}
     .gm-vc__side .gm-btn, .gm-vc__more{width:100%; flex:none}
     .gm-steps--5{grid-template-columns:1fr}
   }
-  /* ===== реальные бенефиты ===== */
-  .gm-perks{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:26px}
-  .gm-perk{display:flex; gap:15px; align-items:flex-start; padding:22px 24px;
-    background:#fff; border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow-sm)}
-  .gm-perk + .gm-perk{border-left:0}
-  .gm-perk__ic{width:42px; height:42px; flex:none; border-radius:11px;
-    display:flex; align-items:center; justify-content:center; line-height:0;
-    background:var(--stripe); color:var(--blue)}
-  .gm-perk__ic svg{width:22px; height:22px; display:block}
-  .gm-perk b{display:block; font-family:var(--display); font-weight:700; font-size:1.04rem; color:var(--ink)}
-  .gm-perk div span{display:block; color:var(--ink-2); font-size:.92rem; margin-top:4px; line-height:1.45}
-
-
   /* ===== профессиональные истории ===== */
   .gm-stories{display:grid; grid-template-columns:repeat(3,1fr); gap:18px}
   .gm-story{background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:26px 24px;
@@ -808,6 +768,57 @@
     border:1px solid rgba(255,255,255,.16); border-radius:16px; padding:28px 30px}
   .gm-lb__nosup b{display:block; font-family:var(--display); font-size:1.05rem; color:#fff}
   .gm-lb__nosup span{display:block; margin-top:8px; font-size:.9rem; color:#AFC0D4; line-height:1.5}
+
+  /* ===== вариант 2a: цифры в баннере, ценности и лента условий ===== */
+  /* цифры внутри баннера. Подпись 1rem вместо .85rem из макета — на голубом
+     фоне мелкий текст читался тяжело */
+  .gm-herostats{margin-top:32px; padding-top:24px; border-top:1px solid rgba(255,255,255,.3);
+    display:grid; grid-template-columns:repeat(4,1fr); text-align:left}
+  .gm-herostats__i{padding:0 32px; border-right:1px solid rgba(255,255,255,.28)}
+  .gm-herostats__i:first-child{padding-left:0}
+  .gm-herostats__i:last-child{padding-right:0; border-right:0}
+  .gm-herostats b{display:block; font-family:var(--display); font-weight:800;
+    font-size:clamp(1.9rem,2.6vw,2.5rem); line-height:1; letter-spacing:-.03em; color:#fff}
+  .gm-herostats span{display:block; margin-top:9px; font-size:1rem; line-height:1.45;
+    color:rgba(255,255,255,.94); text-wrap:pretty}
+
+  /* ценности: без карточек, линейка сверху */
+  .gm-values{display:grid; grid-template-columns:repeat(3,1fr); gap:44px; margin-top:44px}
+  .gm-values__i{display:flex; flex-direction:column; gap:12px; border-top:2px solid var(--blue); padding-top:18px}
+  .gm-values__k{font-family:var(--mono); font-size:.78rem; letter-spacing:.1em; color:var(--blue-700,#0092BC)}
+  .gm-values__i h3{font-family:var(--display); font-size:1.38rem; font-weight:700; line-height:1.2;
+    letter-spacing:-.015em; margin:0; color:var(--ink)}
+  .gm-values__i p{margin:0; font-size:1rem; line-height:1.55; color:var(--ink-2); text-wrap:pretty}
+
+  /* условия: светлая лента в конце секции */
+  .gm-benefits{background:#fff; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    margin-top:60px; padding:34px 0}
+  .gm-benefits__head{display:flex; align-items:baseline; justify-content:space-between; gap:24px; flex-wrap:wrap}
+  .gm-benefits__k{font-family:var(--mono); font-size:.78rem; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3)}
+  .gm-benefits__all{font-family:var(--display); font-size:.9rem; font-weight:600; color:var(--blue)}
+  .gm-benefits__all:hover{text-decoration:underline}
+  .gm-benefits__grid{margin-top:22px; display:grid; grid-template-columns:repeat(3,1fr); gap:32px}
+  .gm-benefit{display:flex; gap:14px; align-items:flex-start}
+  .gm-benefit svg{width:20px; height:20px; flex:none; margin-top:2px; color:var(--blue)}
+  .gm-benefit b{display:block; font-family:var(--display); font-size:1rem; font-weight:700; color:var(--ink)}
+  .gm-benefit span{display:block; margin-top:4px; font-size:.92rem; line-height:1.45; color:var(--ink-2); text-wrap:pretty}
+
+  /* на телефоне первым экраном идут вакансии, поэтому цифры компактнее:
+     иначе блок отодвигает поиск и карточки почти на пол-экрана */
+  @media (max-width:760px){
+    .gm-herostats{margin-top:22px; padding-top:18px}
+    .gm-herostats b{font-size:1.6rem}
+    .gm-herostats span{font-size:.92rem; margin-top:5px; line-height:1.35}
+  }
+  @media (max-width:900px){
+    .gm-herostats{grid-template-columns:repeat(2,1fr); gap:22px 0}
+    .gm-herostats__i{padding:0 20px}
+    .gm-herostats__i:nth-child(2){border-right:0; padding-right:0}
+    .gm-herostats__i:nth-child(3){padding-left:0}
+    .gm-values{grid-template-columns:1fr; gap:28px}
+    .gm-benefits__grid{grid-template-columns:1fr; gap:20px}
+  }
+
   /* ===== просмотрщик галереи ===== */
   .gm-lb{position:fixed; inset:0; z-index:120; display:none; align-items:center; justify-content:center;
     padding:clamp(12px,3vw,40px); background:rgba(8,15,30,.94); backdrop-filter:blur(3px)}
@@ -838,8 +849,6 @@
 
   /* ===== адаптив: истории/галерея/перки/фильтры ===== */
   @media (max-width:900px){
-    .gm-perks{grid-template-columns:1fr}
-    .gm-perk + .gm-perk{border-top:0}
     .gm-stories{grid-template-columns:1fr}
     .gm-gallery{grid-template-columns:repeat(2,1fr)}
   }
@@ -947,6 +956,7 @@
     .gm-subnav__links a{min-height:44px; display:inline-flex; align-items:center}
     .gm-side-item{min-height:44px}
     .gm-mchip{min-height:44px}
+    .gm-benefits__all{min-height:44px; display:inline-flex; align-items:center}
     .gm-vc__more{min-height:44px}
     .gm-filter-reset{min-height:44px}
     .gm-consent input{width:22px; height:22px; margin-top:1px}
@@ -955,7 +965,7 @@
   /* 3. Мелкие подписи: 11,2–11,5px на телефоне и планшете читаются плохо.
      #vakansii .gm-side-lbl указан отдельно — иначе мобильное правило с id перебивает */
   @media (max-width:1024px){
-    .gm-vc__dept, .gm-side-lbl, .gm-why__k, #vakansii .gm-side-lbl{font-size:.75rem}
+    .gm-vc__dept, .gm-side-lbl, #vakansii .gm-side-lbl{font-size:.75rem}
   }
 
   /* 4. Меню шапки на телефоне: .gm-topnav скрыт, а бургер только прокручивал к
@@ -1110,6 +1120,12 @@
           </a>
         </div>
         <p class="gm-hero__sub">Наша сила в команде, где каждый не просто сотрудник, а соавтор общего дела. Мы объединяем вовлеченных профессионалов, которые двигают команду вперед и не боятся брать на себя ответственность. Если ты разделяешь наш подход, заполняй анкету и становись частью движения.</p>
+        <div class="gm-herostats">
+          <div class="gm-herostats__i"><b>19</b><span>лет на российском и зарубежных рынках</span></div>
+          <div class="gm-herostats__i"><b>120&thinsp;000</b><span>пациентов доверяют нам ежегодно</span></div>
+          <div class="gm-herostats__i"><b>100+</b><span>городов присутствия</span></div>
+          <div class="gm-herostats__i"><b>24/7</b><span>круглосуточная поддержка пациентов</span></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1118,49 +1134,49 @@
 <!-- ==================== ПОЧЕМУ ГЕНОМЕД · продолжение ==================== -->
 <section class="gm-sec" id="pochemu-2">
   <div class="gm-wrap">
-    <div class="gm-stats gm-reveal">
-      <div class="gm-stat"><b>19</b><span>лет на российском и зарубежных рынках</span></div>
-      <div class="gm-stat"><b>120&thinsp;000</b><span>пациентов доверяют нам ежегодно</span></div>
-      <div class="gm-stat"><b>100+</b><span>городов присутствия</span></div>
-      <div class="gm-stat"><b>24/7</b><span>круглосуточная поддержка</span></div>
+    <div class="gm-sec__head gm-reveal">
+      <span class="gm-eyebrow">Почему у нас остаются</span>
+      <h2>Три причины, о которых говорят сами сотрудники</h2>
     </div>
 
-    <div class="gm-perks gm-reveal gm-perks--top">
-      <div class="gm-perk">
-        <span class="gm-perk__ic" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </span>
-        <div><b>Заботливый HR</b><span>Сопровождаем ваше профессиональное развитие.</span></div>
-      </div>
-      <div class="gm-perk">
-        <span class="gm-perk__ic" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg>
-        </span>
-        <div><b>Скидки на медуслуги</b><span>Для сотрудника и членов семьи.</span></div>
-      </div>
-      <div class="gm-perk">
-        <span class="gm-perk__ic" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12"/></svg>
-        </span>
-        <div><b>Спорт и музыка</b><span>Бесплатные тренировки: пляжный волейбол, музыкальные занятия. Соревнования.</span></div>
-      </div>
-    </div>
-
-    <div class="gm-why gm-why--3" style="margin-top:8px">
-      <div class="gm-why__item gm-reveal">
-        <span class="gm-why__k">// смысл</span>
+    <div class="gm-values gm-reveal">
+      <div class="gm-values__i">
+        <span class="gm-values__k">01 / смысл</span>
         <h3>Работа доходит до пациента</h3>
         <p>Пробирка, пайплайн или строчка кода — часть чьего-то диагноза и решения о лечении. Здесь редко бывает «просто задача».</p>
       </div>
-      <div class="gm-why__item gm-reveal">
-        <span class="gm-why__k">// атмосфера</span>
-        <h3>К нам приходят за возможностями. Возвращаются за стабильностью</h3>
-        <p>Мы создаём среду для карьерного роста и профессионального развития. И атмосферу, ради которой возвращаются обратно. Здесь по-настоящему ценят людей.</p>
+      <div class="gm-values__i">
+        <span class="gm-values__k">02 / атмосфера</span>
+        <h3>Приходят за возможностями, возвращаются за стабильностью</h3>
+        <p>Среда для роста и атмосфера, ради которой возвращаются обратно. Здесь по-настоящему ценят людей.</p>
       </div>
-      <div class="gm-why__item gm-reveal">
-        <span class="gm-why__k">// развитие</span>
+      <div class="gm-values__i">
+        <span class="gm-values__k">03 / развитие</span>
         <h3>Стек обновляется — и вы вместе с ним</h3>
         <p>Секвенирование, новые панели, инструменты на основе ИИ. Методы двигаются быстро, и рядом есть у кого учиться.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="gm-benefits gm-reveal">
+    <div class="gm-wrap">
+      <div class="gm-benefits__head">
+        <span class="gm-benefits__k">// что получаете, кроме зарплаты</span>
+        <a class="gm-benefits__all" href="#reserv">Все условия работы →</a>
+      </div>
+      <div class="gm-benefits__grid">
+        <div class="gm-benefit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <div><b>Заботливый HR</b><span>Сопровождаем ваше профессиональное развитие.</span></div>
+        </div>
+        <div class="gm-benefit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg>
+          <div><b>Скидки на медуслуги</b><span>Для сотрудника и членов семьи.</span></div>
+        </div>
+        <div class="gm-benefit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12"/></svg>
+          <div><b>Спорт и музыка</b><span>Бесплатные тренировки: пляжный волейбол, музыкальные занятия. Соревнования.</span></div>
+        </div>
       </div>
     </div>
   </div>
