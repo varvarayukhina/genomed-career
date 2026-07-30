@@ -759,6 +759,18 @@
     border:1px solid var(--line); background:var(--stripe)}
   .gm-gtile img{width:100%; height:100%; object-fit:cover; display:block; transition:.3s ease}
   .gm-gtile:hover img{transform:scale(1.04)}
+  /* видеоплитка: пока не пришёл первый кадр — тёмная подложка, а не пустой прямоугольник */
+  .gm-gtile--vid{background:linear-gradient(160deg,#24384E,#0E1E2E)}
+  .gm-gtile video{width:100%; height:100%; object-fit:cover; display:block;
+    opacity:0; transition:opacity .3s ease, transform .3s ease}
+  .gm-gtile--vid.is-ready video{opacity:1}
+  .gm-gtile--vid:hover video{transform:scale(1.04)}
+  .gm-gtile__play{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:52px; height:52px; border-radius:50%; background:rgba(255,255,255,.92);
+    display:grid; place-items:center; box-shadow:0 8px 22px rgba(15,23,42,.28);
+    pointer-events:none; transition:opacity .2s ease}
+  .gm-gtile__play svg{width:20px; height:20px; margin-left:2px; color:#0F172A}
+  .gm-gtile--vid.is-playing .gm-gtile__play{opacity:0}
   .gm-gtile__cap{position:absolute; left:0; right:0; bottom:0; padding:10px 12px; font-size:.85rem; font-weight:600; color:#fff;
     background:linear-gradient(transparent, rgba(10,37,64,.72))}
   .gm-gtile--ph{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
@@ -2107,10 +2119,10 @@ const GALLERY = [
   { src:GB+'2024-2/2024-09-19 23.15.09_470x470_be4.jpg', full:GB+'2024-2/2024-09-19 23.15.09_1280x0_426.jpg', caption:'Лаборатория изнутри' },              // 2024-09-19
   { src:GB+'2026/photo_2026-03-31_15-48-58-m.jpg', full:GB+'2026/photo_2026-03-31_15-48-58.jpg', caption:'Мастер-класс по живописи' },                      // 2026-03-31
   { src:GB+'2026/photo_2026-03-31_15-40-14-m.jpg', full:GB+'2026/photo_2026-03-31_15-40-14.jpg', caption:'Творческий вечер' },                              // 2026-03-31
-  { src:GB+'2026/1.png', full:GB+'2026/1.jpg', caption:'Кулинарный мастер-класс' },                                                                         // 2026
-  { src:GB+'2026/7.png', full:GB+'2026/7.jpg', caption:'Картинг-турнир' },                                                                                  // 2026
+  { video:GB+'2026/11.MP4', caption:'Кулинарный мастер-класс' },                                                                                            // 2026, 5,4 МБ
+  { video:GB+'2026/33.MP4', caption:'Картинг-турнир' },                                                                                                     // 2026, 3,4 МБ
   { src:GB+'2026/8.png', full:GB+'2026/8.jpg', caption:'Турнир по бильярду' },                                                                              // 2026
-  { src:GB+'2026/9.png', full:GB+'2026/9.jpg', caption:'Корпоративный праздник' },                                                                          // 2026
+  { video:GB+'2026/55.MP4', caption:'Корпоративный праздник' },                                                                                             // 2026, 6,4 МБ
   { src:GB+'2025/photo_2025-11-20_20-12-52-470.png', full:GB+'2025/photo_2025-11-20_20-12-52.jpg', caption:'Пляжный волейбол' },                            // 2025-11-20
   { src:GB+'2025/photo_2025-10-02_19-22-49_470x470_be4.jpg', full:GB+'2025/photo_2025-10-02_19-22-49_1280x0_426.jpg', caption:'Форумы и конференции' },     // 2025-10-02
   { src:GB+'2025/photo_2025-06-17_17-51-07_470x470_be4.jpg', full:GB+'2025/photo_2025-06-17_17-51-07_1280x0_426.jpg', caption:'Забеги' },                   // 2025-06-17
@@ -2119,17 +2131,56 @@ const GALLERY = [
 (function(){
   const el=document.getElementById('gmGallery'); if(!el) return;
   const CAM='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 8h3l1.5-2h7L18 8h2a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.2"/></svg>';
+  const PLAY='<span class="gm-gtile__play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg></span>';
   const items = GALLERY.length ? GALLERY : Array.from({length:6}, ()=>({}));
   items.forEach(g=>{
-    const t=document.createElement(g.src?'a':'div');
-    t.className='gm-gtile'+(g.src?'':' gm-gtile--ph');
-    if(g.src){
+    const media = g.src || g.video;
+    const t=document.createElement(media?'a':'div');
+    t.className='gm-gtile'+(media?'':' gm-gtile--ph')+(g.video?' gm-gtile--vid':'');
+    const cap = g.caption ? '<span class="gm-gtile__cap">'+g.caption+'</span>' : '';
+    if(g.video){
+      t.href=g.video; t.target='_blank'; t.rel='noopener';
+      t.setAttribute('aria-label', (g.caption||'Видео о жизни команды')+' — видео');
+      /* постеров у роликов на сайте нет, поэтому превью — кадр из самого файла;
+         src ставится очередью ниже, чтобы браузер не тянул все ролики разом */
+      t.innerHTML='<video data-src="'+g.video+'" muted playsinline loop preload="none"></video>'+PLAY+cap;
+    } else if(g.src){
       t.href=g.full||g.src; t.target='_blank'; t.rel='noopener';
-      t.innerHTML='<img src="'+g.src+'" alt="'+(g.caption||'Фото лаборатории Геномед')+'" loading="lazy">'+
-                  (g.caption?'<span class="gm-gtile__cap">'+g.caption+'</span>':'');
+      t.innerHTML='<img src="'+g.src+'" alt="'+(g.caption||'Фото лаборатории Геномед')+'" loading="lazy">'+cap;
     } else { t.innerHTML=CAM+'<span>фото</span>'; }
     el.appendChild(t);
   });
+
+  /* ---- превью видеоплиток: грузим по появлению в кадре и по одному ----
+     на наведение ролик играет без звука, при уходе курсора возвращается на кадр-превью */
+  const queue=[]; let busy=false;
+  function pump(){ if(busy || !queue.length) return; load(queue.shift()); }
+  function load(v){
+    busy=true;
+    const tile=v.closest('.gm-gtile');
+    let settled=false;
+    const finish=ok=>{ if(settled) return; settled=true; clearTimeout(timer);
+      if(ok) tile.classList.add('is-ready'); busy=false; pump(); };
+    const timer=setTimeout(()=>finish(v.videoWidth>0), 9000);
+    v.addEventListener('loadedmetadata',()=>{
+      v.dataset.frame=Math.min(1, (v.duration||4)/4);
+      try{ v.currentTime=+v.dataset.frame; }catch(err){ finish(v.videoWidth>0); }
+    },{once:true});
+    v.addEventListener('seeked',()=>finish(v.videoWidth>0),{once:true});
+    v.addEventListener('error',()=>finish(false),{once:true});
+    v.preload='metadata'; v.src=v.dataset.src;
+    tile.addEventListener('pointerenter',()=>{ if(v.readyState>=2){ tile.classList.add('is-playing'); v.play().catch(()=>{}); } });
+    tile.addEventListener('pointerleave',()=>{ tile.classList.remove('is-playing'); v.pause();
+      try{ v.currentTime=+(v.dataset.frame||0); }catch(err){} });
+  }
+  const vids=[...el.querySelectorAll('video[data-src]')];
+  if('IntersectionObserver' in window){
+    const io=new IntersectionObserver((ents,ob)=>{
+      ents.forEach(e=>{ if(e.isIntersecting){ ob.unobserve(e.target); queue.push(e.target); } });
+      pump();
+    },{rootMargin:'400px 0px'});
+    vids.forEach(v=>io.observe(v));
+  } else { queue.push(...vids); pump(); }
 })();
 
 /* ---------- resume upload ---------- */
