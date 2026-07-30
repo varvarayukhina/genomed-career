@@ -792,6 +792,15 @@
   .gm-gallery-lead__ps{color:var(--ink-3); font-size:.98rem}
 
 
+  /* число материалов в разделе: сразу видно, что за плиткой альбом */
+  .gm-gtile__count{position:absolute; top:10px; right:10px; min-width:26px; padding:3px 8px;
+    border-radius:999px; background:rgba(15,23,42,.72); color:#fff; font-family:var(--mono);
+    font-size:.74rem; font-weight:700; text-align:center; pointer-events:none}
+  button.gm-gtile{cursor:zoom-in; padding:0; font:inherit; text-align:left; width:100%}
+  .gm-lb__nosup{max-width:30em; text-align:center; color:#E2E8F0; background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.16); border-radius:16px; padding:28px 30px}
+  .gm-lb__nosup b{display:block; font-family:var(--display); font-size:1.05rem; color:#fff}
+  .gm-lb__nosup span{display:block; margin-top:8px; font-size:.9rem; color:#AFC0D4; line-height:1.5}
   /* ===== просмотрщик галереи ===== */
   .gm-lb{position:fixed; inset:0; z-index:120; display:none; align-items:center; justify-content:center;
     padding:clamp(12px,3vw,40px); background:rgba(8,15,30,.94); backdrop-filter:blur(3px)}
@@ -2283,94 +2292,47 @@ const STORIES = [
 })();
 
 /* ============================================================
-   ФОТОГАЛЕРЕЯ — вставьте ссылки на изображения.
-   Формат: { src:'https://…/photo.jpg', caption:'Подпись' }
-   Пока массив пуст — показываются плитки-заглушки.
+   ФОТОГАЛЕРЕЯ — десять разделов (формулировки Пятовой М.В.).
+   Одна плитка = один раздел, клик открывает весь его альбом в просмотрщике:
+   в «Закулисье лаборатории» 25 материалов, во «Встречах команды» 77, всего 313.
+   Внутри раздела порядок хронологический — от новых кадров к старым.
+   cover — обложка плитки, items — весь альбом: {s:'фото.jpg'} или {v:'ролик.mp4'}.
+   Пути даются от GB. Данные собраны из фотогалереи genomed.ru.
    ============================================================ */
 const GB='https://genomed.ru/wp-content/uploads/vacancy/gallery/';
-/* Подборка обновлена 30.07.2026: от свежих кадров к более старым. Первые два —
-   сама лаборатория (для кандидата это главное), дальше жизнь команды.
-   Подписи — десять названий разделов по списку Пятовой М.В.
-   Даты в комментариях — дата съёмки по галерее genomed.ru. */
-const GALLERY = [
-  { src:GB+'2025/photo_2025-06-12_18-04-34_470x470_be4.jpg', full:GB+'2025/photo_2025-06-12_18-04-34_1280x0_426.jpg', caption:'Закулисье лаборатории' },      // 2025-06-12
-  { src:GB+'2026/photo_2026-03-31_15-48-58-m.jpg', full:GB+'2026/photo_2026-03-31_15-48-58.jpg', caption:'Творческие вечера' },                      // 2026-03-31
-  { video:GB+'2026/11.MP4', caption:'Кулинарные мастер-классы' },                                                                                            // 2026, 5,4 МБ
-  { video:GB+'2026/33.MP4', caption:'Картинг-турниры' },                                                                                                     // 2026, 3,4 МБ
-  { src:GB+'2026/8.png', full:GB+'2026/8.jpg', caption:'Турниры по бильярду' },                                                                              // 2026
-  { video:GB+'2026/55.MP4', caption:'Встречи команды' },                                                                                             // 2026, 6,4 МБ
-  { src:GB+'2025/photo_2025-11-20_20-12-52-470.png', full:GB+'2025/photo_2025-11-20_20-12-52.jpg', caption:'Волейбольная команда' },                            // 2025-11-20
-  { src:GB+'2025/photo_2025-10-02_19-22-49_470x470_be4.jpg', full:GB+'2025/photo_2025-10-02_19-22-49_1280x0_426.jpg', caption:'Форумы и конференции' },     // 2025-10-02
-  { src:GB+'2025/photo_2025-06-17_17-51-07_470x470_be4.jpg', full:GB+'2025/photo_2025-06-17_17-51-07_1280x0_426.jpg', caption:'Забеги' },                   // 2025-06-17
-  { src:GB+'2025/IMG_4820_470x470_a05.png', full:GB+'2025/IMG_4820_1280x0_198.png', caption:'Футбольная команда' },                                          // 2025
+const GALB = [
+  { n:'Закулисье лаборатории', cover:{src:'2025/photo_2025-06-12_18-04-34_470x470_be4.jpg'}, items:[{s:'2025/photo_2025-06-12_18-04-34_1280x0_426.jpg'},{v:'2024-2/v_2024-09-19 23.15.31.mp4'},{v:'2024-2/v_2024-09-19 23.13.42.mp4'},{s:'2024-2/2024-09-19 23.15.09_1280x0_426.jpg'},{v:'2024-2/v_2024-09-19 23.08.07.mp4'},{s:'2024-2/2024-09-19 23.14.50_1280x0_426.jpg'},{s:'2024-2/2024-09-19 23.14.32_1280x0_426.jpg'},{s:'2024-2/2024-09-19 23.14.21_1280x0_426.jpg'},{s:'2024-2/2024-09-19 23.14.13_1280x0_426.jpg'},{s:'2024-2/2024-09-19 23.13.51_1280x0_426.jpg'},{s:'2024-2/2024-09-19 23.13.30_1280x0_426.jpg'},{s:'2024-2/2024-09-19 23.13.21_1280x0_426.jpg'},{s:'2024-2/2024-09-19 23.13.08_1280x0_426.jpg'},{s:'2024-2/2024-09-19 23.12.57_1280x0_426.jpg'},{s:'2024-2/2024-09-19 23.12.45_1280x0_426.jpg'},{s:'2024-2/2024-09-19 23.12.20_1280x0_426.jpg'},{s:'2024-2/2024-09-19 23.12.10_1280x0_426.jpg'},{s:'2024-2/2024-09-19 23.11.18_1280x0_426.jpg'},{s:'2024-2/2024-09-19 23.11.11_1280x0_426.jpg'},{s:'2024-2/2024-09-19 23.11.01_1280x0_426.jpg'},{s:'2024-2/2024-09-19 23.10.25_1280x0_426.jpg'},{s:'2024-2/4_1280x0_426.jpg'},{s:'2024-2/3_1280x0_426.jpg'},{s:'2024-2/2_1280x0_426.jpg'},{s:'2024-2/1_1280x0_426.jpg'}] },   // 25 материалов
+  { n:'Футбольная команда', cover:{src:'2025/IMG_4820_470x470_a05.png'}, items:[{s:'2025/IMG_4820_1280x0_198.png'},{s:'2025/IMG_4756_1280x0_426.jpg'},{s:'2025/IMG_4833_1280x0_198.png'},{s:'2025/IMG_4830_1280x0_198.png'},{s:'2025/IMG_4828_1280x0_198.png'},{s:'2025/IMG_4826_1280x0_198.png'},{s:'2025/IMG_4817_1280x0_198.png'},{s:'2025/IMG_4819_1280x0_198.png'},{s:'2025/IMG_4750_1280x0_426.jpg'},{v:'2025/IMG_4711.mp4'},{s:'2025/IMG_4757_1280x0_426.jpg'},{s:'2025/IMG_4818_1280x0_198.png'},{s:'2024/photo_2024-11-22_22-45-44_1280x0_426.jpg'},{s:'2024/photo_2024-11-22_22-45-45_1280x0_426.jpg'},{s:'2024/photo_2024-11-22_22-45-45 (2)_1280x0_426.jpg'},{s:'2024/photo_2024-11-22_22-45-47_1280x0_426.jpg'},{s:'2024/photo_2024-11-22_22-45-45 (3)_1280x0_426.jpg'},{s:'2024/photo_2024-11-22_22-45-46_1280x0_426.jpg'},{s:'2024/photo_2024-11-22_22-45-46 (2)_1280x0_426.jpg'},{s:'2024/photo_2024-11-22_22-45-47 (2)_1280x0_426.jpg'},{s:'2024/photo_2024-11-22_22-45-47 (3)_1280x0_426.jpg'},{s:'2024/photo_2024-11-22_22-45-45 (4)_1280x0_426.jpg'},{s:'2024/photo_2024-11-22_22-45-44 (2)_1280x0_426.jpg'},{v:'2024/2024-11-02_20-46-45.mp4'},{v:'2024/2024-11-02_20-47-01.mp4'},{s:'2024/2024-08-21 17.38.34_1280x0_426.jpg'},{s:'2024/2024-08-21 17.37.01_1280x0_426.jpg'},{s:'2024/2024-08-21 17.36.53_1280x0_426.jpg'},{s:'2024/2024-08-21 17.36.46_1280x0_426.jpg'},{s:'2024/2024-08-21 17.36.36_1280x0_426.jpg'},{s:'2024/2024-08-21 17.36.27_1280x0_426.jpg'},{s:'2024/2024-08-21 17.33.33_1280x0_426.jpg'},{s:'2024/2024-08-21 17.33.26_1280x0_426.jpg'},{s:'2024/2024-08-21 17.33.10_1280x0_426.jpg'},{v:'2024/2024-08-21 17.33.01.mp4'},{v:'2024/2024-08-21 17.32.47.mp4'},{s:'2023/2024-08-21 17.27.15_1280x0_426.jpg'},{s:'2023/2024-08-21 17.27.01_1280x0_426.jpg'},{s:'2023/2024-08-21 17.26.49_1280x0_426.jpg'},{s:'2023/2024-08-21 17.22.22_1280x0_426.jpg'},{v:'2023/2024-08-21 17.22.14.mp4'},{s:'2023/2024-08-21 17.21.56_1280x0_426.jpg'},{s:'2023/2024-08-21 17.21.38_1280x0_426.jpg'},{v:'2023/2024-08-21 17.21.21.mp4'},{v:'2023/2024-08-21 17.17.54.mp4'},{v:'2023/2024-08-21 17.17.12.mp4'},{v:'2023/2024-08-21 17.16.41.mp4'},{v:'2023/2024-08-21 17.16.24.mp4'},{v:'2024/IMG_6890.mp4'}] },   // 49 материалов
+  { n:'Волейбольная команда', cover:{src:'2025/photo_2025-11-20_20-12-52-470.png'}, items:[{s:'2025/photo_2025-11-20_20-12-52.jpg'},{s:'2025/photo_2025-10-02_19-48-49_1280x0_426.jpg'},{s:'2025/photo_2025-10-02_19-48-54_1280x0_426.jpg'},{s:'2025/photo_2025-10-02_19-49-01_1280x0_426.jpg'},{s:'2025/photo_2025-10-02_19-49-04_1280x0_426.jpg'},{s:'2025/photo_2025-10-02_19-49-06_1280x0_426.jpg'},{s:'2025/photo_2025-10-02_19-49-09_1280x0_426.jpg'},{s:'2025/photo_2025-05-27_21-26-11_1280x0_426.jpg'},{s:'2025/photo_2025-05-27_21-27-23_1280x0_426.jpg'},{s:'2025/photo_2025-05-27_21-27-03_1280x0_426.jpg'},{s:'2025/photo_2025-05-27_21-26-56_1280x0_426.jpg'},{s:'2025/photo_2025-05-27_21-26-45_1280x0_426.jpg'},{s:'2025/photo_2025-05-27_21-34-55_1280x0_426.jpg'},{s:'2025/photo_2025-05-25_22-05-09_1280x0_426.jpg'},{s:'2025/photo_2025-05-25_22-07-24_1280x0_426.jpg'},{s:'2025/photo_2025-05-25_22-42-41_1280x0_426.jpg'},{v:'2025/IMG_0021.MP4'},{v:'2025/IMG_4087.mp4'},{v:'2025/IMG_4098.mp4'},{v:'2025/IMG_4105.mp4'},{v:'2025/IMG_3986.mp4'},{s:'2024/photo_2024-09-14_19-51-27_1280x0_426.jpg'},{s:'2024/photo_2024-09-14_19-51-28_1280x0_426.jpg'},{s:'2024/photo_2024-09-14_19-51-29_1280x0_426.jpg'},{s:'2024/2024-08-21 17.53.33_1280x0_198.png'},{s:'2024/2024-08-21 17.52.51_1280x0_198.png'},{s:'2024/2024-08-21 17.51.33_1280x0_198.png'},{s:'2024/2024-08-21 17.48.36_1280x0_426.jpg'},{s:'2024/2024-08-21 17.48.17_1280x0_426.jpg'},{s:'2024/2024-08-21 17.47.57_1280x0_426.jpg'},{v:'2024/2024-08-21 17.47.36.mp4'},{s:'2024/2024-08-21 17.47.14_1280x0_426.jpg'},{v:'2024/2024-08-21 17.46.59.mp4'},{v:'2024/2024-08-21 17.46.51.mp4'},{v:'2024/2024-08-21 17.46.31.mp4'},{s:'2024/2024-08-21 17.46.20_1280x0_426.jpg'},{s:'2024/2024-08-21 17.46.00_1280x0_426.jpg'},{s:'2024/2024-08-21 17.45.54_1280x0_426.jpg'},{s:'2024/2024-08-21 17.45.47_1280x0_426.jpg'},{v:'2023/2024-08-21 17.25.53.mp4'},{s:'2023/2024-08-21 17.25.38_1280x0_426.jpg'},{s:'2023/2024-08-21 17.25.30_1280x0_426.jpg'},{s:'2023/2024-08-21 17.25.22_1280x0_426.jpg'},{s:'2023/2024-08-21 17.25.09_1280x0_426.jpg'},{v:'2024/IMG_5805.mp4'},{v:'2024/IMG_5696.mp4'}] },   // 46 материалов
+  { n:'Турниры по бильярду', cover:{src:'2026/8.png'}, items:[{s:'2026/8.jpg'},{s:'2025/photo_2025-03-04_22-36-38_1280x0_426.jpg'},{s:'2025/photo_2025-03-04_20-26-21_1280x0_426.jpg'},{s:'2025/photo_2025-03-04_20-26-19_1280x0_426.jpg'},{s:'2025/photo_2025-03-04_20-26-09_1280x0_426.jpg'},{s:'2025/photo_2025-03-04_20-26-03_1280x0_426.jpg'},{s:'2025/photo_2025-03-04_20-16-22_2_1280x0_426.jpg'},{v:'2025/IMG_9101.mp4'},{v:'2025/IMG_9098.mp4'}] },   // 9 материалов
+  { n:'Забеги', cover:{src:'2025/photo_2025-06-17_17-51-07_470x470_be4.jpg'}, items:[{s:'2025/photo_2025-06-17_17-51-07_1280x0_426.jpg'},{s:'2025/photo_2025-06-17_17-51-02_1280x0_426.jpg'},{s:'2025/photo_2025-06-17_17-50-12_1280x0_426.jpg'},{v:'2025/IMG_4514.mp4'},{v:'2024/2024-08-21 17.35.41.mp4'},{s:'2024/2024-08-21 17.35.12_1280x0_426.jpg'},{s:'2024/2024-08-21 17.34.40_1280x0_426.jpg'},{s:'2024/2024-08-21 17.34.31_1280x0_426.jpg'},{v:'2024/2024-08-21 17.34.23.mp4'},{s:'2024/2024-08-21 17.34.16_1280x0_426.jpg'},{s:'2024/2024-08-21 17.34.10_1280x0_426.jpg'},{s:'2024/2024-08-21 17.34.03_1280x0_426.jpg'},{s:'2023/2024-08-21 17.18.56_1280x0_426.jpg'},{v:'2023/2024-08-21 17.18.32.mp4'},{s:'2022/2024-08-21 17.01.40_1280x0_426.jpg'}] },   // 15 материалов
+  { n:'Картинг-турниры', cover:{video:'2026/33.MP4'}, items:[{s:'2026/6.jpg'},{s:'2026/7.jpg'},{v:'2026/33.MP4'},{s:'2025/photo_2025-03-04_22-46-32_1280x0_426.jpg'},{s:'2025/photo_2025-03-04_22-22-01_1280x0_426.jpg'},{s:'2025/photo_2025-03-04_22-17-57_1280x0_426.jpg'},{s:'2025/photo_2025-03-04_22-17-56_1280x0_426.jpg'},{s:'2025/photo_2025-03-04_20-10-37_1280x0_426.jpg'},{s:'2025/photo_2025-03-04_20-10-36_1280x0_426.jpg'},{s:'2025/photo_2025-03-04_20-10-36 (2)_1280x0_426.jpg'},{s:'2025/photo_2025-03-04_20-10-35_1280x0_426.jpg'},{s:'2025/photo_2025-01-30_14-11-11_1280x0_426.jpg'},{s:'2025/photo_2025-01-30_14-11-47_1280x0_426.jpg'},{s:'2025/photo_2025-01-30_14-11-44_1280x0_426.jpg'},{s:'2025/photo_2025-01-30_14-11-02_1280x0_426.jpg'},{v:'2025/IMG_9084.mp4'},{v:'2025/IMG_9085.mp4'}] },   // 17 материалов
+  { n:'Форумы и конференции', cover:{src:'2025/photo_2025-10-02_19-22-49_470x470_be4.jpg'}, items:[{s:'2025/photo_2025-10-02_19-22-49_1280x0_426.jpg'},{s:'2022/2024-11-02-17.36_1280x0_426.jpg'},{s:'2019/photo_2024-11-02_17-53-08_1280x0_426.jpg'},{v:'2024/2024-08-21 17.45.35.mp4'},{s:'2024/2024-08-21 17.32.25_1280x0_426.jpg'},{s:'2024/2024-08-21 17.31.13_1280x0_426.jpg'},{s:'2024/2024-08-21 17.31.06_1280x0_426.jpg'},{v:'2024/2024-08-21 17.30.49.mp4'},{s:'2023/2024-08-21 17.28.37_1280x0_426.jpg'},{s:'2023/2024-08-21 17.28.31_1280x0_426.jpg'},{s:'2023/2024-08-21 17.28.20_1280x0_426.jpg'},{s:'2023/2024-08-21 17.28.08_1280x0_426.jpg'},{s:'2023/2024-08-21 17.26.07_1280x0_426.jpg'},{s:'2022/2024-08-21 17.09.28_1280x0_426.jpg'},{s:'2022/2024-08-21 17.09.10_1280x0_426.jpg'},{s:'2022/2024-08-21 17.08.54_1280x0_426.jpg'},{s:'2022/2024-08-21 17.08.45_1280x0_426.jpg'},{s:'2022/2024-08-21 17.08.27_1280x0_426.jpg'},{s:'2022/2024-08-21 17.02.44_1280x0_426.jpg'},{s:'2022/2024-08-21 17.01.09_1280x0_426.jpg'}] },   // 20 материалов
+  { n:'Кулинарные мастер-классы', cover:{video:'2026/11.MP4'}, items:[{s:'2026/1.jpg'},{s:'2026/2.jpg'},{s:'2026/3.jpg'},{v:'2026/11.MP4'},{s:'2026/4.jpg'},{s:'2026/5.jpg'},{s:'2023/2024-08-21 17.23.38_1280x0_426.jpg'},{s:'2023/2024-08-21 17.23.26_1280x0_426.jpg'}] },   // 8 материалов
+  { n:'Творческие вечера', cover:{src:'2026/photo_2026-03-31_15-48-58-m.jpg'}, items:[{s:'2026/photo_2026-03-31_15-48-58.jpg'},{s:'2026/photo_2026-03-31_15-40-14.jpg'},{s:'2026/photo_2026-03-31_15-40-13.jpg'},{s:'2026/photo_2026-03-31_15-40-12.jpg'},{s:'2026/photo_2026-03-15_15-13-37.jpg'},{s:'2024/photo_2024-12-22_20-43-15_1280x0_426.jpg'},{s:'2024/photo_2024-12-22_20-43-13_1280x0_426.jpg'},{s:'2024/photo_2024-12-22_20-43-16_1280x0_426.jpg'},{s:'2024/photo_2024-12-22_21-01-57_1280x0_426.jpg'},{s:'2024/photo_2024-12-22_20-44-00_1280x0_426.jpg'},{s:'2024/photo_2024-12-22_20-44-00 (2)_1280x0_426.jpg'},{s:'2024/photo_2024-12-22_20-43-58_1280x0_426.jpg'},{s:'2024/photo_2024-12-22_20-43-58 (2)_1280x0_426.jpg'},{s:'2024/photo_2024-12-22_20-43-18_1280x0_426.jpg'},{s:'2024/photo_2024-11-22_20-44-55_1280x0_426.jpg'},{s:'2024/photo_2024-11-22_20-44-56_1280x0_426.jpg'},{s:'2024/photo_2024-11-22_20-44-57_1280x0_426.jpg'},{s:'2024/photo_2024-11-22_20-44-57 (2)_1280x0_426.jpg'},{s:'2024/photo_2024-11-22_22-11-32_1280x0_426.jpg'},{s:'2024/photo_2024-11-22_20-45-24_1280x0_426.jpg'},{s:'2024/photo_2024-11-22_20-45-23_1280x0_426.jpg'},{s:'2024/photo_2024-11-22_20-45-22_1280x0_426.jpg'},{s:'2024/photo_2024-11-22_20-42-34_1280x0_426.jpg'},{s:'2024/photo_2024-11-22_20-42-33_1280x0_426.jpg'},{s:'2024/photo_2024-11-22_20-42-31_1280x0_426.jpg'},{s:'2024/photo_2024-11-20_23-15-54_1280x0_426.jpg'},{s:'2024/photo_2024-11-20_23-15-52_1280x0_426.jpg'},{s:'2024/photo_2024-11-20_23-15-50_1280x0_426.jpg'},{s:'2024/photo_2024-11-20_23-15-49_1280x0_426.jpg'},{v:'2024/2024-10-30_19-46-31.mp4'},{v:'2024/2024-10-30_19-46-22.mp4'},{v:'2024/2024-10-30_19-46-18.mp4'},{s:'2024/2024-10-30_19-37-41_1280x0_426.jpg'},{s:'2024/2024-10-30_19-37-40_1280x0_426.jpg'},{s:'2023/2024-08-21 17.26.21_1280x0_426.jpg'},{s:'2023/2024-08-21 17.26.14_1280x0_426.jpg'},{s:'2023/2024-08-21 17.24.43_1280x0_426.jpg'},{s:'2023/2024-08-21 17.24.31_1280x0_426.jpg'},{s:'2023/2024-08-21 17.24.06_1280x0_426.jpg'},{v:'2023/2024-08-21 17.23.58.mp4'},{s:'2023/2024-08-21 17.23.49_1280x0_426.jpg'},{s:'2023/2024-08-21 17.15.05_1280x0_426.jpg'},{s:'2023/2024-08-21 17.14.53_1280x0_426.jpg'},{s:'2023/2024-08-21 17.14.31_1280x0_426.jpg'},{s:'2023/2024-08-21 17.12.55_1280x0_426.jpg'},{v:'2024/IMG_8481.MP4'},{v:'2024/IMG_7325.MP4'}] },   // 47 материалов
+  { n:'Встречи команды', cover:{video:'2026/55.MP4'}, items:[{v:'2026/22.MP4'},{v:'2026/44.MP4'},{v:'2026/55.MP4'},{s:'2026/9.jpg'},{s:'2026/10.jpg'},{s:'2025/photo_2025-06-17_17-53-01_1280x0_426.jpg'},{s:'2025/photo_2025-03-13_23-20-21_1280x0_426.jpg'},{s:'2025/photo_2025-03-12_16-15-12_1280x0_426.jpg'},{s:'2025/photo_2025-03-12_16-14-58_1280x0_426.jpg'},{s:'2025/photo_2025-03-12_16-15-16_1280x0_426.jpg'},{s:'2025/photo_2025-03-11_16-01-45_1280x0_426.jpg'},{s:'2025/photo_2025-03-04_20-29-08_1280x0_426.jpg'},{s:'2025/photo_2025-03-04_20-26-30_1280x0_426.jpg'},{s:'2025/photo_2025-03-04_20-26-29_1280x0_426.jpg'},{s:'2025/photo_2025-03-04_20-16-22 (2)_1280x0_426.jpg'},{s:'2025/photo_2025-03-04_20-16-21_1280x0_426.jpg'},{s:'2025/photo_2025-02-14_12-58-24 (2)_1280x0_426.jpg'},{s:'2025/photo_2025-02-14_12-58-23_1280x0_426.jpg'},{s:'2025/photo_2025-02-14_12-58-24_1280x0_426.jpg'},{s:'2025/photo_2025-02-14_20-33-44_1280x0_426.jpg'},{s:'2025/photo_2025-01-30_14-12-01_1280x0_426.jpg'},{s:'2025/photo_2025-01-30_14-11-54_1280x0_426.jpg'},{s:'2025/photo_2025-01-30_14-11-50_1280x0_426.jpg'},{s:'2025/photo_2025-01-30_14-11-07_1280x0_426.jpg'},{v:'2025/IMG_9082.mp4'},{s:'2025/ImportedPhoto.761222722.038407_1280x0_c60.jpeg'},{v:'2024/2024-11-05_12-57-50.mp4'},{s:'2022/photo_2024-11-02_20-30-55_1280x0_426.jpg'},{s:'2022/2024-11-02-17.37_1280x0_426.jpg'},{s:'2019/photo_2024-11-02_17-55-02_1280x0_426.jpg'},{s:'2019/photo_2024-11-02_17-54-36_1280x0_426.jpg'},{s:'2019/photo_2024-11-02_17-54-01_1280x0_426.jpg'},{s:'2019/photo_2024-11-02_17-50-57_1280x0_426.jpg'},{s:'2019/photo_2024-11-02_17-50-57 (2)_1280x0_426.jpg'},{s:'2019/photo_2024-11-02_17-50-56_1280x0_426.jpg'},{v:'2024/video_2024-08-28_19-52-38.mp4'},{s:'2023/2024-08-21 17.30.09_1280x0_426.jpg'},{s:'2023/2024-08-21 17.29.53_1280x0_426.jpg'},{s:'2023/2024-08-21 17.29.27_1280x0_426.jpg'},{s:'2023/2024-08-21 17.28.58_1280x0_426.jpg'},{s:'2023/2024-08-21 17.27.40_1280x0_426.jpg'},{s:'2023/2024-08-21 17.20.48_1280x0_426.jpg'},{v:'2023/2024-08-21 17.20.34.mp4'},{s:'2023/2024-08-21 17.20.07_1280x0_426.jpg'},{s:'2023/2024-08-21 17.14.44_1280x0_426.jpg'},{s:'2023/2024-08-21 17.12.41_1280x0_426.jpg'},{s:'2023/2024-08-21 17.12.15_1280x0_426.jpg'},{s:'2022/IMAGE 2024-08-21 16_04_10_1280x0_426.jpg'},{s:'2022/IMAGE 2024-08-21 16_00_51_1280x0_426.jpg'},{s:'2022/IMAGE 2024-08-21 16_01_04_1280x0_426.jpg'},{s:'2022/IMAGE 2024-08-21 16_06_53_1280x0_426.jpg'},{s:'2022/IMAGE 2024-08-21 16_05_43_1280x0_426.jpg'},{s:'2022/IMAGE 2024-08-21 16_02_05_1280x0_426.jpg'},{s:'2022/IMAGE 2024-08-21 16_01_48_1280x0_426.jpg'},{s:'2022/2024-08-21 17.11.16_1280x0_426.jpg'},{s:'2022/2024-08-21 17.11.09_1280x0_426.jpg'},{s:'2022/2024-08-21 17.10.53_1280x0_426.jpg'},{s:'2022/2024-08-21 17.10.17_1280x0_426.jpg'},{s:'2022/2024-08-21 17.10.01_1280x0_426.jpg'},{s:'2022/2024-08-21 17.09.51_1280x0_426.jpg'},{s:'2022/2024-08-21 17.07.18_1280x0_426.jpg'},{s:'2022/2024-08-21 17.04.52_1280x0_426.jpg'},{s:'2022/2024-08-21 17.03.50_1280x0_426.jpg'},{s:'2022/2024-08-21 17.03.17_1280x0_426.jpg'},{s:'2022/2024-08-21 17.02.26_1280x0_426.jpg'},{s:'2022/2024-08-21 17.02.11_1280x0_426.jpg'},{s:'2022/2024-08-21 17.01.59_1280x0_426.jpg'},{s:'2022/2024-08-21 17.00.51_1280x0_426.jpg'},{s:'2022/2024-08-21 17.00.27_1280x0_426.jpg'},{v:'2022/IMG_1429.mp4'},{v:'2022/IMG_4839.MP4'},{v:'2022/IMG_4838.MP4'},{v:'2022/IMG_4837.MP4'},{v:'2022/IMG_4819.MP4'},{v:'2022/IMG_4818.MP4'},{v:'2022/IMG_3031.MP4'},{v:'2022/IMG_1439.mp4'}] },   // 77 материалов
 ];
 (function(){
   const el=document.getElementById('gmGallery'); if(!el) return;
-  const CAM='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 8h3l1.5-2h7L18 8h2a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.2"/></svg>';
   const PLAY='<span class="gm-gtile__play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg></span>';
-  const items = GALLERY.length ? GALLERY : Array.from({length:6}, ()=>({}));
-  items.forEach(g=>{
-    const media = g.src || g.video;
-    const t=document.createElement(media?'a':'div');
-    t.className='gm-gtile'+(media?'':' gm-gtile--ph')+(g.video?' gm-gtile--vid':'');
-    const cap = g.caption ? '<span class="gm-gtile__cap">'+g.caption+'</span>' : '';
-    if(g.video){
-      t.href=g.video; t.target='_blank'; t.rel='noopener';
-      t.setAttribute('aria-label', (g.caption||'Видео о жизни команды')+' — видео');
-      /* постеров у роликов на сайте нет, поэтому превью — кадр из самого файла;
-         src ставится очередью ниже, чтобы браузер не тянул все ролики разом */
-      t.innerHTML='<video data-src="'+g.video+'" muted playsinline loop preload="none"></video>'+PLAY+cap;
-    } else if(g.src){
-      t.href=g.full||g.src; t.target='_blank'; t.rel='noopener';
-      t.innerHTML='<img src="'+g.src+'" alt="'+(g.caption||'Фото лаборатории Геномед')+'" loading="lazy">'+cap;
-    } else { t.innerHTML=CAM+'<span>фото</span>'; }
+  const plural=(n,a,b,c)=>{const d=n%10,w=n%100;return (w>=11&&w<=14)?c:(d===1?a:(d>=2&&d<=4?b:c));};
+
+  /* ---- плитки-обложки ---- */
+  GALB.forEach((alb,ai)=>{
+    const t=document.createElement('button');
+    t.type='button';
+    t.className='gm-gtile'+(alb.cover.video?' gm-gtile--vid':'');
+    t.dataset.album=ai;
+    t.setAttribute('aria-label', alb.n+' — открыть альбом, '+alb.items.length+' '+plural(alb.items.length,'материал','материала','материалов'));
+    const cap='<span class="gm-gtile__cap">'+alb.n+'</span>'+
+      '<span class="gm-gtile__count">'+alb.items.length+'</span>';
+    t.innerHTML = alb.cover.video
+      ? '<video data-src="'+GB+alb.cover.video+'" muted playsinline loop preload="none"></video>'+PLAY+cap
+      : '<img src="'+GB+alb.cover.src+'" alt="'+alb.n+' — Геномед" loading="lazy" decoding="async">'+cap;
     el.appendChild(t);
   });
 
-  /* ---- просмотрщик: клик по плитке открывает кадр во весь экран ----
-     href у плиток остаётся: средним кликом файл по-прежнему открывается отдельно */
-  const lb=document.getElementById('gmLb'), stage=document.getElementById('gmLbStage'),
-        lbCap=document.getElementById('gmLbCap');
-  if(lb){
-    const list=items.filter(g=>g.src||g.video);
-    let cur=-1;
-    const show=i=>{
-      if(i<0) i=list.length-1; if(i>=list.length) i=0;
-      cur=i; const g=list[i];
-      stage.innerHTML = g.video
-        ? '<video src="'+g.video+'" controls autoplay playsinline></video>'
-        : '<img src="'+(g.full||g.src)+'" alt="'+(g.caption||'Фото Геномед')+'">';
-      lbCap.innerHTML=(g.caption||'')+' <i>'+(i+1)+' из '+list.length+'</i>';
-      lb.classList.add('is-on'); document.body.style.overflow='hidden';
-    };
-    const close=()=>{ lb.classList.remove('is-on'); stage.innerHTML=''; document.body.style.overflow=''; cur=-1; };
-    el.addEventListener('click', e=>{
-      const tile=e.target.closest('.gm-gtile'); if(!tile || tile.classList.contains('gm-gtile--ph')) return;
-      const i=[...el.children].filter(c=>!c.classList.contains('gm-gtile--ph')).indexOf(tile);
-      if(i<0) return;
-      e.preventDefault(); show(i);
-    });
-    document.getElementById('gmLbClose').addEventListener('click', close);
-    document.getElementById('gmLbPrev').addEventListener('click', e=>{ e.stopPropagation(); show(cur-1); });
-    document.getElementById('gmLbNext').addEventListener('click', e=>{ e.stopPropagation(); show(cur+1); });
-    lb.addEventListener('click', e=>{ if(e.target===lb) close(); });
-    document.addEventListener('keydown', e=>{
-      if(!lb.classList.contains('is-on')) return;
-      if(e.key==='Escape') close();
-      if(e.key==='ArrowLeft') show(cur-1);
-      if(e.key==='ArrowRight') show(cur+1);
-    });
-    /* свайп на телефоне: стрелки пальцем ловить неудобно */
-    let x0=null;
-    lb.addEventListener('touchstart', e=>{ x0=e.touches[0].clientX; }, {passive:true});
-    lb.addEventListener('touchend', e=>{
-      if(x0===null) return; const dx=e.changedTouches[0].clientX-x0; x0=null;
-      if(Math.abs(dx)>50) show(cur+(dx<0?1:-1));
-    }, {passive:true});
-  }
-
-  /* ---- превью видеоплиток: грузим по появлению в кадре и по одному ----
-     на наведение ролик играет без звука, при уходе курсора возвращается на кадр-превью */
+  /* ---- превью роликов-обложек: по появлению в кадре и по одному за раз ---- */
   const queue=[]; let busy=false;
   function pump(){ if(busy || !queue.length) return; load(queue.shift()); }
   function load(v){
@@ -2381,7 +2343,7 @@ const GALLERY = [
       if(ok) tile.classList.add('is-ready'); busy=false; pump(); };
     const timer=setTimeout(()=>finish(v.videoWidth>0), 9000);
     v.addEventListener('loadedmetadata',()=>{
-      v.dataset.frame=Math.min(1, (v.duration||4)/4);
+      v.dataset.frame=Math.min(1,(v.duration||4)/4);
       try{ v.currentTime=+v.dataset.frame; }catch(err){ finish(v.videoWidth>0); }
     },{once:true});
     v.addEventListener('seeked',()=>finish(v.videoWidth>0),{once:true});
@@ -2399,6 +2361,55 @@ const GALLERY = [
     },{rootMargin:'400px 0px'});
     vids.forEach(v=>io.observe(v));
   } else { queue.push(...vids); pump(); }
+
+  /* ---- просмотрщик: листает внутри выбранного раздела ---- */
+  const lb=document.getElementById('gmLb'), stage=document.getElementById('gmLbStage'),
+        lbCap=document.getElementById('gmLbCap');
+  if(!lb) return;
+  let alb=null, cur=0;
+  function show(i){
+    if(!alb) return;
+    const n=alb.items.length;
+    cur=(i+n)%n;                                  /* по кругу внутри альбома */
+    const it=alb.items[cur];
+    stage.innerHTML = it.v
+      /* без autoplay: в альбомах есть тяжёлые ролики, пусть запускает сам человек */
+      ? '<video src="'+GB+it.v+'" controls playsinline preload="metadata"></video>'
+      : '<img src="'+GB+it.s+'" alt="'+alb.n+' — Геномед">';
+    lbCap.innerHTML=alb.n+' <i>'+(cur+1)+' из '+n+'</i>';
+    if(it.v){
+      /* часть роликов снята на iPhone в HEVC — Chrome и Firefox их не декодируют */
+      const v=stage.querySelector('video');
+      const fail=()=>{ if(!lb.classList.contains('is-on')||stage.querySelector('.gm-lb__nosup')) return;
+        stage.innerHTML='<div class="gm-lb__nosup"><b>Этот ролик браузер показать не может</b>'+
+          '<span>Он записан в формате HEVC — откроется в Safari.</span></div>'; };
+      v.addEventListener('loadedmetadata',()=>{ setTimeout(()=>{ if(v.videoWidth===0) fail(); },500); },{once:true});
+      v.addEventListener('error',fail,{once:true});
+    }
+    lb.classList.add('is-on'); document.body.style.overflow='hidden';
+  }
+  function close(){ lb.classList.remove('is-on'); stage.innerHTML=''; document.body.style.overflow=''; alb=null; }
+  el.addEventListener('click', e=>{
+    const tile=e.target.closest('.gm-gtile[data-album]'); if(!tile) return;
+    alb=GALB[+tile.dataset.album]; show(0);
+  });
+  document.getElementById('gmLbClose').addEventListener('click', close);
+  document.getElementById('gmLbPrev').addEventListener('click', e=>{ e.stopPropagation(); show(cur-1); });
+  document.getElementById('gmLbNext').addEventListener('click', e=>{ e.stopPropagation(); show(cur+1); });
+  lb.addEventListener('click', e=>{ if(e.target===lb) close(); });
+  document.addEventListener('keydown', e=>{
+    if(!lb.classList.contains('is-on')) return;
+    if(e.key==='Escape') close();
+    if(e.key==='ArrowLeft') show(cur-1);
+    if(e.key==='ArrowRight') show(cur+1);
+  });
+  /* свайп на телефоне: стрелки пальцем ловить неудобно */
+  let x0=null;
+  lb.addEventListener('touchstart', e=>{ x0=e.touches[0].clientX; }, {passive:true});
+  lb.addEventListener('touchend', e=>{
+    if(x0===null) return; const dx=e.changedTouches[0].clientX-x0; x0=null;
+    if(Math.abs(dx)>50) show(cur+(dx<0?1:-1));
+  }, {passive:true});
 })();
 
 /* ---------- resume upload ---------- */
