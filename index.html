@@ -564,6 +564,7 @@
     font-size:.86rem; color:var(--blue)}
   .gm-filter-reset svg{width:14px; height:14px}
   .gm-filter-reset:hover{text-decoration:underline}
+  .gm-filter-reset[hidden]{display:none}   /* иначе display:inline-flex перебивает атрибут hidden */
 
   .gm-search{position:relative; margin-bottom:18px}
   .gm-search svg{position:absolute; left:16px; top:50%; transform:translateY(-50%);
@@ -1042,6 +1043,99 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <meta name="theme-color" content="#00AEEF">
   <link rel="canonical" href="https://varvarayukhina.github.io/genomed-career/">
+<style>
+  /* ================= МОБИЛЬНАЯ ВЕРСИЯ · вариант «лента + шторка» =================
+     Правки: 1) подменю — текстовые табы, не пилюли; 2) в баннере заголовок +
+     короткий подзаголовок + две кнопки + поиск; 3) на экране остаётся одна лента
+     пилюль (направления), город/формат/график — в шторке «Фильтры» с бейджем;
+     4) снизу липкая кнопка «Хочу в команду». */
+  .gm-hero__submob, .gm-only-mob{display:none}
+  @media (max-width:760px){ .gm-only-desk{display:none} .gm-only-mob{display:inline} }
+  .gm-msheet-wrap, .gm-stickycta{display:none}
+
+  @media (max-width:760px){
+    /* --- подменю разделов: подчёркнутые табы вместо ряда пилюль --- */
+    .gm-subnav__links{gap:20px; padding:0}
+    .gm-subnav a{border:none; background:none; border-radius:0; padding:13px 0;
+      font-size:.86rem; color:var(--ink-3); border-bottom:2px solid transparent}
+    .gm-subnav a.is-active{background:none; color:var(--ink); font-weight:700;
+      border-bottom-color:var(--blue); box-shadow:none}
+
+    /* --- вариант 2a: компактный баннер, четыре цифры убраны --- */
+    #pochemu .gm-herostats{display:none}          /* 19 / 120 000 / 100+ / 24/7 — занимали экран */
+    #pochemu .gm-hero__submob{display:none}
+    #pochemu .gm-hero__cta{display:none}          /* вход в анкету — липкая кнопка снизу */
+    #pochemu{padding-top:14px}
+    #pochemu .gm-search{margin-top:14px}
+    /* лента направлений: белые плашки, выбранная — тёмно-синяя */
+    #vakansii .gm-side-item{background:#fff}
+    #vakansii .gm-side-item.is-on{background:var(--ink); border-color:var(--ink); color:#fff}
+    #vakansii .gm-side-item.is-on .gm-side-item__n{color:rgba(255,255,255,.65)}
+
+
+    /* лента направлений: без min-width:0 flex-элемент раздувается по треку
+       (4500px) и перестаёт быть скролл-контейнером — дрейф и палец не работают */
+    #vakansii .gm-vaclayout > *, #vakansii .gm-sidebar > *, #vakansii .gm-vaccol > *{min-width:0; align-self:stretch}
+    /* дрейф идёт субпиксельными шагами — scroll-snap каждый кадр возвращал ленту
+       к ближайшему чипу и она стояла на месте. Привязку снимаем только у бегущей ленты */
+    .gm-marq{scroll-snap-type:none !important}
+    .gm-marq .gm-side-item{scroll-snap-align:none !important}
+
+    /* --- строка «Фильтры (N) · Найдено: N» над списком --- */
+    #vakansii .gm-vacs__bar{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap}
+    .gm-mfilter{order:-1; display:inline-flex; align-items:center; gap:8px; cursor:pointer;
+      padding:11px 16px; border-radius:999px; border:1px solid var(--line); background:#fff;
+      font-family:var(--sans); font-weight:700; font-size:.86rem; color:var(--ink-2); transition:.15s}
+    .gm-mfilter:active{transform:scale(.98)}
+    .gm-mfilter svg{width:16px; height:16px}
+    .gm-mfilter.is-on{background:var(--ink); border-color:var(--ink); color:#fff}
+    .gm-mfilter__n{min-width:20px; height:20px; border-radius:999px; background:var(--blue); color:#fff;
+      font-size:.72rem; font-weight:700; display:grid; place-items:center; padding:0 5px}
+    .gm-mfilter__n[hidden]{display:none}
+
+    /* --- шторка фильтров --- */
+    .gm-msheet-wrap{display:flex; position:fixed; inset:0; z-index:120; align-items:flex-end}
+    .gm-msheet-wrap[hidden]{display:none}
+    .gm-msheet__ov{position:absolute; inset:0; background:rgba(10,37,64,.42)}
+    .gm-msheet{position:relative; width:100%; max-height:82vh; display:flex; flex-direction:column;
+      background:#fff; border-radius:22px 22px 0 0; box-shadow:0 -20px 50px -20px rgba(10,37,64,.5)}
+    .gm-msheet__head{display:flex; align-items:center; justify-content:space-between;
+      padding:16px 18px 12px; border-bottom:1px solid var(--line-2)}
+    .gm-msheet__head b{font-family:var(--display); font-size:1.06rem}
+    .gm-msheet__x{display:grid; place-items:center; width:34px; height:34px; border:none; cursor:pointer;
+      border-radius:999px; background:var(--stripe); color:var(--ink-2)}
+    .gm-msheet__x svg{width:16px; height:16px}
+    .gm-msheet__body{overflow-y:auto; padding:2px 18px 8px; -webkit-overflow-scrolling:touch}
+    .gm-msheet__foot{display:flex; gap:10px; padding:12px 18px calc(16px + env(safe-area-inset-bottom));
+      border-top:1px solid var(--line-2)}
+    .gm-msheet__reset{padding:14px 18px; border-radius:999px; border:1px solid var(--line); background:#fff;
+      font-family:var(--sans); font-weight:600; font-size:.9rem; color:var(--ink-2); cursor:pointer}
+    .gm-msheet__apply{flex:1; padding:14px; border-radius:999px; border:none; background:var(--blue);
+      color:#fff; font-family:var(--display); font-weight:700; font-size:.95rem; cursor:pointer}
+    /* внутри шторки фильтры — списком со чекбоксами, а не пилюлями */
+    .gm-msheet .gm-side-group{display:block; background:none; border:none; box-shadow:none;
+      padding:14px 0; border-bottom:1px solid var(--line-2)}
+    .gm-msheet .gm-side-group:last-child{border-bottom:none}
+    .gm-msheet .gm-side-lbl{display:block; width:auto; padding:0 0 4px; font-family:var(--mono);
+      font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3)}
+    .gm-msheet .gm-side-group > div{display:flex !important; flex-direction:column; overflow:visible !important;
+      margin:0 !important; padding:0 !important}
+    .gm-msheet .gm-side-item{display:flex; width:100%; white-space:normal; border:none; background:none;
+      border-radius:9px; padding:12px 2px; font-size:1rem}
+    .gm-msheet .gm-side-item.is-on{background:none; font-weight:700; color:var(--ink)}
+    .gm-msheet .gm-side-item__box{display:grid}
+    .gm-msheet .gm-side-item__n{margin-left:auto; font-family:var(--mono); font-size:.78rem; color:var(--ink-3); background:none}
+
+    /* --- липкая кнопка «Хочу в команду» --- */
+    .gm-stickycta{display:block; position:fixed; left:0; right:0; bottom:0; z-index:90;
+      padding:10px 16px calc(12px + env(safe-area-inset-bottom));
+      background:linear-gradient(180deg, rgba(255,255,255,0), #fff 42%)}
+    .gm-stickycta.is-off{display:none}
+    .gm-stickycta .gm-btn{width:100%; justify-content:center; background:var(--ink); color:#fff;
+      box-shadow:0 12px 26px -14px rgba(10,37,64,.7)}
+    .gm-page{padding-bottom:76px}
+  }
+</style>
 </head>
 <body>
 <div class="gm-page">
@@ -1118,11 +1212,12 @@
         <h1><span class="gm-hero__brand">Геномед</span> - инновационная компания, которую строят вовлеченные люди</h1>
         <!-- кнопки сразу под заголовком: ниже текста они уезжали за границу первого экрана -->
         <div class="gm-hero__cta">
-          <a href="#vakansii" class="gm-btn gm-btn--primary gm-btn--lg">Смотреть вакансии</a>
+          <a href="#vakansii" class="gm-btn gm-btn--primary gm-btn--lg"><span class="gm-only-desk">Смотреть вакансии</span><span class="gm-only-mob">Вакансии</span></a>
           <a href="#reserv" class="gm-btn gm-btn--ghost gm-btn--lg">Хочу в команду
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </a>
         </div>
+        <p class="gm-hero__submob">Клиническая генетика полного цикла: лаборатория, биоинформатика, ИИ, ИТ и медицина.</p>
         <p class="gm-hero__sub">Наша сила в команде, где каждый не просто сотрудник, а соавтор общего дела. Мы объединяем вовлеченных профессионалов, которые двигают команду вперед и не боятся брать на себя ответственность. Если ты разделяешь наш подход, заполняй анкету и становись частью движения.</p>
         <div class="gm-herostats">
           <div class="gm-herostats__i"><b>19</b><span>лет на российском и зарубежных рынках</span></div>
@@ -1545,9 +1640,9 @@ const ERP_ENDPOINT = ""; // TODO(dev): URL для POST multipart/form-data → �
   function toMobile(){
     /* hero остаётся наверху; вакансии-карточки — сразу под ним; «19 лет» — ниже */
     if(vak.nextElementSibling!==p2) p2.parentNode.insertBefore(vak, p2);
-    /* поиск + лента направлений — внутрь синего hero, под заголовок (как Авиасейлс) */
-    /* поиск закреплён (sticky) над списком вакансий; в синий hero уносим только ленту направлений */
-    if(heroCol&&h1&&deptGroup&&deptGroup.parentNode!==heroCol) h1.insertAdjacentElement('afterend', deptGroup);
+    /* поиск — в синий баннер, сразу под кнопками; лента направлений остаётся над списком вакансий */
+    var ctaEl=heroCol?heroCol.querySelector('.gm-hero__cta'):null;
+    if(heroCol&&ctaEl&&search&&search.parentNode!==heroCol) ctaEl.insertAdjacentElement('afterend', search);
   }
   function toDesktop(){
     if(vak.nextElementSibling!==path) path.parentNode.insertBefore(vak, path);
@@ -2037,8 +2132,7 @@ VACANCIES.forEach(function(v){ v.cities=[v.city]; });
   var mqMobile = window.matchMedia('(max-width:760px)');
   function applyDrift(){
     if(mqMobile.matches){
-      setupDrift(deptEl, 'right');   // направления → слева направо
-      setupDrift(cityEl, 'left');    // города → справа налево
+      setupDrift(deptEl, 'right');   // направления → плывут сами; палец останавливает
     }
   }
   if(mqMobile.addEventListener) mqMobile.addEventListener('change', applyDrift);
@@ -2624,6 +2718,90 @@ ${Array.from({length:18},(_,i)=>{const y=i*42-20; return `<line x1="290" y1="${y
         ' — пересоберите разметку schema.org');
   }catch(e){ console.warn('[SEO] разметку вакансий не удалось прочитать:', e); }
 })();
+</script>
+<!-- ===== моб: шторка «Фильтры» (город / формат / график) ===== -->
+<div class="gm-msheet-wrap" id="gmSheetWrap" hidden>
+  <div class="gm-msheet__ov" id="gmSheetOv"></div>
+  <div class="gm-msheet" role="dialog" aria-modal="true" aria-label="Фильтры вакансий">
+    <div class="gm-msheet__head">
+      <b>Фильтры</b>
+      <button type="button" class="gm-msheet__x" id="gmSheetX" aria-label="Закрыть">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="gm-msheet__body" id="gmSheetBody"></div>
+    <div class="gm-msheet__foot">
+      <button type="button" class="gm-msheet__reset" id="gmSheetReset">Сбросить</button>
+      <button type="button" class="gm-msheet__apply" id="gmSheetApply">Показать вакансии</button>
+    </div>
+  </div>
+</div>
+<!-- ===== моб: липкая кнопка «Хочу в команду» ===== -->
+<div class="gm-stickycta" id="gmStickyCta"><a href="#reserv" class="gm-btn gm-btn--primary">Хочу в команду</a></div>
+
+<script>
+/* ===== моб: город/формат/график — в шторку «Фильтры»; бейдж; липкая кнопка ===== */
+(function(){ try{
+  var mq = window.matchMedia('(max-width:760px)');
+  var wrap = document.getElementById('gmSheetWrap');
+  var body = document.getElementById('gmSheetBody');
+  var sidebar = document.querySelector('#vakansii .gm-sidebar');
+  var bar = document.querySelector('#vakansii .gm-vacs__bar');
+  var deptGroup = document.querySelector('#vakansii .gm-side-group--dept');
+  var groups = ['city','fmt','sch'].map(function(g){
+    return document.querySelector('#vakansii .gm-side-group--' + g);
+  }).filter(Boolean);
+  if(!wrap || !body || !sidebar || !bar || !groups.length) return;
+
+  /* кнопка «Фильтры» в строке со счётчиком найденного */
+  var btn = document.createElement('button');
+  btn.type = 'button'; btn.className = 'gm-mfilter'; btn.id = 'gmMFilter';
+  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Фильтры<span class="gm-mfilter__n" hidden></span>';
+  bar.insertBefore(btn, bar.firstChild);
+  var badge = btn.querySelector('.gm-mfilter__n');
+
+  function open(){ wrap.hidden = false; document.documentElement.style.overflow = 'hidden'; }
+  function close(){ wrap.hidden = true; document.documentElement.style.overflow = ''; }
+  btn.addEventListener('click', open);
+  document.getElementById('gmSheetX').addEventListener('click', close);
+  document.getElementById('gmSheetOv').addEventListener('click', close);
+  document.getElementById('gmSheetApply').addEventListener('click', close);
+  document.getElementById('gmSheetReset').addEventListener('click', function(){
+    [].slice.call(body.querySelectorAll('.gm-side-item.is-on')).forEach(function(el){ el.click(); });
+  });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && !wrap.hidden) close(); });
+
+  function syncBadge(){
+    var n = body.querySelectorAll('.gm-side-item.is-on').length;
+    badge.textContent = n; badge.hidden = n === 0;
+    btn.classList.toggle('is-on', n > 0);
+  }
+  new MutationObserver(syncBadge).observe(body, {subtree:true, attributes:true, attributeFilter:['class']});
+
+  function apply(){
+    if(mq.matches){
+      groups.forEach(function(g){ if(g.parentNode !== body) body.appendChild(g); });
+    } else {
+      close();
+      groups.forEach(function(g){
+        if(g.parentNode !== sidebar) sidebar.insertBefore(g, deptGroup || null);
+      });
+    }
+    syncBadge();
+  }
+  apply();
+  if(mq.addEventListener) mq.addEventListener('change', apply);
+  else if(mq.addListener) mq.addListener(apply);
+
+  /* липкая кнопка прячется, когда анкета резерва уже на экране */
+  var cta = document.getElementById('gmStickyCta');
+  var reserv = document.getElementById('reserv');
+  if(cta && reserv && 'IntersectionObserver' in window){
+    new IntersectionObserver(function(ents){
+      ents.forEach(function(e){ cta.classList.toggle('is-off', e.isIntersecting); });
+    }, {threshold:0.06}).observe(reserv);
+  }
+}catch(e){ console.warn('моб-фильтры:', e); } })();
 </script>
 </body>
 </html>
