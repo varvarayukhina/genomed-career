@@ -751,21 +751,6 @@
   .gm-story__who span{display:block; color:var(--ink-3); font-size:.85rem; margin-top:2px}
 
   /* ===== фотогалерея ===== */
-  /* разделы галереи над сеткой: на широком экране переносятся строками (десять
-     длинных названий в одну строку не влезают и уезжали за край), на узком —
-     лента, которая листается пальцем */
-  .gm-gtabs{display:flex; flex-wrap:wrap; gap:8px; margin:0 0 16px; padding:2px 0 6px}
-  @media (max-width:1024px){
-    .gm-gtabs{flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none;
-      -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity}
-    .gm-gtabs::-webkit-scrollbar{display:none}
-  }
-  .gm-gtab{flex:0 0 auto; scroll-snap-align:start; cursor:pointer; white-space:nowrap;
-    background:#fff; border:1px solid var(--line); border-radius:999px; padding:9px 16px;
-    font-family:var(--display); font-weight:600; font-size:.88rem; color:var(--ink-2);
-    box-shadow:var(--shadow-sm); transition:.16s ease}
-  .gm-gtab:hover{color:var(--ink); border-color:var(--line-2); transform:translateY(-1px)}
-  .gm-gtab[aria-selected="true"]{background:var(--ink); border-color:var(--ink); color:#fff}
   .gm-gallery{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
   .gm-gtile{position:relative; display:block; aspect-ratio:4/3; border-radius:var(--radius); overflow:hidden;
     border:1px solid var(--line); background:var(--stripe)}
@@ -904,7 +889,6 @@
     .gm-subnav__links a{min-height:44px; display:inline-flex; align-items:center}
     .gm-side-item{min-height:44px}
     .gm-mchip{min-height:44px}
-    .gm-gtab{min-height:44px}
     .gm-vc__more{min-height:44px}
     .gm-filter-reset{min-height:44px}
     .gm-consent input{width:22px; height:22px; margin-top:1px}
@@ -1237,9 +1221,8 @@
         <p class="gm-gallery-lead__ps">P.S. Хотите узнать, с чего всё начинается? Загляните в раздел «Закулисье лаборатории»&nbsp;— там наше сердце.</p>
       </div>
     </div>
-    <!-- разделы и плитки строятся из GSECTIONS в <script> ниже -->
-    <div class="gm-gtabs" id="gmGalleryTabs" role="tablist" aria-label="Разделы фотогалереи"></div>
-    <div class="gm-gallery" id="gmGallery" role="tabpanel"></div>
+    <!-- Плитки строятся из массива GALLERY в <script> ниже. -->
+    <div class="gm-gallery" id="gmGallery"></div>
   </div>
 </section>
 
@@ -2203,122 +2186,65 @@ const STORIES = [
 })();
 
 /* ============================================================
-   ФОТОГАЛЕРЕЯ — десять тематических разделов (формулировки Пятовой М.В.).
-   В каждом разделе на главной показываем 6 свежих материалов: от поздних
-   кадров к ранним. Полные альбомы живут в галерее genomed.ru.
-   Формат плитки: { src, full } — фото, { video } — ролик (превью берётся
-   первым кадром из самого файла, постеров на сайте нет).
-   Пути даются от GB, ролики — только H.264 до 7 МБ, иначе телефон не тянет.
+   ФОТОГАЛЕРЕЯ — вставьте ссылки на изображения.
+   Формат: { src:'https://…/photo.jpg', caption:'Подпись' }
+   Пока массив пуст — показываются плитки-заглушки.
    ============================================================ */
 const GB='https://genomed.ru/wp-content/uploads/vacancy/gallery/';
-const GSECTIONS = [
-  { n:'Закулисье лаборатории', items:[
-    { src:'2025/photo_2025-06-12_18-04-34_470x470_be4.jpg', full:'2025/photo_2025-06-12_18-04-34_1280x0_426.jpg' }, // 2025-06-12
-    { src:'2024-2/2024-09-19 23.15.09_470x470_be4.jpg', full:'2024-2/2024-09-19 23.15.09_1280x0_426.jpg' },     // 2024-09-19
-    { src:'2024-2/2024-09-19 23.14.50_470x470_be4.jpg', full:'2024-2/2024-09-19 23.14.50_1280x0_426.jpg' },     // 2024-09-19
-    { src:'2024-2/2024-09-19 23.14.32_470x470_be4.jpg', full:'2024-2/2024-09-19 23.14.32_1280x0_426.jpg' },     // 2024-09-19
-    { src:'2024-2/2024-09-19 23.14.21_470x470_be4.jpg', full:'2024-2/2024-09-19 23.14.21_1280x0_426.jpg' },     // 2024-09-19
-    { src:'2024-2/2024-09-19 23.14.13_470x470_be4.jpg', full:'2024-2/2024-09-19 23.14.13_1280x0_426.jpg' },     // 2024-09-19
-  ]},
-  { n:'Футбольная команда', items:[
-    { src:'2025/IMG_4820_470x470_a05.png', full:'2025/IMG_4820_1280x0_198.png' },                      // 2025-01-01
-    { src:'2025/IMG_4756_470x470_be4.jpg', full:'2025/IMG_4756_1280x0_426.jpg' },                      // 2025-01-01
-    { src:'2025/IMG_4833_470x470_a05.png', full:'2025/IMG_4833_1280x0_198.png' },                      // 2025-01-01
-    { src:'2025/IMG_4830_470x470_a05.png', full:'2025/IMG_4830_1280x0_198.png' },                      // 2025-01-01
-    { src:'2025/IMG_4828_470x470_a05.png', full:'2025/IMG_4828_1280x0_198.png' },                      // 2025-01-01
-    { src:'2025/IMG_4826_470x470_a05.png', full:'2025/IMG_4826_1280x0_198.png' },                      // 2025-01-01
-  ]},
-  { n:'Волейбольная команда', items:[
-    { src:'2025/photo_2025-11-20_20-12-52-470.png', full:'2025/photo_2025-11-20_20-12-52.jpg' },           // 2025-11-20
-    { src:'2025/photo_2025-10-02_19-48-49_470x470_be4.jpg', full:'2025/photo_2025-10-02_19-48-49_1280x0_426.jpg' }, // 2025-10-02
-    { src:'2025/photo_2025-10-02_19-48-54_470x470_be4.jpg', full:'2025/photo_2025-10-02_19-48-54_1280x0_426.jpg' }, // 2025-10-02
-    { src:'2025/photo_2025-10-02_19-49-01_470x470_be4.jpg', full:'2025/photo_2025-10-02_19-49-01_1280x0_426.jpg' }, // 2025-10-02
-    { src:'2025/photo_2025-10-02_19-49-04_470x470_be4.jpg', full:'2025/photo_2025-10-02_19-49-04_1280x0_426.jpg' }, // 2025-10-02
-    { src:'2025/photo_2025-10-02_19-49-06_470x470_be4.jpg', full:'2025/photo_2025-10-02_19-49-06_1280x0_426.jpg' }, // 2025-10-02
-  ]},
-  { n:'Турниры по бильярду', items:[
-    { src:'2026/8.png', full:'2026/8.jpg' },                                               // 2026-01-01
-    { src:'2025/photo_2025-03-04_22-36-38_470x470_be4.jpg', full:'2025/photo_2025-03-04_22-36-38_1280x0_426.jpg' }, // 2025-03-04
-    { src:'2025/photo_2025-03-04_20-26-21_470x470_be4.jpg', full:'2025/photo_2025-03-04_20-26-21_1280x0_426.jpg' }, // 2025-03-04
-    { src:'2025/photo_2025-03-04_20-26-19_470x470_be4.jpg', full:'2025/photo_2025-03-04_20-26-19_1280x0_426.jpg' }, // 2025-03-04
-    { src:'2025/photo_2025-03-04_20-26-09_470x470_be4.jpg', full:'2025/photo_2025-03-04_20-26-09_1280x0_426.jpg' }, // 2025-03-04
-    { src:'2025/photo_2025-03-04_20-26-03_470x470_be4.jpg', full:'2025/photo_2025-03-04_20-26-03_1280x0_426.jpg' }, // 2025-03-04
-  ]},
-  { n:'Забеги', items:[
-    { src:'2025/photo_2025-06-17_17-51-07_470x470_be4.jpg', full:'2025/photo_2025-06-17_17-51-07_1280x0_426.jpg' }, // 2025-06-17
-    { src:'2025/photo_2025-06-17_17-51-02_470x470_be4.jpg', full:'2025/photo_2025-06-17_17-51-02_1280x0_426.jpg' }, // 2025-06-17
-    { src:'2025/photo_2025-06-17_17-50-12_470x470_be4.jpg', full:'2025/photo_2025-06-17_17-50-12_1280x0_426.jpg' }, // 2025-06-17
-    { src:'2024/2024-08-21 17.35.12_470x470_be4.jpg', full:'2024/2024-08-21 17.35.12_1280x0_426.jpg' },       // 2024-08-21
-    { src:'2024/2024-08-21 17.34.40_470x470_be4.jpg', full:'2024/2024-08-21 17.34.40_1280x0_426.jpg' },       // 2024-08-21
-    { src:'2024/2024-08-21 17.34.31_470x470_be4.jpg', full:'2024/2024-08-21 17.34.31_1280x0_426.jpg' },       // 2024-08-21
-  ]},
-  { n:'Картинг-турниры', items:[
-    { video:'2026/33.MP4' },                                                               // 2026-01-01
-    { src:'2026/6.png', full:'2026/6.jpg' },                                               // 2026-01-01
-    { src:'2026/7.png', full:'2026/7.jpg' },                                               // 2026-01-01
-    { src:'2025/photo_2025-03-04_22-46-32_470x470_be4.jpg', full:'2025/photo_2025-03-04_22-46-32_1280x0_426.jpg' }, // 2025-03-04
-    { src:'2025/photo_2025-03-04_22-22-01_470x470_be4.jpg', full:'2025/photo_2025-03-04_22-22-01_1280x0_426.jpg' }, // 2025-03-04
-    { src:'2025/photo_2025-03-04_22-17-57_470x470_be4.jpg', full:'2025/photo_2025-03-04_22-17-57_1280x0_426.jpg' }, // 2025-03-04
-  ]},
-  { n:'Форумы и конференции', items:[
-    { src:'2025/photo_2025-10-02_19-22-49_470x470_be4.jpg', full:'2025/photo_2025-10-02_19-22-49_1280x0_426.jpg' }, // 2025-10-02
-    { src:'2022/2024-11-02-17.36_470x470_be4.jpg', full:'2022/2024-11-02-17.36_1280x0_426.jpg' },           // 2024-11-02
-    { src:'2019/photo_2024-11-02_17-53-08_470x470_be4.jpg', full:'2019/photo_2024-11-02_17-53-08_1280x0_426.jpg' }, // 2024-11-02
-    { src:'2024/2024-08-21 17.32.25_470x470_be4.jpg', full:'2024/2024-08-21 17.32.25_1280x0_426.jpg' },       // 2024-08-21
-    { src:'2024/2024-08-21 17.31.13_470x470_be4.jpg', full:'2024/2024-08-21 17.31.13_1280x0_426.jpg' },       // 2024-08-21
-    { src:'2024/2024-08-21 17.31.06_470x470_be4.jpg', full:'2024/2024-08-21 17.31.06_1280x0_426.jpg' },       // 2024-08-21
-  ]},
-  { n:'Кулинарные мастер-классы', items:[
-    { video:'2026/11.MP4' },                                                               // 2026-01-01
-    { src:'2026/1.png', full:'2026/1.jpg' },                                               // 2026-01-01
-    { src:'2026/2.png', full:'2026/2.jpg' },                                               // 2026-01-01
-    { src:'2026/3.png', full:'2026/3.jpg' },                                               // 2026-01-01
-    { src:'2026/4.png', full:'2026/4.jpg' },                                               // 2026-01-01
-    { src:'2026/5.png', full:'2026/5.jpg' },                                               // 2026-01-01
-  ]},
-  { n:'Творческие вечера', items:[
-    { src:'2026/photo_2026-03-31_15-48-58-m.jpg', full:'2026/photo_2026-03-31_15-48-58.jpg' },             // 2026-03-31
-    { src:'2026/photo_2026-03-31_15-40-14-m.jpg', full:'2026/photo_2026-03-31_15-40-14.jpg' },             // 2026-03-31
-    { src:'2026/photo_2026-03-31_15-40-13-m.jpg', full:'2026/photo_2026-03-31_15-40-13.jpg' },             // 2026-03-31
-    { src:'2026/photo_2026-03-31_15-40-12-m.jpg', full:'2026/photo_2026-03-31_15-40-12.jpg' },             // 2026-03-31
-    { src:'2026/photo_2026-03-15_15-13-37-m.jpg', full:'2026/photo_2026-03-15_15-13-37.jpg' },             // 2026-03-15
-    { src:'2024/photo_2024-12-22_20-43-15_470x470_be4.jpg', full:'2024/photo_2024-12-22_20-43-15_1280x0_426.jpg' }, // 2024-12-22
-  ]},
-  { n:'Встречи команды', items:[
-    { video:'2026/22.MP4' },                                                               // 2026-01-01
-    { src:'2026/9.png', full:'2026/9.jpg' },                                               // 2026-01-01
-    { src:'2026/10.png', full:'2026/10.jpg' },                                              // 2026-01-01
-    { src:'2025/photo_2025-06-17_17-53-01_470x470_be4.jpg', full:'2025/photo_2025-06-17_17-53-01_1280x0_426.jpg' }, // 2025-06-17
-    { src:'2025/photo_2025-03-13_23-20-21_470x470_be4.jpg', full:'2025/photo_2025-03-13_23-20-21_1280x0_426.jpg' }, // 2025-03-13
-    { src:'2025/photo_2025-03-12_16-15-12_470x470_be4.jpg', full:'2025/photo_2025-03-12_16-15-12_1280x0_426.jpg' }, // 2025-03-12
-  ]},
+/* Подборка обновлена 30.07.2026: от свежих кадров к более старым. Первые два —
+   сама лаборатория (для кандидата это главное), дальше жизнь команды.
+   Подписи — десять названий разделов по списку Пятовой М.В.
+   Даты в комментариях — дата съёмки по галерее genomed.ru. */
+const GALLERY = [
+  { src:GB+'2025/photo_2025-06-12_18-04-34_470x470_be4.jpg', full:GB+'2025/photo_2025-06-12_18-04-34_1280x0_426.jpg', caption:'Закулисье лаборатории' },      // 2025-06-12
+  { src:GB+'2024-2/2024-09-19 23.15.09_470x470_be4.jpg', full:GB+'2024-2/2024-09-19 23.15.09_1280x0_426.jpg', caption:'Закулисье лаборатории' },              // 2024-09-19
+  { src:GB+'2026/photo_2026-03-31_15-48-58-m.jpg', full:GB+'2026/photo_2026-03-31_15-48-58.jpg', caption:'Творческие вечера' },                      // 2026-03-31
+  { src:GB+'2026/photo_2026-03-31_15-40-14-m.jpg', full:GB+'2026/photo_2026-03-31_15-40-14.jpg', caption:'Творческие вечера' },                              // 2026-03-31
+  { video:GB+'2026/11.MP4', caption:'Кулинарные мастер-классы' },                                                                                            // 2026, 5,4 МБ
+  { video:GB+'2026/33.MP4', caption:'Картинг-турниры' },                                                                                                     // 2026, 3,4 МБ
+  { src:GB+'2026/8.png', full:GB+'2026/8.jpg', caption:'Турниры по бильярду' },                                                                              // 2026
+  { video:GB+'2026/55.MP4', caption:'Встречи команды' },                                                                                             // 2026, 6,4 МБ
+  { src:GB+'2025/photo_2025-11-20_20-12-52-470.png', full:GB+'2025/photo_2025-11-20_20-12-52.jpg', caption:'Волейбольная команда' },                            // 2025-11-20
+  { src:GB+'2025/photo_2025-10-02_19-22-49_470x470_be4.jpg', full:GB+'2025/photo_2025-10-02_19-22-49_1280x0_426.jpg', caption:'Форумы и конференции' },     // 2025-10-02
+  { src:GB+'2025/photo_2025-06-17_17-51-07_470x470_be4.jpg', full:GB+'2025/photo_2025-06-17_17-51-07_1280x0_426.jpg', caption:'Забеги' },                   // 2025-06-17
+  { src:GB+'2025/IMG_4820_470x470_a05.png', full:GB+'2025/IMG_4820_1280x0_198.png', caption:'Футбольная команда' },                                          // 2025
 ];
 (function(){
-  const grid=document.getElementById('gmGallery'), tabs=document.getElementById('gmGalleryTabs');
-  if(!grid||!tabs) return;
+  const el=document.getElementById('gmGallery'); if(!el) return;
+  const CAM='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 8h3l1.5-2h7L18 8h2a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.2"/></svg>';
   const PLAY='<span class="gm-gtile__play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg></span>';
+  const items = GALLERY.length ? GALLERY : Array.from({length:6}, ()=>({}));
+  items.forEach(g=>{
+    const media = g.src || g.video;
+    const t=document.createElement(media?'a':'div');
+    t.className='gm-gtile'+(media?'':' gm-gtile--ph')+(g.video?' gm-gtile--vid':'');
+    const cap = g.caption ? '<span class="gm-gtile__cap">'+g.caption+'</span>' : '';
+    if(g.video){
+      t.href=g.video; t.target='_blank'; t.rel='noopener';
+      t.setAttribute('aria-label', (g.caption||'Видео о жизни команды')+' — видео');
+      /* постеров у роликов на сайте нет, поэтому превью — кадр из самого файла;
+         src ставится очередью ниже, чтобы браузер не тянул все ролики разом */
+      t.innerHTML='<video data-src="'+g.video+'" muted playsinline loop preload="none"></video>'+PLAY+cap;
+    } else if(g.src){
+      t.href=g.full||g.src; t.target='_blank'; t.rel='noopener';
+      t.innerHTML='<img src="'+g.src+'" alt="'+(g.caption||'Фото лаборатории Геномед')+'" loading="lazy">'+cap;
+    } else { t.innerHTML=CAM+'<span>фото</span>'; }
+    el.appendChild(t);
+  });
 
-  /* ---- превью роликов: по появлению в кадре и по одному за раз ----
-     генерация (gen) отсекает загрузки от прошлого раздела: плитки уже удалены,
-     их события приходить не будут, и очередь без этого зависла бы */
-  let gen=0, busy=0, queue=[];
-  const io='IntersectionObserver' in window
-    ? new IntersectionObserver((ents,ob)=>{
-        ents.forEach(e=>{ if(e.isIntersecting){ ob.unobserve(e.target); queue.push(e.target); } });
-        pump();
-      },{rootMargin:'400px 0px'})
-    : null;
+  /* ---- превью видеоплиток: грузим по появлению в кадре и по одному ----
+     на наведение ролик играет без звука, при уходе курсора возвращается на кадр-превью */
+  const queue=[]; let busy=false;
   function pump(){ if(busy || !queue.length) return; load(queue.shift()); }
   function load(v){
-    const my=gen, tile=v.closest('.gm-gtile');
-    busy++;
+    busy=true;
+    const tile=v.closest('.gm-gtile');
     let settled=false;
     const finish=ok=>{ if(settled) return; settled=true; clearTimeout(timer);
-      if(ok && tile.isConnected) tile.classList.add('is-ready');
-      if(my===gen){ busy--; pump(); } };
+      if(ok) tile.classList.add('is-ready'); busy=false; pump(); };
     const timer=setTimeout(()=>finish(v.videoWidth>0), 9000);
     v.addEventListener('loadedmetadata',()=>{
-      v.dataset.frame=Math.min(1,(v.duration||4)/4);
+      v.dataset.frame=Math.min(1, (v.duration||4)/4);
       try{ v.currentTime=+v.dataset.frame; }catch(err){ finish(v.videoWidth>0); }
     },{once:true});
     v.addEventListener('seeked',()=>finish(v.videoWidth>0),{once:true});
@@ -2328,42 +2254,14 @@ const GSECTIONS = [
     tile.addEventListener('pointerleave',()=>{ tile.classList.remove('is-playing'); v.pause();
       try{ v.currentTime=+(v.dataset.frame||0); }catch(err){} });
   }
-
-  function render(i){
-    const sec=GSECTIONS[i]; if(!sec) return;
-    gen++; queue.length=0; busy=0;
-    grid.innerHTML='';
-    sec.items.forEach(g=>{
-      const t=document.createElement('a');
-      t.className='gm-gtile'+(g.video?' gm-gtile--vid':'');
-      t.target='_blank'; t.rel='noopener';
-      /* подпись на плитке — название раздела, ровно как в списке Пятовой */
-      const cap='<span class="gm-gtile__cap">'+sec.n+'</span>';
-      if(g.video){
-        t.href=GB+g.video;
-        t.setAttribute('aria-label', sec.n+' — видео');
-        t.innerHTML='<video data-src="'+GB+g.video+'" muted playsinline loop preload="none"></video>'+PLAY+cap;
-      } else {
-        t.href=GB+g.full;
-        t.innerHTML='<img src="'+GB+g.src+'" alt="'+sec.n+' — Геномед" loading="lazy" decoding="async">'+cap;
-      }
-      grid.appendChild(t);
-    });
-    grid.setAttribute('aria-label', sec.n);
-    [...tabs.children].forEach((b,k)=>b.setAttribute('aria-selected', k===i?'true':'false'));
-    grid.querySelectorAll('video[data-src]').forEach(v=>{ if(io) io.observe(v); else queue.push(v); });
-    if(!io) pump();
-  }
-
-  GSECTIONS.forEach((sec,i)=>{
-    const b=document.createElement('button');
-    b.type='button'; b.className='gm-gtab'; b.setAttribute('role','tab');
-    b.setAttribute('aria-selected', i===0?'true':'false');
-    b.textContent=sec.n;
-    b.addEventListener('click',()=>render(i));
-    tabs.appendChild(b);
-  });
-  render(0);
+  const vids=[...el.querySelectorAll('video[data-src]')];
+  if('IntersectionObserver' in window){
+    const io=new IntersectionObserver((ents,ob)=>{
+      ents.forEach(e=>{ if(e.isIntersecting){ ob.unobserve(e.target); queue.push(e.target); } });
+      pump();
+    },{rootMargin:'400px 0px'});
+    vids.forEach(v=>io.observe(v));
+  } else { queue.push(...vids); pump(); }
 })();
 
 /* ---------- resume upload ---------- */
