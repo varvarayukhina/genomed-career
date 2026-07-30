@@ -521,6 +521,18 @@
   /* ===== навигация вакансий: боковое меню + поиск ===== */
   .gm-vaclayout{display:grid; grid-template-columns:250px minmax(0,1fr); gap:28px; align-items:start}
   .gm-sidebar{position:sticky; top:70px; display:flex; flex-direction:column; gap:22px}
+  /* только десктопная раскладка (меню сбоку): закреплённое меню не выше экрана и
+     листается внутри себя — иначе нижние направления недостижимы, пока не
+     долистаешь все вакансии. На ≤900px меню становится лентами сверху — там как было */
+  @media (min-width:901px){
+    .gm-sidebar{max-height:calc(100vh - 88px); overflow-y:auto; padding:3px 4px;
+      scrollbar-width:thin; scrollbar-color:var(--line-2) transparent}
+    .gm-sidebar::-webkit-scrollbar{width:8px}
+    .gm-sidebar::-webkit-scrollbar-track{background:transparent}
+    .gm-sidebar::-webkit-scrollbar-thumb{background:var(--line-2); border-radius:999px;
+      border:2px solid transparent; background-clip:content-box}
+    .gm-sidebar:hover::-webkit-scrollbar-thumb{background:var(--ink-3); background-clip:content-box}
+  }
   .gm-side-group{background:#fff; border:1px solid var(--line); border-radius:var(--radius);
     box-shadow:var(--shadow-sm); padding:14px 12px}
   .gm-side-lbl{display:block; font-family:var(--mono); font-size:.7rem; letter-spacing:.12em;
@@ -753,6 +765,8 @@
     color:var(--ink-3); background:repeating-linear-gradient(135deg,var(--stripe),var(--stripe) 12px,var(--stripe-2) 12px,var(--stripe-2) 24px)}
   .gm-gtile--ph svg{width:34px; height:34px; opacity:.6}
   .gm-gtile--ph span{font-family:var(--mono); font-size:.72rem; letter-spacing:.1em; text-transform:uppercase}
+  .gm-gallery__more{margin-top:20px; display:flex; align-items:center; gap:18px; flex-wrap:wrap}
+  .gm-gallery__more span{color:var(--ink-3); font-size:.92rem; line-height:1.5; max-width:52ch}
 
   /* ===== адаптив: истории/галерея/перки/фильтры ===== */
   @media (max-width:900px){
@@ -1330,6 +1344,13 @@
       <p class="gm-sec__lead">Лаборатория, команда и будни: спортивные турниры, выездные корпоративы, мастер-классы и совместные праздники.</p>
     </div>
     <div class="gm-gallery" id="gmGallery"></div>
+    <!-- на главной — только избранное; всё остальное на отдельной странице по разделам -->
+    <div class="gm-gallery__more gm-reveal">
+      <a href="fotogalereya.html" class="gm-btn gm-btn--ghost">Вся фотогалерея — 313 фото и видео
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <span>10 разделов: лаборатория изнутри, спортивные команды, турниры, форумы, мастер-классы и встречи команды.</span>
+    </div>
   </div>
 </section>
 

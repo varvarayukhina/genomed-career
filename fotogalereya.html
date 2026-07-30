@@ -61,6 +61,10 @@
     background:#EEF3F8;cursor:zoom-in;border:none;padding:0;transition:.22s cubic-bezier(.22,1,.36,1)}
   .tile img,.tile>video{width:100%;height:100%;object-fit:cover;display:block;
     transition:transform .4s cubic-bezier(.22,1,.36,1);pointer-events:none}
+  /* плитка видео до появления первого кадра: тёмная подложка, а не пустой серый квадрат */
+  .tile--vid{background:linear-gradient(160deg,#24384E,#0E1E2E)}
+  .tile>video{opacity:0;transition:opacity .32s ease,transform .4s cubic-bezier(.22,1,.36,1)}
+  .tile--vid.is-ready>video{opacity:1}
   .tile:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(30,41,59,.16)}
   .tile:hover img,.tile:hover>video{transform:scale(1.06)}
   .tile:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
@@ -86,6 +90,12 @@
   .lb__n{right:18px;top:50%;transform:translateY(-50%)}
   .lb__cap{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#CBD5E1;
     font-size:.86rem;font-weight:600;text-align:center;padding:0 60px}
+  .lb__nosup{max-width:30em;text-align:center;color:#E2E8F0;background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:28px 30px}
+  .lb__nosup b{display:block;font-family:var(--display);font-size:1.05rem;color:#fff}
+  .lb__nosup span{display:block;margin:8px 0 16px;font-size:.9rem;color:#AFC0D4;line-height:1.5}
+  .lb__nosup a{display:inline-block;color:#0F172A;background:#fff;border-radius:999px;
+    padding:9px 18px;font-family:var(--display);font-weight:700;font-size:.86rem;text-decoration:none}
 
   .note{margin:44px 0 60px;padding:16px 18px;border-radius:16px;background:#fff;
     border:1px solid #E7EDF4;box-shadow:var(--shadow-sm);color:var(--muted);font-size:.9rem;line-height:1.6}
@@ -162,11 +172,12 @@ const SECTIONS = [{"id": 1, "name": "Закулисье лаборатории",
           '<p class="sec__desc">'+esc(s.desc)+'</p>';
     h+='<div class="grid">';
     s.items.forEach(p=>{
-      /* у видео на сайте нет картинки-превью, поэтому превью — первый кадр самого файла:
-         #t=0.5 заставляет браузер отрисовать кадр, preload=metadata не тянет весь ролик */
-      h+='<button class="tile" data-i="'+p.i+'">'+
+      /* у видео на сайте нет картинки-превью, поэтому превью — первый кадр самого файла.
+         src ставится не сразу, а по очереди (см. ниже): 60 роликов одновременно
+         браузер не тянет и часть плиток оставалась пустой */
+      h+='<button class="tile'+(p.video?' tile--vid':'')+'" data-i="'+p.i+'">'+
          (p.video
-           ? '<video src="'+esc(p.src)+'#t=0.5" muted playsinline preload="metadata"></video>'+
+           ? '<video data-src="'+esc(p.src)+'" muted playsinline preload="none"></video>'+
              '<span class="tile__play">'+PLAY+'</span><span class="tile__tag">видео</span>'
            : '<img src="'+esc(p.thumb)+'" alt="'+esc(s.name)+'" loading="lazy" decoding="async">')+
          '</button>';
@@ -213,7 +224,52 @@ const SECTIONS = [{"id": 1, "name": "Закулисье лаборатории",
   body.addEventListener('click',e=>{
     const b=e.target.closest('.more'); if(!b) return;
     expand(b.closest('.sec'));
-  });  /* ---- просмотрщик ---- */
+    scanVideos();
+  });
+
+  /* ---- превью видео: грузим по мере появления в кадре, не больше LIMIT сразу ----
+     раньше все 60 роликов получали src при отрисовке страницы; браузер держит
+     ограниченное число медиа-загрузок, поэтому у части плиток кадр не появлялся
+     и они выглядели как пустые квадраты. Теперь: очередь + первый кадр через
+     currentTime (надёжнее медиа-фрагмента #t=), плюс тёмная подложка на время загрузки */
+  const LIMIT=4, queue=[];
+  let busy=0;
+  function pump(){
+    while(busy<LIMIT && queue.length){ const v=queue.shift(); if(!v.dataset.state) load(v); }
+  }
+  function load(v){
+    busy++; v.dataset.state='loading';
+    let settled=false;
+    const finish=ok=>{ if(settled) return; settled=true; v.dataset.state='done';
+      clearTimeout(timer);
+      if(ok) v.closest('.tile').classList.add('is-ready');
+      busy--; pump(); };
+    const timer=setTimeout(()=>finish(v.videoWidth>0), 9000);
+    v.addEventListener('loadedmetadata',()=>{
+      try{ v.currentTime=Math.min(.5,(v.duration||2)/4); }catch(err){ finish(v.videoWidth>0); }
+    },{once:true});
+    v.addEventListener('seeked',()=>finish(v.videoWidth>0),{once:true});
+    v.addEventListener('error',()=>finish(false),{once:true});
+    v.preload='metadata';
+    v.src=v.dataset.src;
+  }
+  const io='IntersectionObserver' in window
+    ? new IntersectionObserver((ents,ob)=>{
+        ents.forEach(e=>{ if(e.isIntersecting){ ob.unobserve(e.target); queue.push(e.target); } });
+        pump();
+      },{rootMargin:'500px 0px'})
+    : null;
+  function scanVideos(){
+    body.querySelectorAll('video[data-src]:not([data-seen])').forEach(v=>{
+      v.dataset.seen='1';
+      if(io) io.observe(v); else { queue.push(v); }
+    });
+    if(!io) pump();
+  }
+  scanVideos();
+  nav.addEventListener('click',scanVideos);
+
+  /* ---- просмотрщик ---- */
   const lb=$('lb'), slot=$('lbSlot'), cap=$('lbCap');
   let cur=-1;
   function show(i){
@@ -222,6 +278,18 @@ const SECTIONS = [{"id": 1, "name": "Закулисье лаборатории",
     slot.innerHTML = p.video
       ? '<video src="'+esc(p.src)+'" controls autoplay playsinline></video>'
       : '<img src="'+esc(p.src)+'" alt="'+esc(p.sec)+'">';
+    /* два ролика в галерее сняты на iPhone в HEVC — Chrome и Firefox их не декодируют
+       (метаданные приходят, а видеодорожки нет). Вместо чёрного плеера — ссылка на файл */
+    if(p.video){
+      const v=slot.querySelector('video'), fail=()=>{
+        if(!lb.classList.contains('on')||slot.querySelector('.lb__nosup')) return;
+        slot.innerHTML='<div class="lb__nosup"><b>Этот ролик в формате HEVC</b>'+
+          '<span>Браузер не умеет его показывать — Safari или плеер на компьютере откроют файл нормально.</span>'+
+          '<a href="'+esc(p.src)+'" target="_blank" rel="noopener">Открыть файл</a></div>';
+      };
+      v.addEventListener('loadedmetadata',()=>{ setTimeout(()=>{ if(v.videoWidth===0) fail(); },500); },{once:true});
+      v.addEventListener('error',fail,{once:true});
+    }
     cap.textContent=p.sec+'  ·  '+(i+1)+' из '+FLAT.length;
     lb.classList.add('on'); document.body.style.overflow='hidden';
   }
