@@ -999,6 +999,35 @@
     .gm-manifest__text{margin-top:16px; font-size:.95rem}
   }
 
+  /* ----- при наведении из блока вылетают фигурки с фото команды ----- */
+  .gm-manifest{position:relative}
+  .gm-manifest__rule, .gm-manifest__lead, .gm-manifest__text{position:relative; z-index:1}
+  .gm-manifest__fx{position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:0}
+  .gm-fly{position:absolute; bottom:-90px; display:block; pointer-events:none;
+    background-size:cover; background-position:center; background-color:var(--stripe);
+    opacity:0; will-change:transform,opacity;
+    animation-name:gm-fly-up; animation-timing-function:cubic-bezier(.32,.06,.38,1);
+    animation-fill-mode:forwards;
+    -webkit-mask-size:100% 100%; mask-size:100% 100%;
+    -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat}
+  @keyframes gm-fly-up{
+    0%{opacity:0; transform:translate3d(0,0,0) scale(.62) rotate(0)}
+    13%{opacity:var(--peak,.4)}
+    76%{opacity:var(--peak,.4)}
+    100%{opacity:0; transform:translate3d(var(--dx,0), calc(-1 * var(--rise,320px)), 0) scale(1) rotate(var(--rot,0))}
+  }
+  .gm-fly--heart{-webkit-mask-image:var(--m-heart); mask-image:var(--m-heart)}
+  .gm-fly--cloud{-webkit-mask-image:var(--m-cloud); mask-image:var(--m-cloud)}
+  .gm-fly--drop{-webkit-mask-image:var(--m-drop);  mask-image:var(--m-drop)}
+  .gm-fly--blob{-webkit-mask-image:var(--m-blob);  mask-image:var(--m-blob)}
+  .gm-manifest__fx{
+    --m-heart:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23000' d='M50 89C19 66 7 52 7 36A22 22 0 0 1 50 25 22 22 0 0 1 93 36c0 16-12 30-43 53z'/%3E%3C/svg%3E");
+    --m-cloud:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23000'%3E%3Ccircle cx='30' cy='59' r='20'/%3E%3Ccircle cx='52' cy='42' r='26'/%3E%3Ccircle cx='74' cy='59' r='20'/%3E%3Crect x='30' y='54' width='44' height='25'/%3E%3C/g%3E%3C/svg%3E");
+    --m-drop:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23000' d='M50 6s32 36 32 54a32 32 0 0 1-64 0C18 42 50 6 50 6z'/%3E%3C/svg%3E");
+    --m-blob:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23000' d='M52 5c27-3 46 19 44 44-2 26-22 47-48 46C22 94 3 71 5 45 7 20 26 8 52 5z'/%3E%3C/svg%3E");
+  }
+  @media (prefers-reduced-motion: reduce){ .gm-manifest__fx{display:none} }
+
 </style>
 
 <!-- ==== курсор-реактивный фон баннера (десктоп, дополнение к .gm-hero) ==== -->
@@ -2826,6 +2855,67 @@ ${Array.from({length:18},(_,i)=>{const y=i*42-20; return `<line x1="290" y1="${y
     }, {threshold:0.06}).observe(reserv);
   }
 }catch(e){ console.warn('моб-фильтры:', e); } })();
+</script>
+
+<!-- ===== манифест: при наведении вылетают фигурки с фото команды ===== -->
+<script>
+(function(){
+  const box = document.querySelector('.gm-manifest');
+  if(!box || !Array.isArray(GALB)) return;
+  /* только там, где есть настоящее наведение: на тач-экране hover залипает */
+  if(!window.matchMedia('(hover:hover)').matches) return;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const shots = alb => alb.items.filter(i=>i.s).map(i=>GB+i.s);
+  const LAB = 'Закулисье лаборатории';
+  const lab  = shots(GALB.find(a=>a.n===LAB) || {items:[]});
+  const rest = GALB.filter(a=>a.n!==LAB).flatMap(a=>shots(a).slice(0,4));
+  /* лаборатория трижды: она должна попадаться заметно чаще остальных */
+  const POOL = lab.concat(lab, lab, rest);
+  if(!POOL.length) return;
+
+  const SHAPES = ['heart','cloud','drop','blob'];
+  const rnd = arr => arr[(Math.random()*arr.length)|0];
+
+  const fx = document.createElement('div');
+  fx.className = 'gm-manifest__fx';
+  fx.setAttribute('aria-hidden','true');
+  box.appendChild(fx);
+
+  let timer = null, live = 0, warmed = false;
+  const MAX = 14;
+
+  function spawn(){
+    if(live >= MAX) return;
+    const el = document.createElement('span');
+    el.className = 'gm-fly gm-fly--' + rnd(SHAPES);
+    const size = 64 + Math.random()*58;
+    el.style.width = size+'px';
+    el.style.height = size+'px';
+    el.style.left = (4 + Math.random()*88) + '%';
+    el.style.backgroundImage = 'url("' + rnd(POOL) + '")';
+    el.style.setProperty('--dx',   ((Math.random()*2-1)*130) + 'px');
+    el.style.setProperty('--rot',  ((Math.random()*2-1)*26) + 'deg');
+    el.style.setProperty('--peak', (0.30 + Math.random()*0.22).toFixed(2));
+    el.style.setProperty('--rise', (box.offsetHeight + 70 + Math.random()*90) + 'px');
+    el.style.animationDuration = (6 + Math.random()*2) + 's';   /* 6–8 c */
+    fx.appendChild(el);
+    live++;
+    el.addEventListener('animationend', function(){ this.remove(); live--; });
+  }
+
+  box.addEventListener('mouseenter', function(){
+    if(!warmed){                       /* фото лежат на genomed.ru — прогреваем кэш */
+      warmed = true;
+      for(let i=0;i<6;i++){ new Image().src = rnd(POOL); }
+    }
+    if(timer) return;
+    spawn();
+    timer = setInterval(spawn, 520);
+  });
+  /* курсор ушёл — новых не создаём, уже летящие спокойно долетают */
+  box.addEventListener('mouseleave', function(){ clearInterval(timer); timer = null; });
+})();
 </script>
 </body>
 </html>
