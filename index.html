@@ -1296,7 +1296,7 @@
 
   <div class="gm-manifest">
     <span class="gm-manifest__rule" aria-hidden="true"></span>
-    <p class="gm-manifest__lead">Наша сила в команде, где каждый не просто сотрудник, а соавтор общего дела</p>
+    <p class="gm-manifest__lead">Наша сила в команде, где каждый&nbsp;— не просто сотрудник, а соавтор общего дела</p>
     <p class="gm-manifest__text">Мы объединяем вовлеченных профессионалов, которые двигают команду вперед и не боятся брать на себя ответственность.</p>
   </div>
 
@@ -2860,8 +2860,6 @@ ${Array.from({length:18},(_,i)=>{const y=i*42-20; return `<line x1="290" y1="${y
 (function(){
   const box = document.querySelector('.gm-manifest');
   if(!box || !Array.isArray(GALB)) return;
-  /* только там, где есть настоящее наведение: на тач-экране hover залипает */
-  if(!window.matchMedia('(hover:hover)').matches) return;
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   const shots = alb => alb.items.filter(i=>i.s).map(i=>GB+i.s);
@@ -2902,11 +2900,33 @@ ${Array.from({length:18},(_,i)=>{const y=i*42-20; return `<line x1="290" y1="${y
     el.addEventListener('animationend', function(){ this.remove(); live--; });
   }
 
+  /* фото лежат на genomed.ru — прогреваем кэш, чтобы фигурки не были пустыми */
+  function warm(){
+    if(warmed) return;
+    warmed = true;
+    for(let i=0;i<6;i++){ new Image().src = rnd(POOL); }
+  }
+
+  /* Затравка: когда блок впервые доехал до экрана, эффект проигрывается сам —
+     иначе о нём никто не догадается, блок выглядит обычным текстом.
+     Работает и на телефонах, где наведения нет вообще. */
+  new IntersectionObserver(function(ents, obs){
+    ents.forEach(function(e){
+      if(!e.isIntersecting) return;
+      obs.disconnect();
+      warm();
+      let n = 1;
+      spawn();
+      const t = setInterval(function(){ spawn(); if(++n >= 4) clearInterval(t); }, 620);
+    });
+  }, {threshold:0.45}).observe(box);
+
+  /* Дальше — только по наведению. На тач-экранах пропускаем: там hover залипает
+     после тапа и фигурки сыпались бы, пока не тронешь что-то другое. */
+  if(!window.matchMedia('(hover:hover)').matches) return;
+
   box.addEventListener('mouseenter', function(){
-    if(!warmed){                       /* фото лежат на genomed.ru — прогреваем кэш */
-      warmed = true;
-      for(let i=0;i<6;i++){ new Image().src = rnd(POOL); }
-    }
+    warm();
     if(timer) return;
     spawn();
     timer = setInterval(spawn, 520);
