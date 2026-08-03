@@ -2735,7 +2735,19 @@ ${Array.from({length:18},(_,i)=>{const y=i*42-20; return `<line x1="290" y1="${y
 
 <script>
 (function(){ var f=document.getElementById('kartaFrame'); if(!f) return;
-  function fit(){ try{ var d=f.contentDocument; if(!d||!d.body) return;
+  /* Схема сама ужимается под ширину экрана, и на телефоне становилась
+     нечитаемо мелкой: масштаб 0.15 вместо прежних 0.78. Возвращаем как было —
+     минимальная ширина плюс горизонтальная прокрутка внутри кадра. 1400px
+     подобрано так, чтобы масштаб совпал с версией до обновления карты.
+     Переставляем на каждом проходе: сборка подменяет документ и стиль теряется. */
+  function widen(){
+    var d=f.contentDocument;
+    if(!d || !d.head || d.getElementById('gmMapWide')) return;
+    var st=d.createElement('style'); st.id='gmMapWide';
+    st.textContent='@media (max-width:900px){html,body{min-width:1400px}}';
+    d.head.appendChild(st);
+  }
+  function fit(){ try{ widen(); var d=f.contentDocument; if(!d||!d.body) return;
       /* по нижней границе видимого содержимого, а не по scrollHeight страницы */
       var bot=0;
       [].slice.call(d.body.querySelectorAll('body > *, body > * > *')).forEach(function(e){
