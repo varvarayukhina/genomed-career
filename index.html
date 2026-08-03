@@ -2744,18 +2744,58 @@ ${Array.from({length:18},(_,i)=>{const y=i*42-20; return `<line x1="290" y1="${y
     var d=f.contentDocument;
     if(!d || !d.head || d.getElementById('gmMapWide')) return;
     var st=d.createElement('style'); st.id='gmMapWide';
-    st.textContent='@media (max-width:900px){html,body{min-width:1400px}}';
+    st.textContent='html,body{min-height:0}' +
+      '@media (max-width:900px){html,body{min-width:1400px}}';
     d.head.appendChild(st);
   }
-  function fit(){ try{ widen(); var d=f.contentDocument; if(!d||!d.body) return;
-      /* по нижней границе видимого содержимого, а не по scrollHeight страницы */
-      var bot=0;
-      [].slice.call(d.body.querySelectorAll('body > *, body > * > *')).forEach(function(e){
-        if(getComputedStyle(e).display==='none') return;
-        var r=e.getBoundingClientRect(); if(r.height>0) bot=Math.max(bot, r.bottom + d.documentElement.scrollTop);
+
+  /* Правки внутри схемы. У её элементов нет ни классов, ни id — вёрстка
+     инлайновая, поэтому ищем по тексту. Прогоняем на каждом проходе:
+     сборка перерисовывает документ и правки слетают. */
+  function tune(){
+    var d=f.contentDocument; if(!d || !d.body) return;
+    var all=[].slice.call(d.body.querySelectorAll('div'));
+
+    /* 1. Счётчики «18 карьерных треков» и «6 открытых вакансий» убраны:
+          цифра вакансий считалась по своему списку и расходилась с разделом
+          «Открытые позиции» на самой странице. */
+    if(!d.body.dataset.gmCounters){
+      var row=null;
+      all.forEach(function(el){
+        var t=(el.textContent||'').replace(/\s+/g,' ').trim();
+        if(/карьерных треков/.test(t) && /открытых вакансий/.test(t) && t.length<80){
+          if(!row || el.contains(row)===false && row.contains(el)) row=el;
+        }
       });
-      var h=Math.max(bot, 0);
-      if(h>300) f.style.height=Math.round(h+24)+'px'; }catch(e){} }
+      if(row){ row.style.display='none'; d.body.dataset.gmCounters='hidden'; }
+    }
+
+    /* 2. Ряд чипов направлений прижимаем к ширине экрана. Схема остаётся
+          широкой и листается вбок, а выбрать направление можно сразу,
+          не уезжая вправо. */
+    var chip=null;
+    [].slice.call(d.body.querySelectorAll('button')).forEach(function(el){
+      if(!chip && (el.textContent||'').trim()==='Все направления') chip=el;
+    });
+    var rowEl = chip && chip.parentElement;      /* ряд с flex-wrap */
+    if(rowEl){
+      /* вычитаем отступ ряда с обеих сторон: иначе крайние чипы вылезают
+         за правую границу видимой части кадра */
+      var w = Math.max(220, f.clientWidth - 2*rowEl.offsetLeft) + 'px';
+      if(rowEl.style.maxWidth !== w){ rowEl.style.maxWidth = w; rowEl.style.boxSizing = 'border-box'; }
+    }
+  }
+  /* Высоту берём из scrollHeight содержимого. Обход детей, который тут был
+     раньше, упирался в корневой div схемы: он растянут на 100% высоты кадра,
+     поэтому замер всегда возвращал текущую высоту кадра, к ней прибавлялся
+     запас — и кадр рос на 24px каждые полторы секунды без остановки.
+     Запас не добавляем намеренно: как только кадр станет выше содержимого,
+     scrollHeight начнёт возвращать высоту кадра и петля вернётся. */
+  function fit(){ try{ widen(); tune(); var d=f.contentDocument; if(!d||!d.body) return;
+      var h=Math.max(d.body.scrollHeight, d.documentElement.scrollHeight);
+      if(h<=300) return;
+      if(Math.abs(h - parseFloat(f.style.height||0)) > 8) f.style.height=Math.round(h)+'px';
+    }catch(e){} }
   f.addEventListener('load',function(){ fit(); [400,1200,2500,5000].forEach(function(t){setTimeout(fit,t);}); });
   addEventListener('resize',fit); setInterval(fit,1500);
 })();
