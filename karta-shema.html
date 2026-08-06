@@ -1,7 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Страница живёт только внутри iframe на карьерной странице, отдельно
+       индексировать нечего: в выдаче она давала бы дубль тех же 18 треков.
+       Правило было в версии от 31 июля и потерялось при пересборке схемы
+       3 августа — возвращено. follow оставляем: ссылки внутри веса не теряют. -->
+  <meta name="robots" content="noindex, follow">
   <title>Карта карьерных путей Геномед</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
